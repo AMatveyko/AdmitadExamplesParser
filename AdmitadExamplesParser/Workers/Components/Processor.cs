@@ -70,7 +70,7 @@ namespace AdmitadExamplesParser.Workers.Components
         }
 
         private List<DownloadInfo> DownloadFiles() {
-            var downloader = new FeedsDownloader();
+            var downloader = new FeedsDownloader( _settings.AttemptsToDownload );
             return downloader.DownloadsAll( _settings.DirectoryPath );
         }
 
