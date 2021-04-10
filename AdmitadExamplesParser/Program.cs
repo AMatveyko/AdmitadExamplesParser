@@ -12,6 +12,7 @@ namespace AdmitadExamplesParser
             string[] args )
         {
             var settings = new ProcessorSettings {
+                AttemptsToDownload = 3,
                 EnableExtendedStatistics = true,
                 DirectoryPath = @"g:\admitadFeeds\",
                 DuplicateFile = @"o:\admitad\fromZak\dublicat.xml",

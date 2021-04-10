@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
-using System;
+using AdmitadCommon.Entities;
+
 namespace AdmitadExamplesParser.Entities
 {
     internal sealed class DownloadInfo
@@ -9,7 +10,7 @@ namespace AdmitadExamplesParser.Entities
         public string ShopName { get; set; }
         public string FilePath { get; set; }
         public long DownloadTime { get; set; }
-        public string Error { get; set; } = ErrorStatusOk;
-        public bool HasError => Error != ErrorStatusOk;
+        public DownloadError Error { get; set; }
+        public bool HasError => Error != DownloadError.Ok;
     }
 }

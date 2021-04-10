@@ -6,6 +6,7 @@ namespace AdmitadExamplesParser.Entities
 {
     internal sealed class ProcessorSettings
     {
+        public int AttemptsToDownload { get; set; }
         public bool EnableExtendedStatistics { get; set; }
         public string DirectoryPath { get; set; }
         public string DuplicateFile { get; set; }
