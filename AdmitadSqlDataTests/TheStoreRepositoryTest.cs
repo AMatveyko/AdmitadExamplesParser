@@ -1,5 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
+using AdmitadCommon.Helpers;
+
 using AdmitadSqlData.Helpers;
 using AdmitadSqlData.Repositories;
 
@@ -7,7 +9,7 @@ using NUnit.Framework;
 
 namespace AdmitadSqlDataTests
 {
-    public class ShopRepositoryTest
+    public sealed class TheStoreRepositoryTest
     {
         [ Test, Explicit ]
         public void GetShopsTest()
@@ -16,6 +18,17 @@ namespace AdmitadSqlDataTests
             var shops = rep.GetEnableShops();
         }
 
+        [ Test ]
+        public void UnknownBrands()
+        {
+            var brands = new[] {"noname", "sdfadf", "", " ", null, "USHATAVA", "Грандсток", "Adidas" };
+            foreach( var brand in brands ) {
+                var cleanName = BrandHelper.GetClearlyVendor( brand );
+                DbHelper.RememberVendorIfUnknown( brand, cleanName );
+            }
+            DbHelper.WriteUnknownBrands();
+        }
+        
         [ Test ]
         public void GetCountryTest()
         {

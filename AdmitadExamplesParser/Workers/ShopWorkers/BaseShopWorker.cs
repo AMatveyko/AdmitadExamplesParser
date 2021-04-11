@@ -22,7 +22,6 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
         protected const string AgeParamName = "возраст";
         protected const string GenderParamName = "пол";
 
-        private static readonly Regex VendorCleaner = new Regex( @"[^a-zA-Zа-яА-Я0-9]", RegexOptions.Compiled );
         private static Regex _pricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
         public Offer Convert( RawOffer rawOfer )
@@ -40,7 +39,7 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
                 offer.SoldOut = true;
                 return offer;
             }
-            
+
             FillBaseOffer( offer, rawOfer );
             DoFillExtendedOffer( offer, rawOfer );
 
@@ -159,6 +158,9 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
             
             extendedOffer.CountryId = GetCountryId( rawOffer );
             extendedOffer.VendorNameClearly = GetClearlyVendor( rawOffer.Vendor );
+            
+            DbHelper.RememberVendorIfUnknown( rawOffer.Vendor, extendedOffer.VendorNameClearly );
+            
             FillParams( extendedOffer, rawOffer );
         }
 
@@ -177,11 +179,6 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
         protected virtual Age GetAgeFromParam( IEnumerable<RawParam> @params ) {
             var value = GetParamValueByName( AgeParamName, @params );
             return AgeHelper.GetAge( value );
-            // return value switch {
-            //     "взрослый" => Age.Adult,
-            //     "детский" => Age.Child,
-            //     _ => Age.Undefined
-            // };
         }
 
         private static Gender GetGender( RawOffer rawOffer )
@@ -204,87 +201,10 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
             @params.FirstOrDefault( p => p.Name.ToLower() == name.ToLower() )?.Value.ToLower();
 
 
-        protected virtual string GetClearlyVendor( string vendor ) {
-            
-            // return VendorCleaner.Replace( vendor ?? string.Empty, "" ).ToLower();
-
-            if( vendor.IsNullOrWhiteSpace() ) {
-                return string.Empty;
-            }
-
-            vendor = vendor.ToLower();
-            
-            foreach( var replace in _replaceDictionary ) {
-                vendor = vendor.Replace( replace.Key, replace.Value );
-            }
-
-            vendor = VendorCleaner.Replace( vendor, string.Empty );
-
-            vendor = vendor.Replace( " ", string.Empty );
-
-            return vendor;
-
+        protected virtual string GetClearlyVendor( string vendor )
+        {
+            return BrandHelper.GetClearlyVendor( vendor );
         }
-
-
-        private Dictionary<string, string> _replaceDictionary = new() {
-            // соблюдать последовательность пока не будет 100% понимания
-            {"&gt;", " "},
-            {"&lt;", " "},
-            {"&amp;", " "},
-            {"&apos;", " "},
-            {"&#039;", " "},
-            {"&quot;", " "},
-            {"&", string.Empty},
-            {" and ", string.Empty},
-            {"%", string.Empty},
-            {"#", string.Empty},
-            {".", string.Empty},
-            {",", string.Empty},
-            {"-", string.Empty},
-            {"+", string.Empty},
-            {"(", string.Empty},
-            {")", string.Empty},
-            {"/", string.Empty},
-            {"!", string.Empty},
-            {"?", string.Empty},
-            {"`", string.Empty},
-            {"’", string.Empty},
-            {"\"", string.Empty},
-            {"'", string.Empty},
-            {"™", string.Empty},
-            {"®", string.Empty},
-            {"ё","e"},
-            {"Ë","e"},
-            {"ê","e"},
-            {"é","e"},
-            {"è","e"},
-            {"É","e"},
-            {"Ē","e"},
-            {"ü","u"},
-            {"ú","u"},
-            {"ù","u"},
-            {"ã",""},
-            {"â","a"},
-            {"ä","a"},
-            {"á","a"},
-            {"à","a"},
-            {"Å","a"},
-            {"å","a"},
-            {"ò","o"},
-            {"ó","o"},
-            {"ø","o"},
-            {"ô","o"},
-            {"ö","o"},
-            {"ō","o"},
-            {"Ọ","o"},
-            {"ç","c"},
-            {"ñ","n"},
-            {"Ð","d"},
-            {"ï","i"},
-            {"ì","i"},
-            {"Í","i"}
-        };
 
     }
 }

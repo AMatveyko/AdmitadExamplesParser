@@ -1271,7 +1271,7 @@ theStore|schema||thestore|localhost|UPDATE|G</Grants>
     </column>
     <column id="352" parent="336" name="NumberOfProducts">
       <Position>3</Position>
-      <DataType>mediumtext|0s</DataType>
+      <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
     <index id="353" parent="336" name="UnknownBrands_Id_uindex">
