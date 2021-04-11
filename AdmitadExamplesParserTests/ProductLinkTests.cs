@@ -49,7 +49,7 @@ namespace AdmitadExamplesParserTests
             linker.MaterialsLink();
             linker.SizesLink();
             
-            LogWriter.WriteLog();
+            //LogWriter.WriteLog(  );
         }
         
         [ Test ]

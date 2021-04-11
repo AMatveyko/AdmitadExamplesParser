@@ -13,6 +13,8 @@ using AdmitadCommon.Helpers;
 
 using AdmitadExamplesParser.Entities;
 
+using Messenger;
+
 namespace AdmitadExamplesParser.Workers.Components
 {
     internal sealed class Processor : BaseComponent
@@ -31,10 +33,17 @@ namespace AdmitadExamplesParser.Workers.Components
         public void Start() {
             MeasureWorkTime( DoParseAndSave );
             PrintStatistics();
-            
-            LogWriter.WriteLog();
+
+            var messenger = GetMessenger();
+            LogWriter.WriteLog( messenger.Send );
         }
 
+        private IMessenger GetMessenger()
+        {
+            var messenger = new Messenger.Messenger( _settings.MessengerSettings );
+            return messenger;
+        }
+        
         private static void PrintStatistics() {
             foreach( var line in StatisticsContainer.GetAllLines() ) {
                 LogWriter.Log( line );
@@ -51,10 +60,16 @@ namespace AdmitadExamplesParser.Workers.Components
             LogWriter.Log( $"Start: '{ _startTime }'" );
             
             var files = GetDownloadInfos();
+            var documentsBefore =
+                CreateElasticClient( _settings.ElasticSearchClientSettings ).GetCountAllDocuments();
             foreach( var fileInfo in files.Where( f => f.HasError == false ) ) {
                 TryProcess( fileInfo );
             }
-
+            
+            var documentsAfter = CreateElasticClient( _settings.ElasticSearchClientSettings ).GetCountAllDocuments();
+            
+            LogWriter.Log( $"Total products {documentsAfter}, new documents { documentsAfter - documentsBefore}", true );
+            
             var linker = new ProductLinker( _settings.ElasticSearchClientSettings );
             linker.CategoryLink();
             linker.TagsLink();
@@ -65,7 +80,13 @@ namespace AdmitadExamplesParser.Workers.Components
             
             linker.DisableProducts( _startTime );
             
-            ResponseCollector.Responses.ForEach( r => LogWriter.Log( $"{r.Item1}: {r.Item2}\n{r.Item3}" ) );
+            ResponseCollector.Responses.ForEach(
+                r => {
+                    LogWriter.Log(
+                        $"{r.Item1}: {r.Item2}\n{r.Item3}",
+                        r.Item3.ToString().ToLower().Contains( "invalid" ) );
+                } );
+            
             
         }
 
@@ -90,7 +111,7 @@ namespace AdmitadExamplesParser.Workers.Components
         {
             try { DoProcess( fileInfo ); }
             catch( Exception e ) {
-                LogWriter.Log( $"{fileInfo.ShopName } error: {e.Message}" );
+                LogWriter.Log( $"{fileInfo.ShopName } error: {e.Message}", true );
             }
         }
         
@@ -132,19 +153,10 @@ namespace AdmitadExamplesParser.Workers.Components
             return converter.GetCleanOffers();
         }
 
-        private static void IndexOffers(
-            IEnumerable<Offer> offers,
-            ElasticSearchClientSettings settings )
-        {
-            settings.DefaultIndex = Offer.IndexNameConst;
-            IndexEntities( offers, settings );
-        }
-
         private static void IndexProducts(
             IEnumerable<Product> products,
             ElasticSearchClientSettings settings )
         {
-            settings.DefaultIndex = Product.IndexName;
             var iProducts = products.Select( p => ( IProductForIndex ) p ).ToList();
             IndexEntities( iProducts, settings );
         }
@@ -153,9 +165,14 @@ namespace AdmitadExamplesParser.Workers.Components
             IEnumerable<IIndexedEntities> entities,
             ElasticSearchClientSettings settings )
         {
-            var client = new ElasticSearchClient<IIndexedEntities>( settings );
+            var client = CreateElasticClient( settings );
             
             client.BulkAll( entities );
+        }
+
+        private static ElasticSearchClient<IIndexedEntities> CreateElasticClient( ElasticSearchClientSettings settings )
+        {
+            return new ElasticSearchClient<IIndexedEntities>( settings );
         }
         
         // private static void Serialize( IEnumerable<Offer> offers, string fileName = "" ) {

@@ -54,8 +54,10 @@ namespace AdmitadExamplesParserTests
             };
             
             var shopData = ParseFile( downloadInfo, false );
+            var sortedRawOffers = shopData.Offers.OrderBy( o => o.OldPrice ).ToList();
             var unique = GetUnique( shopData.Offers, shopName );
             var offers = ConvertOffers( shopData );
+            var sortedOffers = offers.OrderBy( o => o.OldPrice ).ToList();
             var countryIds = offers.Select( o => o.CountryId ).Distinct().ToList();
             var genders = offers.Select( o => o.Gender ).Distinct().ToList();
             var ages = offers.Select( o => o.Age ).Distinct().ToList();
@@ -67,6 +69,7 @@ namespace AdmitadExamplesParserTests
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
             var products = ProductConverter.GetProductsContainer( offers );
+            var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
         }
 

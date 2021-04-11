@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 using AdmitadCommon.Entities;
 
@@ -39,13 +41,33 @@ namespace AdmitadCommon.Helpers
             _messages.Enqueue( message );
         }
         
-        public static void WriteLog()
+        public static void WriteLog( Action<string> sendLog )
+        {
+            WriteLogToFile();
+            SendLogRemote( sendLog );
+        }
+
+        private static void SendLogRemote( Action<string> sendLog ) {
+            sendLog?.Invoke( GetLogForRemote() );
+        }
+
+        private static string GetLogForRemote()
+        {
+            var fullMessage = new StringBuilder();
+            fullMessage.AppendLine( $"Start at {DateTime.Now}" );
+            foreach( var message in _messages.Where( m => m.Important ) ) {
+                fullMessage.AppendLine( message.Text );
+            }
+            return fullMessage.ToString();
+        }
+        
+        private static void WriteLogToFile()
         {
             foreach( var message in _messages ) {
                 File.AppendAllText( _filePath, $"{message}\n" );
             }
         }
-
+        
         private static void PrintToConsole( Message message )
         {
             Console.WriteLine( message.Text );

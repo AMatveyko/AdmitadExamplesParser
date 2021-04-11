@@ -42,7 +42,7 @@ namespace AdmitadExamplesParser.Workers.Components
             }
             
             var fileCount = Directory.GetFiles( filePath ).Length;
-            LogWriter.Log( $"Files downloaded {fileCount} from {files.Count}" );
+            LogWriter.Log( $"Files downloaded {fileCount} from {files.Count}", true );
             return downloadInfos;
         }
 

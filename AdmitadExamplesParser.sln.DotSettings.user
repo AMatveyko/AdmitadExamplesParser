@@ -1,9 +1,14 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d0bb94b8_002D0ac4_002D425e_002D914e_002D2e84539dfa5e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetUnlinkedIds" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0080a42c_002D9004_002D42bf_002Dbf4c_002Df2bab9ad2874/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetCountAllDocuments" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ElasticSearchClientTests.GetUnlinkedIds&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.CategoryLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.CategoriesLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.CompareStrings&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ElasticSearchClientTests.GetCountAllDocuments&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3d9e4cf8_002D1584_002D4c89_002D9fa7_002D5c528c0e9302/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ParsingTest(&amp;quot;12storeez&amp;quot;)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("12storeez")&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	
+	
+	</wpf:ResourceDictionary>
