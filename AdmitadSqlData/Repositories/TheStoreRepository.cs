@@ -32,6 +32,20 @@ namespace AdmitadSqlData.Repositories
             using var db = GetDb();
             return db.Brands.Where( b => b.Duplicate == false ).ToList();
         }
-        
+
+        public void ClearUnknownBrands()
+        {
+            using var db = GetDb();
+            db.UnknownBrands.RemoveRange( db.UnknownBrands );
+            db.SaveChanges();
+        }
+
+        public void AddUnknownBrands( IEnumerable<UnknownBrands> brands )
+        {
+            using var db = GetDb();
+            db.UnknownBrands.AttachRange( brands );
+            db.SaveChanges();
+        }
+
     }
 }

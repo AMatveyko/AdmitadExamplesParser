@@ -13,6 +13,8 @@ using AdmitadCommon.Helpers;
 
 using AdmitadExamplesParser.Entities;
 
+using AdmitadSqlData.Helpers;
+
 using Messenger;
 
 namespace AdmitadExamplesParser.Workers.Components
@@ -33,7 +35,9 @@ namespace AdmitadExamplesParser.Workers.Components
         public void Start() {
             MeasureWorkTime( DoParseAndSave );
             PrintStatistics();
-
+            
+            DbHelper.WriteUnknownBrands();
+            
             var messenger = GetMessenger();
             LogWriter.WriteLog( messenger.Send );
         }
@@ -53,7 +57,8 @@ namespace AdmitadExamplesParser.Workers.Components
                 LogWriter.Log( line );
             }
 
-            //Console.ReadLine();
+            var numberUnknownBrands = DbHelper.GetUnknownBrandsCount();
+            LogWriter.Log( $"Number of unknown brands {numberUnknownBrands}", true );
         }
 
         private void DoParseAndSave()
@@ -133,12 +138,7 @@ namespace AdmitadExamplesParser.Workers.Components
             _settings.ElasticSearchClientSettings.ShopName = shopData.Name;
 
             IndexProducts( products, _settings.ElasticSearchClientSettings );
-            var client = new ElasticSearchClient<IIndexedEntities>( _settings.ElasticSearchClientSettings );
-            //client.BulkLinkedData( LinkedDataContainer.Container );
 
-            //IndexProducts( products, settings );
-            //IndexOffers( offers, _settings.ElasticSearchClientSettings );
-            //_ids.Add( products.Select( p => p.Id ).ToList() );
         }
 
         private ShopData ParseFile( DownloadInfo fileInfo ) {
@@ -179,11 +179,5 @@ namespace AdmitadExamplesParser.Workers.Components
             return new ElasticSearchClient<IIndexedEntities>( settings );
         }
         
-        // private static void Serialize( IEnumerable<Offer> offers, string fileName = "" ) {
-        //     var x = new System.Xml.Serialization.XmlSerializer( typeof( List<Offer> ) );
-        //     var t = new StreamWriter(  fileName );
-        //     x.Serialize( t, offers.ToList() );
-        //     t.Close();
-        // }
     }
 }

@@ -13,8 +13,6 @@ using AdmitadCommon.Helpers;
 using AdmitadSqlData.Entities;
 using AdmitadSqlData.Repositories;
 
-using Nest;
-
 namespace AdmitadSqlData.Helpers
 {
     public static class DbHelper
@@ -31,8 +29,43 @@ namespace AdmitadSqlData.Helpers
         private static readonly ConcurrentDictionary<string, int> ShopIdCache = new();
         private static Dictionary<int, string[]> CountriesCache;
         private static Dictionary<string, string> BrandCache;
+        private static Dictionary<string, UnknownBrands> UnknownBrands = new();
+        private static bool UnknownBrandsNeedClean = true;
 
+        public static int GetUnknownBrandsCount()
+        {
+            return UnknownBrands.Count;
+        }
 
+        public static void RememberVendorIfUnknown( string vendorName, string cleanName )
+        {
+            if( UnknownBrandsNeedClean ) {
+                _theStoreRepository.ClearUnknownBrands();
+                UnknownBrandsNeedClean = false;
+            }
+
+            if( vendorName == null || vendorName.Trim().IsNullOrWhiteSpace() ) {
+                vendorName = "NoBrandName";
+            }
+
+            var brandId = GetBrandId( cleanName );
+            if( brandId != Constants.UndefinedBrandId ) {
+                return;
+            }
+
+            if( UnknownBrands.ContainsKey( vendorName ) == false ) {
+                UnknownBrands.Add( vendorName, new UnknownBrands { Name = vendorName, NumberOfProducts = 0 });
+            }
+
+            UnknownBrands[ vendorName ].NumberOfProducts++;
+            
+        }
+
+        public static void WriteUnknownBrands()
+        {
+            _theStoreRepository.AddUnknownBrands( UnknownBrands.Select( b => b.Value ) );
+        }
+        
         public static string GetBrandId( string clearlyName )
         {
             if( BrandCache == null ) {

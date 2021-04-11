@@ -26,6 +26,7 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<SostavDb> Materials { get; set; }
         public DbSet<SizeDb> Sizes { get; set; }
         public DbSet<BrandDb> Brands { get; set; }
+        public DbSet<UnknownBrands> UnknownBrands { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {
