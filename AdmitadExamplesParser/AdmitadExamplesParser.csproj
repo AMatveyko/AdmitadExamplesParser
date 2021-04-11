@@ -20,6 +20,7 @@
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\Messenger\Messenger.csproj" />
     </ItemGroup>
     <ItemGroup>
       <Folder Include="Helpers" />

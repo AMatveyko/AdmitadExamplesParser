@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Helpers;
 
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.ShopWorkers;
@@ -14,19 +15,28 @@ namespace AdmitadExamplesParser.Workers.Components
     {
         private readonly IShopWorker _worker;
         private readonly List<RawOffer> _offers;
+        private readonly string _shopName;
 
         public OfferConverter( ShopData shopData )
             : base( ComponentType.Converter )
         {
             _worker = ConverterBuilder.GetConverterByShop( shopData.Name );
             _offers = shopData.Offers;
+            _shopName = shopData.Name;
         }
 
         public List<Offer> GetCleanOffers() =>
             MeasureWorkTime( DoGetCleanOffers );
 
-        private List<Offer> DoGetCleanOffers() =>
-            FilterOffers( _offers ).Select( _worker.Convert ).ToList();
+        private List<Offer> DoGetCleanOffers()
+        {
+            var offers = FilterOffers( _offers ).Select( _worker.Convert ).ToList();
+            if( _worker.CountWithOldPriceSecond > 0 ) {
+                LogWriter.Log( $"{ _shopName } has products with oldPriceSecond: { _worker.CountWithOldPriceSecond }" );
+            }
+
+            return offers;
+        }
 
         private static IEnumerable<RawOffer> FilterOffers( IEnumerable<RawOffer> offers ) =>
             offers.Where( o => o != null )

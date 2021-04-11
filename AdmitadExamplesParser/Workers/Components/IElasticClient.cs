@@ -32,5 +32,6 @@ namespace AdmitadExamplesParser.Workers.Components
         void BulkLinkedData( List<LinkedData> data );
         string DisableOldProducts( DateTime indexTime );
         string UnlinkProductsByProperty( BaseProperty property );
+        public long GetCountAllDocuments();
     }
 }

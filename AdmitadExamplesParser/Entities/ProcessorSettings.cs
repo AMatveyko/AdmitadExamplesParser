@@ -1,6 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
-using System.Collections.Generic;
+using Messenger;
 
 namespace AdmitadExamplesParser.Entities
 {
@@ -12,5 +12,6 @@ namespace AdmitadExamplesParser.Entities
         public string DuplicateFile { get; set; }
         public bool ShowStatistics { get; set; }
         public ElasticSearchClientSettings ElasticSearchClientSettings { get; set; }
+        public TelegramSettings TelegramSettings { get; set; }
     }
 }

@@ -9,8 +9,7 @@ using AdmitadCommon.Helpers;
 
 namespace AdmitadExamplesParser.Entities
 {
-    internal sealed class ShopData {
-        //public int Id { get; set; }
+    public sealed class ShopData {
         public string Name { get; set; }
         public List<RawOffer> Offers { get; set; } = new();
         public Dictionary<string, ShopCategory> Categories { get; } = new ();

@@ -3,15 +3,12 @@
 using System;
 using System.Collections.Generic;
 
-using Nest;
-
 using Newtonsoft.Json;
 
 namespace AdmitadCommon.Entities
 {
     public sealed class Product : IProductForIndex
     {
-        private const string IndexNameConst = "products-25";
         [ JsonProperty( "view" ) ] public long View { get; set; }
 
         [ JsonProperty( "categories" ) ] public string[] Categories { get; set; }
@@ -22,9 +19,6 @@ namespace AdmitadCommon.Entities
         [ JsonProperty( "soldout" ) ] public byte Soldout { get; set; }
         [ JsonProperty( "enable" ) ] public byte Enable { get; set; }
         [ JsonProperty( "click" ) ] public long Click { get; set; }
-
-        //public JoinField MyJoinField { get; set; } = JoinField.Root<Product>();
-        public static string IndexName => IndexNameConst;
         [ JsonProperty( "id" ) ] public string Id { get; set; }
         [ JsonIgnore ] public string RoutingId => $"R-{Id}";
         [ JsonProperty( "url" ) ] public string Url { get; set; }

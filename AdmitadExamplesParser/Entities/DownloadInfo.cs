@@ -3,7 +3,7 @@ using AdmitadCommon.Entities;
 
 namespace AdmitadExamplesParser.Entities
 {
-    internal sealed class DownloadInfo
+    public sealed class DownloadInfo
     {
         private const string ErrorStatusOk = "Ok";
         public string Url { get; set; }

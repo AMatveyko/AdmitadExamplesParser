@@ -28,6 +28,5 @@ namespace AdmitadCommon.Entities
         [ JsonProperty( "click" ) ] public int Click { get; set; } = 0; 
 
         public JoinField MyJoinField { get; set; }
-        [ JsonIgnore ] public static string IndexName => "products-25";
     }
 }

@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 
@@ -146,6 +145,12 @@ namespace AdmitadExamplesParser.Workers.Components
             return GetResult( response );
         }
 
+        public long GetCountAllDocuments()
+        {
+            var response = _client.Count<Product>( r => r.Query( q => q.MatchAll() ) );
+            return response.Count;
+        }
+        
         public string UnlinkProductsByProperty( BaseProperty property )
         {
             var response = _client.UpdateByQuery<Product>( r =>

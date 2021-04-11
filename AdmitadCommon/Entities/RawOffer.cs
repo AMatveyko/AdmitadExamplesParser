@@ -27,7 +27,8 @@ namespace AdmitadCommon.Entities
         [ XmlElement( "modified_time" ) ] public string ModifiedTime { get; set; }
         [ XmlElement( "name" ) ] public string Name { get; set; }
         [ XmlElement( "price" ) ] public string Price { get; set; }
-        [ XmlElement( "oldPrice" ) ] public string OldPrice { get; set; }
+        [ XmlElement( "oldprice" ) ] public string OldPrice { get; set; }
+        [ XmlElement( "oldPrice" ) ] public string OldPriceSecond { get; set; }
         [ XmlElement( "param" ) ] public List<RawParam> Params { get; set; }
         [ XmlElement( "pickup" ) ] public bool? IsPickup { get; set; }
         [ XmlElement( "picture" ) ] public List<string> Pictures { get; set; }
