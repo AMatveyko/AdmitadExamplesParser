@@ -1237,755 +1237,795 @@ theStore|schema||thestore|localhost|UPDATE|G</Grants>
     <user id="335" parent="1" name="thestore">
       <Host>localhost</Host>
     </user>
-    <table id="336" parent="6" name="brand">
+    <table id="336" parent="6" name="UnknownBrands"/>
+    <table id="337" parent="6" name="brand">
       <Comment>глвная начиная с 10.05.2020 (Shopsy)</Comment>
     </table>
-    <table id="337" parent="6" name="category"/>
-    <table id="338" parent="6" name="city"/>
-    <table id="339" parent="6" name="color"/>
-    <table id="340" parent="6" name="country"/>
-    <table id="341" parent="6" name="item_tag">
+    <table id="338" parent="6" name="category"/>
+    <table id="339" parent="6" name="city"/>
+    <table id="340" parent="6" name="color"/>
+    <table id="341" parent="6" name="country"/>
+    <table id="342" parent="6" name="item_tag">
       <Comment>теги товаров</Comment>
       <Engine>MyISAM</Engine>
     </table>
-    <table id="342" parent="6" name="price"/>
-    <table id="343" parent="6" name="sezon"/>
-    <table id="344" parent="6" name="shop">
+    <table id="343" parent="6" name="price"/>
+    <table id="344" parent="6" name="sezon"/>
+    <table id="345" parent="6" name="shop">
       <Comment>подключенные магазины</Comment>
     </table>
-    <table id="345" parent="6" name="size"/>
-    <table id="346" parent="6" name="sostav"/>
-    <table id="347" parent="6" name="tag"/>
-    <table id="348" parent="6" name="tag_type"/>
-    <column id="349" parent="336" name="id">
+    <table id="346" parent="6" name="size"/>
+    <table id="347" parent="6" name="sostav"/>
+    <table id="348" parent="6" name="tag"/>
+    <table id="349" parent="6" name="tag_type"/>
+    <column id="350" parent="336" name="Id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="351" parent="336" name="Name">
+      <Position>2</Position>
+      <DataType>varchar(255)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="352" parent="336" name="NumberOfProducts">
+      <Position>3</Position>
+      <DataType>mediumtext|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="353" parent="336" name="UnknownBrands_Id_uindex">
+      <ColNames>Id</ColNames>
+      <Unique>1</Unique>
+      <Type>btree</Type>
+    </index>
+    <index id="354" parent="336" name="UnknownBrands_Name_uindex">
+      <ColNames>Name</ColNames>
+      <Unique>1</Unique>
+      <Type>btree</Type>
+    </index>
+    <key id="355" parent="336" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>Id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <key id="356" parent="336" name="UnknownBrands_Id_uindex">
+      <ColNames>Id</ColNames>
+      <UnderlyingIndexName>UnknownBrands_Id_uindex</UnderlyingIndexName>
+    </key>
+    <key id="357" parent="336" name="UnknownBrands_Name_uindex">
+      <ColNames>Name</ColNames>
+      <UnderlyingIndexName>UnknownBrands_Name_uindex</UnderlyingIndexName>
+    </key>
+    <column id="358" parent="337" name="id">
       <Position>1</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="350" parent="336" name="date_add">
+    <column id="359" parent="337" name="date_add">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="351" parent="336" name="name">
+    <column id="360" parent="337" name="name">
       <Position>3</Position>
       <Comment>моя категория </Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="352" parent="336" name="name_format">
+    <column id="361" parent="337" name="name_format">
       <Position>4</Position>
       <Comment>отформатированное</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="353" parent="336" name="name_clearly">
+    <column id="362" parent="337" name="name_clearly">
       <Position>5</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="354" parent="336" name="name_ru">
+    <column id="363" parent="337" name="name_ru">
       <Position>6</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="355" parent="336" name="name2_clearly">
+    <column id="364" parent="337" name="name2_clearly">
       <Position>7</Position>
       <Comment>альтернативное имя</Comment>
       <DataType>varchar(100)|0s</DataType>
     </column>
-    <column id="356" parent="336" name="name_lat">
+    <column id="365" parent="337" name="name_lat">
       <Position>8</Position>
       <Comment>используется в url /brand-name/</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="357" parent="336" name="logo">
+    <column id="366" parent="337" name="logo">
       <Position>9</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="358" parent="336" name="duplicate">
+    <column id="367" parent="337" name="duplicate">
       <Position>10</Position>
       <Comment>дубль в группе одинаковых</Comment>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>0</DefaultExpression>
     </column>
-    <column id="359" parent="336" name="enabled">
+    <column id="368" parent="337" name="enabled">
       <Position>11</Position>
       <DataType>tinyint(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>1</DefaultExpression>
     </column>
-    <column id="360" parent="336" name="shopsy_url">
+    <column id="369" parent="337" name="shopsy_url">
       <Position>12</Position>
       <DataType>varchar(300)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="361" parent="336" name="shopsy_cnt">
+    <column id="370" parent="337" name="shopsy_cnt">
       <Position>13</Position>
       <Comment>колво товаров в Шопси</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="362" parent="336" name="source">
+    <column id="371" parent="337" name="source">
       <Position>14</Position>
       <Comment>источник бренда</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="363" parent="336" name="description">
+    <column id="372" parent="337" name="description">
       <Position>15</Position>
       <Comment>мое примечание</Comment>
       <DataType>varchar(500)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="364" parent="336" name="name_clearly">
+    <index id="373" parent="337" name="name_clearly">
       <ColNames>name_clearly</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="365" parent="336" name="name2_clearly">
+    <index id="374" parent="337" name="name2_clearly">
       <ColNames>name2_clearly</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="366" parent="336" name="name_lat2">
+    <index id="375" parent="337" name="name_lat2">
       <ColNames>name_lat</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="367" parent="336" name="PRIMARY">
+    <key id="376" parent="337" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="368" parent="337" name="id">
+    <column id="377" parent="338" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="369" parent="337" name="id_parent">
+    <column id="378" parent="338" name="id_parent">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="370" parent="337" name="enabled">
+    <column id="379" parent="338" name="enabled">
       <Position>3</Position>
       <Comment>статус категории</Comment>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>1</DefaultExpression>
     </column>
-    <column id="371" parent="337" name="lvl">
+    <column id="380" parent="338" name="lvl">
       <Position>4</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="372" parent="337" name="name">
+    <column id="381" parent="338" name="name">
       <Position>5</Position>
       <Comment>для меню</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="373" parent="337" name="name_h1">
+    <column id="382" parent="338" name="name_h1">
       <Position>6</Position>
       <Comment>для h1</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="374" parent="337" name="name2">
+    <column id="383" parent="338" name="name2">
       <Position>7</Position>
       <Comment>(род.) нет чего?</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="375" parent="337" name="name3">
+    <column id="384" parent="338" name="name3">
       <Position>8</Position>
       <Comment>(вин.) купить что?</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="376" parent="337" name="unit">
+    <column id="385" parent="338" name="unit">
       <Position>9</Position>
       <Comment>товар в ед. числе</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="377" parent="337" name="name_lat">
+    <column id="386" parent="338" name="name_lat">
       <Position>10</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="378" parent="337" name="name_lat2">
+    <column id="387" parent="338" name="name_lat2">
       <Position>11</Position>
       <Comment>upd 11.12.17</Comment>
       <DataType>varchar(150)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="379" parent="337" name="prefix_type">
+    <column id="388" parent="338" name="prefix_type">
       <Position>12</Position>
       <Comment>падеж/род префикса (1,2,3)</Comment>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>1</DefaultExpression>
     </column>
-    <column id="380" parent="337" name="sex">
+    <column id="389" parent="338" name="sex">
       <Position>13</Position>
       <Comment>пол</Comment>
       <DataType>varchar(2)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="381" parent="337" name="img">
+    <column id="390" parent="338" name="img">
       <Position>14</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="382" parent="337" name="search">
+    <column id="391" parent="338" name="search">
       <Position>15</Position>
       <Comment>набор слов, которые ищем. Разделены запятой</Comment>
       <DataType>varchar(500)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="383" parent="337" name="search_minus">
+    <column id="392" parent="338" name="search_minus">
       <Position>16</Position>
       <Comment>минус слова, через запятую</Comment>
       <DataType>varchar(500)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="384" parent="337" name="search_fields">
+    <column id="393" parent="338" name="search_fields">
       <Position>17</Position>
       <Comment>поля сфинкс индекса по которым искать (через запятую): name,model,typeprefix,categoryName</Comment>
       <DataType>varchar(300)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;name,model,typeprefix,categoryName,param&apos;</DefaultExpression>
     </column>
-    <column id="385" parent="337" name="ExcludeWordsFields">
+    <column id="394" parent="338" name="ExcludeWordsFields">
       <Position>18</Position>
       <Comment>поля для поиска исключающих слов. разделитель запятая. если нулл то берем из search_fields. нужно подумать, может сюда нужно просто добавлять а не копировать....</Comment>
       <DataType>varchar(300)|0s</DataType>
     </column>
-    <column id="386" parent="337" name="search_gender">
+    <column id="395" parent="338" name="search_gender">
       <Position>19</Position>
       <Comment>w,m,u,g,b,c,b</Comment>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="387" parent="337" name="search_age">
+    <column id="396" parent="338" name="search_age">
       <Position>20</Position>
       <Comment>1 - взрослый, 2 - детский</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>1</DefaultExpression>
     </column>
-    <column id="388" parent="337" name="cnt">
+    <column id="397" parent="338" name="cnt">
       <Position>21</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="389" parent="337" name="price_min">
+    <column id="398" parent="338" name="price_min">
       <Position>22</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="390" parent="337" name="price_max">
+    <column id="399" parent="338" name="price_max">
       <Position>23</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="391" parent="337" name="discount_max">
+    <column id="400" parent="338" name="discount_max">
       <Position>24</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="392" parent="337" name="id">
+    <index id="401" parent="338" name="id">
       <ColNames>id</ColNames>
       <Unique>1</Unique>
       <Type>btree</Type>
     </index>
-    <index id="393" parent="337" name="id_parent">
+    <index id="402" parent="338" name="id_parent">
       <ColNames>id_parent</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="394" parent="337" name="enabled">
+    <index id="403" parent="338" name="enabled">
       <ColNames>enabled</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="395" parent="337" name="name">
+    <index id="404" parent="338" name="name">
       <ColNames>name</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="396" parent="337" name="name_h1">
+    <index id="405" parent="338" name="name_h1">
       <ColNames>name_h1</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="397" parent="337" name="id">
+    <key id="406" parent="338" name="id">
       <ColNames>id</ColNames>
       <UnderlyingIndexName>id</UnderlyingIndexName>
     </key>
-    <column id="398" parent="338" name="id">
+    <column id="407" parent="339" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="399" parent="338" name="name">
+    <column id="408" parent="339" name="name">
       <Position>2</Position>
       <Comment>моя категория </Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="400" parent="338" name="name_lat">
+    <column id="409" parent="339" name="name_lat">
       <Position>3</Position>
       <Comment>категория магазина</Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="401" parent="338" name="important">
+    <column id="410" parent="339" name="important">
       <Position>4</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="402" parent="338" name="PRIMARY">
+    <key id="411" parent="339" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="403" parent="339" name="id">
+    <column id="412" parent="340" name="id">
       <Position>1</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="404" parent="339" name="id_parent">
+    <column id="413" parent="340" name="id_parent">
       <Position>2</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="405" parent="339" name="name">
+    <column id="414" parent="340" name="name">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="406" parent="339" name="name2">
+    <column id="415" parent="340" name="name2">
       <Position>4</Position>
       <Comment>какие?</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="407" parent="339" name="name3">
+    <column id="416" parent="340" name="name3">
       <Position>5</Position>
       <Comment>какая?</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="408" parent="339" name="name4">
+    <column id="417" parent="340" name="name4">
       <Position>6</Position>
       <Comment>какого?</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="409" parent="339" name="name_sin1">
+    <column id="418" parent="340" name="name_sin1">
       <Position>7</Position>
       <Comment>синоним, опечатка</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="410" parent="339" name="name_lat">
+    <column id="419" parent="340" name="name_lat">
       <Position>8</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="411" parent="339" name="name_lat2">
+    <column id="420" parent="340" name="name_lat2">
       <Position>9</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="412" parent="339" name="code">
+    <column id="421" parent="340" name="code">
       <Position>10</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="413" parent="339" name="PRIMARY">
+    <key id="422" parent="340" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="414" parent="340" name="id">
+    <column id="423" parent="341" name="id">
       <Position>1</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="415" parent="340" name="name">
+    <column id="424" parent="341" name="name">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="416" parent="340" name="name2">
+    <column id="425" parent="341" name="name2">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="417" parent="340" name="name_sin">
+    <column id="426" parent="341" name="name_sin">
       <Position>4</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="418" parent="340" name="name_lat">
+    <column id="427" parent="341" name="name_lat">
       <Position>5</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="419" parent="340" name="PRIMARY">
+    <key id="428" parent="341" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="420" parent="341" name="id_item">
+    <column id="429" parent="342" name="id_item">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="421" parent="341" name="id_tag">
+    <column id="430" parent="342" name="id_tag">
       <Position>2</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="422" parent="341" name="date_add">
+    <column id="431" parent="342" name="date_add">
       <Position>3</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="423" parent="341" name="id_item">
+    <index id="432" parent="342" name="id_item">
       <ColNames>id_item</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="424" parent="341" name="id_color">
+    <index id="433" parent="342" name="id_color">
       <ColNames>id_tag</ColNames>
       <Type>btree</Type>
     </index>
-    <column id="425" parent="342" name="id">
+    <column id="434" parent="343" name="id">
       <Position>1</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="426" parent="342" name="val">
+    <column id="435" parent="343" name="val">
       <Position>2</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="427" parent="342" name="currency">
+    <column id="436" parent="343" name="currency">
       <Position>3</Position>
       <DataType>varchar(10)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="428" parent="342" name="name">
+    <column id="437" parent="343" name="name">
       <Position>4</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="429" parent="342" name="PRIMARY">
+    <key id="438" parent="343" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="430" parent="343" name="id">
+    <column id="439" parent="344" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="431" parent="343" name="name">
+    <column id="440" parent="344" name="name">
       <Position>2</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="432" parent="343" name="name_sin">
+    <column id="441" parent="344" name="name_sin">
       <Position>3</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="433" parent="343" name="name_sin2">
+    <column id="442" parent="344" name="name_sin2">
       <Position>4</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="434" parent="343" name="name2">
+    <column id="443" parent="344" name="name2">
       <Position>5</Position>
       <Comment>из кожи</Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="435" parent="343" name="name_lat">
+    <column id="444" parent="344" name="name_lat">
       <Position>6</Position>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="436" parent="343" name="PRIMARY">
+    <key id="445" parent="344" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="437" parent="344" name="id">
+    <column id="446" parent="345" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="438" parent="344" name="name">
+    <column id="447" parent="345" name="name">
       <Position>2</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="439" parent="344" name="name_lat">
+    <column id="448" parent="345" name="name_lat">
       <Position>3</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="440" parent="344" name="url">
+    <column id="449" parent="345" name="url">
       <Position>4</Position>
       <DataType>varchar(60)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="441" parent="344" name="description">
+    <column id="450" parent="345" name="description">
       <Position>5</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="442" parent="344" name="xml_feed">
+    <column id="451" parent="345" name="xml_feed">
       <Position>6</Position>
       <DataType>varchar(300)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="443" parent="344" name="status">
+    <column id="452" parent="345" name="status">
       <Position>7</Position>
       <Comment>2 - готов к импорту, 3 - готов к постобработке, 4 - готов</Comment>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="444" parent="344" name="status2">
+    <column id="453" parent="345" name="status2">
       <Position>8</Position>
       <Comment>новые статусы (04.2019): 1 - свежий xml файл скачен, 2 - csv файл создан</Comment>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="445" parent="344" name="date_update">
+    <column id="454" parent="345" name="date_update">
       <Position>9</Position>
       <Comment>последнее обновление</Comment>
       <DataType>int(8)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="446" parent="344" name="date_download_feed">
+    <column id="455" parent="345" name="date_download_feed">
       <Position>10</Position>
       <Comment>когда последний раз скачивали фид?</Comment>
       <DataType>datetime|0s</DataType>
     </column>
-    <column id="447" parent="344" name="enabled">
+    <column id="456" parent="345" name="enabled">
       <Position>11</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>1</DefaultExpression>
     </column>
-    <column id="448" parent="344" name="partner_url">
+    <column id="457" parent="345" name="partner_url">
       <Position>12</Position>
       <DataType>varchar(200)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="449" parent="344" name="logo">
+    <column id="458" parent="345" name="logo">
       <Position>13</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="450" parent="344" name="all_cnt">
+    <column id="459" parent="345" name="all_cnt">
       <Position>14</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="451" parent="344" name="enabled_cnt">
+    <column id="460" parent="345" name="enabled_cnt">
       <Position>15</Position>
       <DataType>int(9)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="452" parent="344" name="PRIMARY">
+    <key id="461" parent="345" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="453" parent="345" name="id">
+    <column id="462" parent="346" name="id">
       <Position>1</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="454" parent="345" name="name">
+    <column id="463" parent="346" name="name">
       <Position>2</Position>
       <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="455" parent="345" name="name_sin">
+    <column id="464" parent="346" name="name_sin">
       <Position>3</Position>
       <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="456" parent="345" name="PRIMARY">
+    <key id="465" parent="346" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="457" parent="346" name="id">
+    <column id="466" parent="347" name="id">
       <Position>1</Position>
       <DataType>tinyint(4)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="458" parent="346" name="name">
+    <column id="467" parent="347" name="name">
       <Position>2</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="459" parent="346" name="name_sin">
+    <column id="468" parent="347" name="name_sin">
       <Position>3</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="460" parent="346" name="name2">
+    <column id="469" parent="347" name="name2">
       <Position>4</Position>
       <Comment>из кожи</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="461" parent="346" name="name3">
+    <column id="470" parent="347" name="name3">
       <Position>5</Position>
       <Comment>какие?</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="462" parent="346" name="name_lat">
+    <column id="471" parent="347" name="name_lat">
       <Position>6</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="463" parent="346" name="PRIMARY">
+    <key id="472" parent="347" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="464" parent="347" name="id">
+    <column id="473" parent="348" name="id">
       <Position>1</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="465" parent="347" name="date_add">
+    <column id="474" parent="348" name="date_add">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="466" parent="347" name="name">
+    <column id="475" parent="348" name="name">
       <Position>3</Position>
       <Comment>по этому полю Сфинкс ищет</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="467" parent="347" name="name2">
+    <column id="476" parent="348" name="name2">
       <Position>4</Position>
       <Comment>единств число</Comment>
       <DataType>text|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="468" parent="347" name="name_menu">
+    <column id="477" parent="348" name="name_menu">
       <Position>5</Position>
       <Comment>для меню</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="469" parent="347" name="name_h1">
+    <column id="478" parent="348" name="name_h1">
       <Position>6</Position>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="470" parent="347" name="name_title">
+    <column id="479" parent="348" name="name_title">
       <Position>7</Position>
       <Comment>для тега title</Comment>
       <DataType>varchar(300)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="471" parent="347" name="name_lat">
+    <column id="480" parent="348" name="name_lat">
       <Position>8</Position>
       <Comment>для url</Comment>
       <DataType>varchar(100)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="472" parent="347" name="name_lat2">
+    <column id="481" parent="348" name="name_lat2">
       <Position>9</Position>
       <Comment>для чего?</Comment>
       <DataType>varchar(150)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="473" parent="347" name="pol">
+    <column id="482" parent="348" name="pol">
       <Position>10</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="474" parent="347" name="id_category">
+    <column id="483" parent="348" name="id_category">
       <Position>11</Position>
       <Comment>ID моей категории</Comment>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="475" parent="347" name="search_fields">
+    <column id="484" parent="348" name="search_fields">
       <Position>12</Position>
       <Comment>поля сфинкс индекса по которым искать (через запятую): name,model,typeprefix,categoryName</Comment>
       <DataType>varchar(300)|0s</DataType>
       <NotNull>1</NotNull>
       <DefaultExpression>&apos;name,model,typeprefix,categoryName,param&apos;</DefaultExpression>
     </column>
-    <column id="476" parent="347" name="enabled">
+    <column id="485" parent="348" name="enabled">
       <Position>13</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="477" parent="347" name="important">
+    <column id="486" parent="348" name="important">
       <Position>14</Position>
       <DataType>tinyint(1)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <index id="478" parent="347" name="name">
+    <index id="487" parent="348" name="name">
       <ColNames>name</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="479" parent="347" name="id_category_2">
+    <index id="488" parent="348" name="id_category_2">
       <ColNames>id_category
 id</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="480" parent="347" name="id_category_3">
+    <index id="489" parent="348" name="id_category_3">
       <ColNames>id_category
 enabled</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="481" parent="347" name="id_category">
+    <index id="490" parent="348" name="id_category">
       <ColNames>id_category</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="482" parent="347" name="PRIMARY">
+    <key id="491" parent="348" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="483" parent="348" name="id">
+    <column id="492" parent="349" name="id">
       <Position>1</Position>
       <DataType>mediumint(9)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="484" parent="348" name="name">
+    <column id="493" parent="349" name="name">
       <Position>2</Position>
       <DataType>varchar(50)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="485" parent="348" name="PRIMARY">
+    <key id="494" parent="349" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
