@@ -24,8 +24,6 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
 
         private static Regex _pricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
-        public int CountWithOldPriceSecond { get; private set; } = 0;
-
         public Offer Convert( RawOffer rawOfer )
         {
 
@@ -71,13 +69,8 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
         
         private void FillBaseOffer( IBaseOffer offer, RawOffer rawOffer )
         {
-            if( rawOffer.OldPriceSecond.IsNotNullOrWhiteSpace() ) {
-                CountWithOldPriceSecond++;
-            }
-                
-                
             var price = GetPrice( rawOffer.Price );
-            var oldPrice = GetPrice( rawOffer.OldPrice ?? rawOffer.OldPriceSecond );
+            var oldPrice = GetPrice( rawOffer.OldPriceClean );
             offer.Id = HashHelper.GetMd5Hash( rawOffer.ShopName, rawOffer.OfferId );
             offer.ProductId = HashHelper.GetMd5Hash( rawOffer.Pictures.FirstOrDefault() ?? rawOffer.Url );
             offer.Url = rawOffer.Url;
