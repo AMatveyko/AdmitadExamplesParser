@@ -13,7 +13,6 @@ namespace AdmitadCommon.Entities
         [ XmlAttribute( "available" ) ] public string AvailableFromXml { get; set; }
         [ XmlAttribute( "deleted" ) ] public bool IsDeleted { get; set; }
         [ XmlIgnore ] public bool Available => AvailableFromXml == "true" || AvailableFromXml == "available for order";
-        //[ XmlAttribute( "group_id" ) ] public int? GroupId { get; set; }
         [ XmlAttribute( "id" ) ] public string OfferId { get; set; }
         [ XmlAttribute( "type" ) ] public string Type { get; set; }
         [ XmlElement( "categoryId" ) ] public string CategoryId { get; set; }
@@ -28,7 +27,8 @@ namespace AdmitadCommon.Entities
         [ XmlElement( "name" ) ] public string Name { get; set; }
         [ XmlElement( "price" ) ] public string Price { get; set; }
         [ XmlElement( "oldprice" ) ] public string OldPrice { get; set; }
-        [ XmlElement( "oldPrice" ) ] public string OldPriceSecond { get; set; }
+        [ XmlElement( "oldPrice" ) ] public string OldPriceWithCapital { get; set; }
+        [ XmlElement( "old_price" ) ] public string OldPriceUnderlined { get; set; }
         [ XmlElement( "param" ) ] public List<RawParam> Params { get; set; }
         [ XmlElement( "pickup" ) ] public bool? IsPickup { get; set; }
         [ XmlElement( "picture" ) ] public List<string> Pictures { get; set; }
@@ -42,5 +42,6 @@ namespace AdmitadCommon.Entities
         [ XmlIgnore ] public DateTime UpdateTime { get; set; }
         [ XmlIgnore ] public string ShopNameLatin { get; set; }
         [ XmlIgnore ] public string Text { get; set; }
+        [ XmlIgnore ] public string OldPriceClean => OldPrice ?? OldPriceWithCapital ?? OldPriceUnderlined;
     }
 }
