@@ -10,8 +10,8 @@ namespace UtilsTests
     {
         private TelegramSettings _telegramSettings = new() {
             Enabled = true,
-            Token = "1795605206:AAFlbA3CLKQY2b6OmBDZlClCfx2j7iDEk1c",
-            ChatId = "-1001160519062"
+            Token = "sldfjaldfjad",
+            ChatId = "sdfaslkfjsladf"
         };
 
         [ Test ]
