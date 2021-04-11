@@ -20,9 +20,10 @@ namespace Admitad.Converters
         {
             var groupedOffers = offers.GroupBy( o => o.ProductId ).ToList();
             var products =
-                groupedOffers.Select( g => CollectProduct( g.ToList() ) ).ToList();
+                groupedOffers.Select( g => CollectProduct( g.ToList() ) );
+            var filteredProducts = FilterBrokenProducts( products ).ToList();
 
-            return products;
+            return filteredProducts;
         }
 
         public static Product CollectProduct( List<Offer> offers ) {
@@ -31,13 +32,18 @@ namespace Admitad.Converters
             }
             
             var updateDate = offers.Max( o => o.UpdateDate );
-            var product = CreateNewProduct( offers.First(), updateDate );
+            var product = CreateNewProduct( offers, updateDate );
             offers.ForEach( o => MergeOfferIntoProduct( product, o ) );
             product.Param = string.Join( " ; ", product.Params.Distinct() );
             product.JsonParams = GetJsonParams( offers );
             return product;
         }
 
+        private static IEnumerable<Product> FilterBrokenProducts( IEnumerable<Product> products )
+        {
+            return products.Where( p => p.Price > 0 );
+        }
+        
         private static string GetJsonParams( List<Offer> offers )
         {
             var parameters = offers.SelectMany( o => o.Params ).ToList();
@@ -65,9 +71,10 @@ namespace Admitad.Converters
         }
 
         private static Product CreateNewProduct(
-            Offer offer,
+            List<Offer> offers,
             DateTime updateDate )
         {
+            var offer = offers.First();
             return new Product {
                 Id = offer.ProductId,
                 Url = offer.Url,
@@ -78,7 +85,7 @@ namespace Admitad.Converters
                 Gender = GenderHelper.Convert( offer.Gender ),
                 Age = AgeHelper.Convert( offer.Age ),
                 ShopId = offer.ShopId.ToString(),
-                Price = offer.Price,
+                Price = offers.Max( o => o.Price ),
                 OldPrice = offer.OldPrice ?? 0m,
                 TypePrefix = offer.TypePrefix ?? string.Empty,
                 CategoryName = offer.CategoryPath ?? string.Empty,
