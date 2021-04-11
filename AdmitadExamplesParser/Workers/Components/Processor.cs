@@ -40,7 +40,11 @@ namespace AdmitadExamplesParser.Workers.Components
 
         private IMessenger GetMessenger()
         {
-            var messenger = new Messenger.Messenger( _settings.MessengerSettings );
+            var messengerSettings = new MessengerSettings();
+            foreach( var client in new IClientSettings[] { _settings.TelegramSettings } ) {
+                messengerSettings.Clients.Add( client );
+            }
+            var messenger = new Messenger.Messenger( messengerSettings );
             return messenger;
         }
         

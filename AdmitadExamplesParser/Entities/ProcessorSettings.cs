@@ -12,6 +12,6 @@ namespace AdmitadExamplesParser.Entities
         public string DuplicateFile { get; set; }
         public bool ShowStatistics { get; set; }
         public ElasticSearchClientSettings ElasticSearchClientSettings { get; set; }
-        public MessengerSettings MessengerSettings { get; set; }
+        public TelegramSettings TelegramSettings { get; set; }
     }
 }
