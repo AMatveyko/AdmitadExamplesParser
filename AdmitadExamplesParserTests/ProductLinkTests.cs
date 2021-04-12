@@ -22,8 +22,8 @@ namespace AdmitadExamplesParserTests
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             //ElasticSearchUrl = "http://127.0.0.1:9200",
-            ElasticSearchUrl = "http://elastic.matveyko.su:9200",
-            //ElasticSearchUrl = "http://127.0.0.1:8888",
+            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-3",
             FrameSize = 10000
         };

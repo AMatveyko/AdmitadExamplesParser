@@ -21,7 +21,7 @@ namespace AdmitadSqlDataTests
         [ Test ]
         public void UnknownBrands()
         {
-            var brands = new[] {"noname", "sdfadf", "", " ", null, "USHATAVA", "Грандсток", "Adidas" };
+            var brands = new[] {"noname", "sdfadf", "", " ", null, "USHATAVA", "Грандсток", "Adidas", "Грандсток", "Eger", "Eger" };
             foreach( var brand in brands ) {
                 var cleanName = BrandHelper.GetClearlyVendor( brand );
                 DbHelper.RememberVendorIfUnknown( brand, cleanName );

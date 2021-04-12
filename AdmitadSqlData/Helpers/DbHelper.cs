@@ -54,7 +54,7 @@ namespace AdmitadSqlData.Helpers
             }
 
             if( UnknownBrands.ContainsKey( vendorName ) == false ) {
-                UnknownBrands.Add( vendorName, new UnknownBrands { Name = vendorName, NumberOfProducts = 0 });
+                UnknownBrands[ vendorName ] =  new UnknownBrands { Name = vendorName, NumberOfProducts = 0 };
             }
 
             UnknownBrands[ vendorName ].NumberOfProducts++;
