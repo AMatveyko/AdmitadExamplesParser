@@ -34,12 +34,12 @@ namespace AdmitadExamplesParser.Workers.Components
 
         public void Start() {
             MeasureWorkTime( DoParseAndSave );
-            PrintStatistics();
             
+            var numberUnknownBrands = DbHelper.GetUnknownBrandsCount();
+            LogWriter.Log( $"Number of unknown brands {numberUnknownBrands}", true );
             DbHelper.WriteUnknownBrands();
             
-            var messenger = GetMessenger();
-            LogWriter.WriteLog( messenger.Send );
+            PrintStatistics();
         }
 
         private IMessenger GetMessenger()
@@ -52,13 +52,22 @@ namespace AdmitadExamplesParser.Workers.Components
             return messenger;
         }
         
-        private static void PrintStatistics() {
+        private void PrintStatistics() {
             foreach( var line in StatisticsContainer.GetAllLines() ) {
                 LogWriter.Log( line );
             }
 
-            var numberUnknownBrands = DbHelper.GetUnknownBrandsCount();
-            LogWriter.Log( $"Number of unknown brands {numberUnknownBrands}", true );
+            var downloadingStatistic = StatisticsContainer.GetBlock( ComponentType.Downloader.ToString() );
+            LogWriter.Log( $"Downloading time: { downloadingStatistic.WorkTime }", true);
+            var indexStatistic = StatisticsContainer.GetBlock( ComponentType.ElasticSearch.ToString() );
+            LogWriter.Log( $"Indexing time: { indexStatistic.WorkTime }", true);
+            var linkStatistic = StatisticsContainer.GetBlock( ComponentType.ProductLinker.ToString() );
+            LogWriter.Log( $"Linking time: { linkStatistic.WorkTime }", true);
+            var processorStatistic = StatisticsContainer.GetBlock( ComponentType.Processor.ToString() );
+            LogWriter.Log( $"All time: { processorStatistic.WorkTime }", true );
+            
+            var messenger = GetMessenger();
+            LogWriter.WriteLog( messenger.Send );
         }
 
         private void DoParseAndSave()

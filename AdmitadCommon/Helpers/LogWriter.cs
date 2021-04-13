@@ -54,7 +54,6 @@ namespace AdmitadCommon.Helpers
         private static string GetLogForRemote()
         {
             var fullMessage = new StringBuilder();
-            fullMessage.AppendLine( $"Start at {DateTime.Now}" );
             foreach( var message in _messages.Where( m => m.Important ) ) {
                 fullMessage.AppendLine( message.Text );
             }
