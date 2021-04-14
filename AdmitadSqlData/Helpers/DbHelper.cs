@@ -63,7 +63,9 @@ namespace AdmitadSqlData.Helpers
 
         public static void WriteUnknownBrands()
         {
-            _theStoreRepository.AddUnknownBrands( UnknownBrands.Select( b => b.Value ) );
+            _theStoreRepository.AddUnknownBrands(
+                UnknownBrands.Where( b => b.Value.NumberOfProducts > 50 )
+                    .Select( b => b.Value ) );
         }
         
         public static string GetBrandId( string clearlyName )

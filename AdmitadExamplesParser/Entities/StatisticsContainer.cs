@@ -1,6 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AdmitadExamplesParser.Entities
 {
@@ -9,12 +10,24 @@ namespace AdmitadExamplesParser.Entities
 
         private static List<StatisticsBlock> _blocks = new();
 
-        public static StatisticsBlock GetBlock( string componentName ) {
+        public static StatisticsBlock GetNewBlock( string componentName ) {
             var block = new StatisticsBlock( componentName );
             _blocks.Add( block );
             return block;
         }
 
+        public static StatisticsBlock GetSumBlockByName( string componentName )
+        {
+            var sumBlock = new StatisticsBlock( componentName );
+            var blocks = _blocks.Where( b => b.ComponentName == componentName );
+            foreach( var block in blocks ) {
+                block.Lines.ForEach( l => sumBlock.AddLine( l ) );
+                sumBlock.WorkTime += block.WorkTime;
+            }
+
+            return sumBlock;
+        }
+        
         public static IEnumerable<string> GetAllLines()
         {
             foreach( var block in _blocks ) {

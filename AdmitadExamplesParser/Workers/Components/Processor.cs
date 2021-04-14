@@ -57,14 +57,14 @@ namespace AdmitadExamplesParser.Workers.Components
                 LogWriter.Log( line );
             }
 
-            var downloadingStatistic = StatisticsContainer.GetBlock( ComponentType.Downloader.ToString() );
+            var downloadingStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.Downloader.ToString() );
             LogWriter.Log( $"Downloading time: { downloadingStatistic.WorkTime }", true);
-            var indexStatistic = StatisticsContainer.GetBlock( ComponentType.ElasticSearch.ToString() );
+            var indexStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.ElasticSearch.ToString() );
             LogWriter.Log( $"Indexing time: { indexStatistic.WorkTime }", true);
-            var linkStatistic = StatisticsContainer.GetBlock( ComponentType.ProductLinker.ToString() );
+            var linkStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.ProductLinker.ToString() );
             LogWriter.Log( $"Linking time: { linkStatistic.WorkTime }", true);
-            var processorStatistic = StatisticsContainer.GetBlock( ComponentType.Processor.ToString() );
-            LogWriter.Log( $"All time: { processorStatistic.WorkTime }", true );
+            var processorStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.Processor.ToString() );
+            LogWriter.Log( $"Total time: { processorStatistic.WorkTime }", true );
             
             var messenger = GetMessenger();
             LogWriter.WriteLog( messenger.Send );

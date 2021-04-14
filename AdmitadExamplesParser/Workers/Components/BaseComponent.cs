@@ -16,7 +16,7 @@ namespace AdmitadExamplesParser.Workers.Components
         protected BaseComponent(
             ComponentType componentType ) {
             _type = componentType;
-            _statisticsBlock = StatisticsContainer.GetBlock( _type.ToString() );
+            _statisticsBlock = StatisticsContainer.GetNewBlock( _type.ToString() );
         }
 
         protected void AddStatisticLine(

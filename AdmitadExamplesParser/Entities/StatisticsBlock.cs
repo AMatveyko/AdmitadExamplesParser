@@ -22,6 +22,10 @@ namespace AdmitadExamplesParser.Entities
             long? workTime ) {
             Lines.Add( ( line, workTime) );
         }
+        
+        public void AddLine( ( string, long? ) line ) {
+            Lines.Add( line );
+        }
 
     }
 }
