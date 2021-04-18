@@ -22,9 +22,9 @@ namespace AdmitadExamplesParserTests
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             //ElasticSearchUrl = "http://127.0.0.1:9200",
-            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
-            ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-3",
+            ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            //ElasticSearchUrl = "http://127.0.0.1:8888",
+            DefaultIndex = "products-25",
             FrameSize = 10000
         };
 
@@ -60,7 +60,7 @@ namespace AdmitadExamplesParserTests
         }
 
         [ Test ]
-        public void CategoryLinkTest()
+        public void CategoryRelinkTest()
         {
             //",jeans"
             var categoryId = "10101080";
@@ -69,6 +69,32 @@ namespace AdmitadExamplesParserTests
             var unlinkResult = client.UnlinkCategory( category );
             var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
+        }
+
+        [ Test ]
+        public void TagRelinkTest()
+        {
+            TagRelinkTest( "318" );
+        }
+
+        private void TagRelinkTest( string tagId = null )
+        {
+            tagId ??= "318";
+            var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
+            var client = CreateClient( "products-25" );
+            var unlinkResult = client.UnlinkTag( tag );
+            var linkResult = client.UpdateProductsForTag( tag );
+            Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
+        }
+        
+        [ Test ]
+        public void RelinkTagsForCategory()
+        {
+            var categoryId = 10103000;
+            var tagsForCategory = DbHelper.GetTags().Where( t => t.IdCategory == categoryId ).ToList();
+            foreach( var tag in tagsForCategory ) {
+                TagRelinkTest( tag.Id );
+            }
         }
         
         [ Test ]

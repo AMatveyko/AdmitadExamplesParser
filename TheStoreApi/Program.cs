@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace FatApi
+namespace TheStoreApi
 {
     public class Program
     {
@@ -12,12 +12,11 @@ namespace FatApi
         }
 
         public static IHostBuilder CreateHostBuilder(
-            string[] args )
-        {
-            return Host.CreateDefaultBuilder( args ).ConfigureWebHostDefaults(
+            string[] args ) =>
+            Host.CreateDefaultBuilder( args ).ConfigureWebHostDefaults(
                 webBuilder => {
                     webBuilder.UseStartup<Startup>();
+                    webBuilder.UseUrls( "http://0.0.0.0:5000/" );
                 } );
-        }
     }
 }

@@ -42,7 +42,7 @@ namespace AdmitadExamplesParser.Workers.Components
             }
             
             var fileCount = Directory.GetFiles( filePath ).Length;
-            LogWriter.Log( $"Files downloaded {fileCount} from {files.Count}", true );
+            LogWriter.Log( $"{fileCount} удалось скачать из {files.Count}", true );
             return downloadInfos;
         }
 
@@ -58,11 +58,11 @@ namespace AdmitadExamplesParser.Workers.Components
             }
 
             for( var i = 1; i <= _numberAttempts; i++ ) {
-                LogWriter.Log( $"Attempt {i}/{_numberAttempts} to download feeds.", true );
+                LogWriter.Log( $"{i}/{_numberAttempts} попытка докачать фиды открытых магазинов.", true );
                 var downloaded = needDownload.AsParallel().Select( DoDownloadFile ).ToList();
                 needDownload = GetNeedDownload( downloaded );
                 if( needDownload.Any() == false ) {
-                    LogWriter.Log( "All have finished.", true );
+                    LogWriter.Log( "All have finished.", false );
                     break;
                 }
             }
@@ -104,7 +104,7 @@ namespace AdmitadExamplesParser.Workers.Components
                     info.Error == DownloadError.UnknownError
                         ? e.Message
                         : info.Error.ToString();
-                LogWriter.Log( $"Error {info.ShopName}: { errorMessage }", true );
+                LogWriter.Log( $"{info.ShopName} ошибка { errorMessage }", true );
             }
 
             return info;

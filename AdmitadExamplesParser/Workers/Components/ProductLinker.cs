@@ -80,7 +80,7 @@ namespace AdmitadExamplesParser.Workers.Components
         private void DoDisableProducts( DateTime dateTime )
         {
             var counts = Measure( () => _elasticClient.DisableOldProducts( dateTime ), out var time );
-            LogWriter.Log( $"Turned off products {counts}", true );
+            LogWriter.Log( $"{counts} товаров распродано", true );
         }
         
         #endregion

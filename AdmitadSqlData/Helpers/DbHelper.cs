@@ -122,6 +122,18 @@ namespace AdmitadSqlData.Helpers
 
         public static List<SizeProperty> GetSizes() => _theStoreRepository.GetSizes().Select( Convert ).ToList();
 
+        public static void UpdateTags()
+        {
+            _tagRepository.AddDescriptionField();
+        }
+
+        public static void DeleteWordFromTag(
+            string word,
+            int categoryId )
+        {
+            _tagRepository.DeleteWordFromTagSearch( word, categoryId );
+        }
+
         #region Convert
 
         private static ColorProperty Convert( ColorDb colorDb ) =>
@@ -158,6 +170,7 @@ namespace AdmitadSqlData.Helpers
             tag.SearchTerms = CreateTerms( tagDb.Name );
             tag.Gender = GenderHelper.ConvertFromTag( tagDb.Pol );
             tag.IdCategory = tagDb.IdCategory;
+            tag.SpecifyWords = SplitComa( tagDb.SpecifyWords );
             return tag;
         }
         
@@ -171,7 +184,8 @@ namespace AdmitadSqlData.Helpers
                 Terms = CreateTerms( fromDb.Search ),
                 ExcludeWordsFields = fromDb.ExcludeWordsFields.IsNotNullOrWhiteSpace()
                     ? SplitComa( fromDb.ExcludeWordsFields )
-                    : SplitComa( fromDb.Fields )
+                    : SplitComa( fromDb.Fields ),
+                Name = fromDb.Name
             };
         
         #endregion

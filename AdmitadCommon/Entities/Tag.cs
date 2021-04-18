@@ -9,5 +9,6 @@ namespace AdmitadCommon.Entities
         public string Gender { get; set; }
         public string[] Fields { get; set; }
         public int IdCategory { get; set; }
+        public string[] SpecifyWords { get; set; }
     }
 }

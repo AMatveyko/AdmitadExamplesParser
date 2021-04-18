@@ -42,6 +42,8 @@ namespace AdmitadExamplesParser.Workers.Components
             _settings = settings;
         }
 
+        #region Bulk
+        
         public void IndexMany(
             IEnumerable<T> entities )
         {
@@ -100,14 +102,16 @@ namespace AdmitadExamplesParser.Workers.Components
         {
             MeasureWorkTime( () => DoBulkAll( entities ) );
         }
-
-
-
+        
+        #endregion
 
         #region ScrollApi
 
         public HashSet<string> GetIdsUnlinkedProductsByScroll()
         {
+
+            throw new NotImplementedException();
+            
             var ids = new HashSet<string>();
             try {
                 var serchResponce = _client.Search<Product>(
@@ -121,14 +125,11 @@ namespace AdmitadExamplesParser.Workers.Components
             catch( Exception e ) {
                 ;
             }
-
             
-
             return ids;
         }
 
         #endregion
-
 
         #region Property
         
@@ -235,17 +236,40 @@ namespace AdmitadExamplesParser.Workers.Components
             Tag tag )
         {
             var query = string.Join( " OR ", tag.SearchTerms );
+            // if( tag.SpecifyWords != null &&
+            //     tag.SpecifyWords.Length > 0 ) {
+            //     var specifyQuery = string.Join( " OR ", tag.SpecifyWords );
+            //     query = $"( {query} ) AND ( {specifyQuery} )";
+            // }
 
             descriptor = descriptor.Filter( 
                 queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, tag.Fields)).Query( query ) ),
-                gender => gender.Term( t => t.Field( p => p.Gender ).Value( tag.Gender ) ) );
-
-            descriptor =
-                descriptor.Must( m => m.Term( t => t.Field( ld => ld.Categories ).Value( tag.IdCategory ) ) );
+                //m => m.Term( t => t.Field( ld => ld.Categories ).Value( tag.IdCategory ) )
+                m => m.LongRange( r => r.Field( "categories" ).GreaterThanOrEquals( tag.IdCategory ).LessThanOrEquals( CategoryHelper.GetEndCategory( tag.IdCategory ) ) )
+                 ); 
+            
             descriptor =
                 descriptor.MustNot( mn => mn.Term( t => t.Field( ld => ld.Tags ).Value( tag.Id ) ) );
             
             return descriptor;
+        }
+        
+        public UpdateResult UnlinkTag( Tag tag )
+        {
+            var response = _client.UpdateByQuery<Product>(
+                r => r.Query( q => q.Bool( b => GetBoolProductsWithTag( b, tag) ) )
+                    .Script( script => script.Source( $"ctx._source.tags.remove( ctx._source.tags.indexOf( { tag.Id } ) );" ) )
+                    .Conflicts( Conflicts.Proceed )
+                    .Refresh( true ) );
+            return new UpdateResult( response.Total, response.Updated );
+        }
+        
+        private static BoolQueryDescriptor<Product> GetBoolProductsWithTag(
+            BoolQueryDescriptor<Product> boolQuery,
+            Tag tag )
+        {
+            boolQuery = boolQuery.Filter( f => f.Term( t => t.Field( c => c.Tags ).Value( tag.Id ) ) );
+            return boolQuery;
         }
         
         #endregion
@@ -335,7 +359,7 @@ namespace AdmitadExamplesParser.Workers.Components
         {
             var query = string.Join( " OR ", category.Terms );
             var terms = new List<Func<QueryContainerDescriptor<Product>,QueryContainer>> {
-                queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, new [] { "name", "model" } )).Query( query ) ),
+                queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, new [] { "name", "model", "categoryName" } )).Query( query ) ),
                 gender => gender.Term( t => t.Field( p => p.Gender ).Value( category.Gender ) ),
                 age => age.Term( t => t.Field( p => p.Age ).Value( category.Age ) )
             };

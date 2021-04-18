@@ -25,6 +25,7 @@ namespace AdmitadSqlData.Entities
         public int Level { get; set; }
         [ Column("ExcludeWordsFields") ]
         public string ExcludeWordsFields { get; set; }
-
+        [ Column( "name" ) ]
+        public string Name { get; set; }
     }
 }

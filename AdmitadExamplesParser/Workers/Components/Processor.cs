@@ -36,7 +36,7 @@ namespace AdmitadExamplesParser.Workers.Components
             MeasureWorkTime( DoParseAndSave );
             
             var numberUnknownBrands = DbHelper.GetUnknownBrandsCount();
-            LogWriter.Log( $"Number of unknown brands {numberUnknownBrands}", true );
+            LogWriter.Log( $"{numberUnknownBrands} найдено новых брендов", true );
             DbHelper.WriteUnknownBrands();
             
             PrintStatistics();
@@ -57,15 +57,16 @@ namespace AdmitadExamplesParser.Workers.Components
                 LogWriter.Log( line );
             }
 
-            var downloadingStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.Downloader.ToString() );
-            LogWriter.Log( $"Downloading time: { downloadingStatistic.WorkTime }", true);
-            var indexStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.ElasticSearch.ToString() );
-            LogWriter.Log( $"Indexing time: { indexStatistic.WorkTime }", true);
-            var linkStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.ProductLinker.ToString() );
-            LogWriter.Log( $"Linking time: { linkStatistic.WorkTime }", true);
-            var processorStatistic = StatisticsContainer.GetSumBlockByName( ComponentType.Processor.ToString() );
-            LogWriter.Log( $"Total time: { processorStatistic.WorkTime }", true );
-            
+            var blocks = new[] {
+                ( "на скачивание фидов", ComponentType.Downloader ), ( "на индексирование", ComponentType.ElasticSearch ),
+                ( "на привязку товаров", ComponentType.ProductLinker ), ( "всего затрачено времени", ComponentType.Processor )
+            };
+            foreach( var ( title, blockType ) in blocks ) {
+                var downloadingStatistic = StatisticsContainer.GetSumBlockByName( blockType.ToString() );
+                var time = TimeHelper.MillisecondsPretty( downloadingStatistic.WorkTime );
+                LogWriter.Log( $"{ time } {title}", true);
+            }
+
             var messenger = GetMessenger();
             LogWriter.WriteLog( messenger.Send );
         }
@@ -75,7 +76,7 @@ namespace AdmitadExamplesParser.Workers.Components
             FileSystemHelper.PrepareDirectory( _settings.DirectoryPath );
             DownloadFiles();
             
-            LogWriter.Log( $"Start: '{ _startTime }'" );
+            LogWriter.Log( $"Начало: '{ _startTime }'" );
             
             var files = GetDownloadInfos();
             var documentsBefore =
@@ -86,7 +87,7 @@ namespace AdmitadExamplesParser.Workers.Components
             
             var documentsAfter = CreateElasticClient( _settings.ElasticSearchClientSettings ).GetCountAllDocuments();
             
-            LogWriter.Log( $"Total products {documentsAfter}, new documents { documentsAfter - documentsBefore}", true );
+            LogWriter.Log( $"{documentsAfter}/{documentsAfter - documentsBefore} всего товаров / новых товаров ", true );
             
             var linker = new ProductLinker( _settings.ElasticSearchClientSettings );
             linker.CategoryLink();

@@ -1,5 +1,9 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
+using System.IO;
+using System.Linq;
+
 using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
@@ -16,6 +20,32 @@ namespace AdmitadSqlDataTests
         {
             var rep = new ShopRepository();
             var shops = rep.GetEnableShops();
+        }
+
+        [ Test ]
+        public void UpdateTag()
+        {
+            DbHelper.UpdateTags();
+        }
+
+        [ Test ]
+        public void DeleteWordFromTag()
+        {
+            DbHelper.DeleteWordFromTag( "блузки", 10103000 );
+        }
+        
+        [ Test ]
+        public void WarmCategories()
+        {
+            var cats = File.ReadLines( @"o:\admitad\теплыеКатегории.txt" )
+                .Select( s => s.Split(":", StringSplitOptions.TrimEntries ) )
+                .Select( s => ( s[0], s[1] ))
+                .ToList();
+            var categories = DbHelper.GetCategories();
+            foreach( var cat in cats ) {
+                var categoryName = categories.FirstOrDefault( c => c.Id == cat.Item1 ).Name ?? "noname"; 
+                Console.WriteLine( $"{categoryName} : {cat.Item2}" );
+            }
         }
 
         [ Test ]

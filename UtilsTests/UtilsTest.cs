@@ -1,4 +1,6 @@
-﻿using AdmitadCommon.Helpers;
+﻿using System.Linq;
+
+using AdmitadCommon.Helpers;
 
 using Messenger;
 
@@ -14,6 +16,13 @@ namespace UtilsTests
             ChatId = "sdfaslkfjsladf"
         };
 
+        [ Test ]
+        public void CategoryEnd()
+        {
+            var categoryIds = new [] { 10112000, 10101020, 20803000, 10200000, 10000000 };
+            var ends = categoryIds.Select( id => CategoryHelper.GetEndCategory( id ) ).ToList();
+        }
+        
         [ Test ]
         public void CompareStrings()
         {
