@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 
+using AdmitadCommon.Entities;
+
 namespace Messenger
 {
     public class MessengerSettings

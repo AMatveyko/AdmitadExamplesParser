@@ -3,9 +3,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace AdmitadExamplesParser.Entities
+namespace AdmitadCommon.Entities
 {
-    internal static class StatisticsContainer
+    public static class StatisticsContainer
     {
 
         private static List<StatisticsBlock> _blocks = new();

@@ -2,20 +2,21 @@
 
 using System;
 
+using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 
-using AdmitadExamplesParser.Entities;
-
-namespace AdmitadExamplesParser.Workers.Components
+namespace AdmitadCommon.Workers
 {
     public abstract class BaseComponent
     {
         private readonly ComponentType _type;
         private readonly StatisticsBlock _statisticsBlock;
+        protected readonly BackgroundBaseContext _context;
 
         protected BaseComponent(
-            ComponentType componentType ) {
+            ComponentType componentType, BackgroundBaseContext context ) {
             _type = componentType;
+            _context = context;
             _statisticsBlock = StatisticsContainer.GetNewBlock( _type.ToString() );
         }
 

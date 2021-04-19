@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.ShopWorkers;
@@ -15,8 +16,8 @@ namespace AdmitadExamplesParser.Workers.Components
         private readonly IShopWorker _worker;
         private readonly List<RawOffer> _offers;
 
-        public OfferConverter( ShopData shopData )
-            : base( ComponentType.Converter )
+        public OfferConverter( ShopData shopData, BackgroundBaseContext context  )
+            : base( ComponentType.Converter, context )
         {
             _worker = ConverterBuilder.GetConverterByShop( shopData.Name );
             _offers = shopData.Offers;

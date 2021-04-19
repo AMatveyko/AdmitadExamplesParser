@@ -10,6 +10,7 @@ using Admitad.Converters;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 
@@ -27,7 +28,8 @@ namespace AdmitadExamplesParser.Workers.Components
         private readonly DateTime _startTime;
         
         
-        public Processor( ProcessorSettings settings ) : base( ComponentType.Processor ) {
+        public Processor( ProcessorSettings settings, BackgroundBaseContext context )
+            : base( ComponentType.Processor, context ) {
             _settings = settings;
             _startTime = DateTime.Now;
         }
@@ -89,14 +91,16 @@ namespace AdmitadExamplesParser.Workers.Components
             
             LogWriter.Log( $"{documentsAfter}/{documentsAfter - documentsBefore} всего товаров / новых товаров ", true );
             
-            var linker = new ProductLinker( _settings.ElasticSearchClientSettings );
-            linker.CategoryLink();
-            linker.TagsLink();
+            var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _context );
+            linker.CategoryLink( DbHelper.GetCategories() );
+            linker.TagsLink( DbHelper.GetTags() );
+
+            var colors = DbHelper.GetColors();
+            var materials = DbHelper.GetMaterials();
+            var sizes = DbHelper.GetSizes();
             
-            linker.LinkProperties();
-            
-            linker.UnlinkProperties();
-            
+            linker.LinkProperties( colors, materials, sizes );
+            linker.UnlinkProperties( colors, materials, sizes );
             linker.DisableProducts( _startTime );
             
             ResponseCollector.Responses.ForEach(
@@ -110,7 +114,7 @@ namespace AdmitadExamplesParser.Workers.Components
         }
 
         private List<DownloadInfo> DownloadFiles() {
-            var downloader = new FeedsDownloader( _settings.AttemptsToDownload );
+            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, _context );
             return downloader.DownloadsAll( _settings.DirectoryPath );
         }
 
@@ -152,7 +156,11 @@ namespace AdmitadExamplesParser.Workers.Components
         }
 
         private ShopData ParseFile( DownloadInfo fileInfo ) {
-            var parser = new GeneralParser( fileInfo.FilePath, fileInfo.ShopName, _settings.EnableExtendedStatistics );
+            var parser = new GeneralParser(
+                fileInfo.FilePath,
+                fileInfo.ShopName,
+                _context,
+                _settings.EnableExtendedStatistics );
             return parser.Parse();
         }
 
@@ -161,13 +169,13 @@ namespace AdmitadExamplesParser.Workers.Components
             return ProductConverter.GetProductsContainer( offers );
         }
         
-        private static List<Offer> CleanOffers(
+        private List<Offer> CleanOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData );
+            var converter = new OfferConverter( shopData, _context );
             return converter.GetCleanOffers();
         }
 
-        private static void IndexProducts(
+        private void IndexProducts(
             IEnumerable<Product> products,
             ElasticSearchClientSettings settings )
         {
@@ -175,7 +183,7 @@ namespace AdmitadExamplesParser.Workers.Components
             IndexEntities( iProducts, settings );
         }
 
-        private static void IndexEntities( 
+        private void IndexEntities( 
             IEnumerable<IIndexedEntities> entities,
             ElasticSearchClientSettings settings )
         {
@@ -184,9 +192,9 @@ namespace AdmitadExamplesParser.Workers.Components
             client.BulkAll( entities );
         }
 
-        private static ElasticSearchClient<IIndexedEntities> CreateElasticClient( ElasticSearchClientSettings settings )
+        private ElasticSearchClient<IIndexedEntities> CreateElasticClient( ElasticSearchClientSettings settings )
         {
-            return new ElasticSearchClient<IIndexedEntities>( settings );
+            return new ElasticSearchClient<IIndexedEntities>( settings, _context );
         }
         
     }

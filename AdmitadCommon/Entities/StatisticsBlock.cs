@@ -2,9 +2,9 @@
 
 using System.Collections.Generic;
 
-namespace AdmitadExamplesParser.Entities
+namespace AdmitadCommon.Entities
 {
-    internal sealed class StatisticsBlock
+    public sealed class StatisticsBlock
     {
         public StatisticsBlock(
             string componentName )

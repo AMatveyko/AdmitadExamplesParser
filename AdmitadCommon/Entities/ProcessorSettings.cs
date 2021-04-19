@@ -1,10 +1,8 @@
 ﻿// a.snegovoy@gmail.com
 
-using Messenger;
-
-namespace AdmitadExamplesParser.Entities
+namespace AdmitadCommon.Entities
 {
-    internal sealed class ProcessorSettings
+    public sealed class ProcessorSettings
     {
         public int AttemptsToDownload { get; set; }
         public bool EnableExtendedStatistics { get; set; }

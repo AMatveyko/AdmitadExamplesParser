@@ -8,13 +8,11 @@ using System.Threading;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 
-using AdmitadExamplesParser.Entities;
-
 using Elasticsearch.Net;
 
 using Nest;
 
-namespace AdmitadExamplesParser.Workers.Components
+namespace AdmitadCommon.Workers
 {
     public sealed class ElasticSearchClient< T > : BaseComponent, IElasticClient<T>
         where T : class, IIndexedEntities
@@ -31,8 +29,9 @@ namespace AdmitadExamplesParser.Workers.Components
 
         public ElasticSearchClient(
             ElasticSearchClientSettings settings,
+            BackgroundBaseContext context,
             bool withStatics = false )
-            : base( ComponentType.ElasticSearch )
+            : base( ComponentType.ElasticSearch, context )
         {
             var clientSettings = new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
                 .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
@@ -207,14 +206,14 @@ namespace AdmitadExamplesParser.Workers.Components
         #endregion
 
         #region Tags
-        public string UpdateProductsForTag( Tag tag ) {
+        public UpdateResult UpdateProductsForTag( Tag tag ) {
             
             var response = _client.UpdateByQuery<Product>(
                 r => r.Query( q => q.Bool( b => BuildBoolQuery( b, tag ) ) )
                     .Script( script => script.Source( $"if( ctx._source.tags == null ){{ ctx._source.tags = new ArrayList(); }}ctx._source.tags.add( {tag.Id} );" ) )
                     .Conflicts( Conflicts.Proceed )
                     .Refresh( true ) );
-            return GetResult( response );
+            return new UpdateResult( response.Total, response.Updated );
 
         }
 
@@ -236,6 +235,12 @@ namespace AdmitadExamplesParser.Workers.Components
             Tag tag )
         {
             var query = string.Join( " OR ", tag.SearchTerms );
+
+            if( tag.ExcludePhrase.Any() ) {
+                var queryExcludePhrase = string.Join( " AND ", tag.ExcludePhrase.Select( ep => $"NOT {ep}" ) );
+                query = $"( {query} ) AND ( {queryExcludePhrase} )";
+            }
+            
             // if( tag.SpecifyWords != null &&
             //     tag.SpecifyWords.Length > 0 ) {
             //     var specifyQuery = string.Join( " OR ", tag.SpecifyWords );
@@ -296,14 +301,14 @@ namespace AdmitadExamplesParser.Workers.Components
             return GetResult( response );
         }
 
-        public string UpdateProductsForCategoryFieldNameModel( Category category ) {
+        public UpdateResult UpdateProductsForCategoryFieldNameModel( Category category ) {
             
             var response = _client.UpdateByQuery<Product>(
                 r => r.Query( q => q.Bool( b => BuildBoolQueryFieldNameModel( b, category ) ) )
                     .Script( script => script.Source( $"if( ctx._source.categories == null ){{ ctx._source.categories = new ArrayList(); }}ctx._source.categories.add( {category.Id} );" ) )
                     .Conflicts( Conflicts.Proceed )
                     .Refresh( true ) );
-            return GetResult( response );
+            return new UpdateResult( response.Total, response.Updated );
         }
         
         public string UpdateProductsForCategoryNew( Category category ) {

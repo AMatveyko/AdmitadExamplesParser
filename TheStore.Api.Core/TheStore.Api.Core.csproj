@@ -8,4 +8,10 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
+      <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
+      <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+    </ItemGroup>
+
 </Project>

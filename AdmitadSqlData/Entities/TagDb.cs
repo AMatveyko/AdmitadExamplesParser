@@ -21,5 +21,7 @@ namespace AdmitadSqlData.Entities
         public int IdCategory { get; set; }
         [ Column( "name_specify" ) ]
         public string SpecifyWords { get; set; }
+        [ Column( "exclude_phrase" ) ]
+        public string ExcludePhrase { get; set; }
     }
 }

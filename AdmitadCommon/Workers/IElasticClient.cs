@@ -5,9 +5,9 @@ using System.Collections.Generic;
 
 using AdmitadCommon.Entities;
 
-namespace AdmitadExamplesParser.Workers.Components
+namespace AdmitadCommon.Workers
 {
-    internal interface IElasticClient<T>
+    public interface IElasticClient<T>
     {
         void IndexMany( IEnumerable<T> entities );
         void Bulk( IEnumerable<T> entities );
@@ -17,13 +17,13 @@ namespace AdmitadExamplesParser.Workers.Components
         long CountProductsForCategory( Category category );
         long CountProductsForCategoryNew( Category category );
 
-        string UpdateProductsForCategoryFieldNameModel(
+        UpdateResult UpdateProductsForCategoryFieldNameModel(
             Category category );
 
         long CountProductsForCategoryFieldNameModel(
             Category category );
         long CountProductsWithCategory( string categoryId );
-        string UpdateProductsForTag( Tag tag );
+        UpdateResult UpdateProductsForTag( Tag tag );
 
         string LinkProductsByProperty(
             BaseProperty property );

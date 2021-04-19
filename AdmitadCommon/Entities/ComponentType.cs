@@ -1,6 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
-namespace AdmitadExamplesParser.Entities
+namespace AdmitadCommon.Entities
 {
     public enum ComponentType
     {

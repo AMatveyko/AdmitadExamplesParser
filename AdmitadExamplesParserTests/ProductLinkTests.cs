@@ -7,6 +7,7 @@ using System.Linq;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.Components;
@@ -22,8 +23,8 @@ namespace AdmitadExamplesParserTests
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             //ElasticSearchUrl = "http://127.0.0.1:9200",
-            ElasticSearchUrl = "http://elastic.matveyko.su:9200",
-            //ElasticSearchUrl = "http://127.0.0.1:8888",
+            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-25",
             FrameSize = 10000
         };
@@ -44,10 +45,15 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void LinkProperties()
         {
-            var linker = new ProductLinker( _settings );
-            linker.ColorsLink();
-            linker.MaterialsLink();
-            linker.SizesLink();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            
+            var colors = DbHelper.GetColors();
+            var materials = DbHelper.GetMaterials();
+            var sizes = DbHelper.GetSizes();
+            
+            linker.ColorsLink( colors );
+            linker.MaterialsLink( materials );
+            linker.SizesLink( sizes );
             
             //LogWriter.WriteLog(  );
         }
@@ -55,8 +61,8 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoriesLinkTest()
         {
-            var linker = new ProductLinker( _settings );
-            linker.CategoryLink();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            linker.CategoryLink( DbHelper.GetCategories() );
         }
 
         [ Test ]
@@ -74,12 +80,11 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagRelinkTest()
         {
-            TagRelinkTest( "318" );
+            TagRelinkTest( "902" );
         }
 
-        private void TagRelinkTest( string tagId = null )
+        private void TagRelinkTest( string tagId )
         {
-            tagId ??= "318";
             var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
             var client = CreateClient( "products-25" );
             var unlinkResult = client.UnlinkTag( tag );
@@ -100,8 +105,8 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagLinkTest()
         {
-            var linker = new ProductLinker( _settings );
-            linker.TagsLink();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            linker.TagsLink( DbHelper.GetTags() );
         }
 
         [ Test ]
@@ -123,8 +128,13 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void UnlinkProperties()
         {
-            var linker = new ProductLinker( _settings );
-            linker.UnlinkProperties();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            
+            var colors = DbHelper.GetColors();
+            var materials = DbHelper.GetMaterials();
+            var sizes = DbHelper.GetSizes();
+
+            linker.UnlinkProperties( colors, materials, sizes );
         }
         
         [ Test ]
@@ -214,7 +224,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings );
+            return new ( _settings, new BackgroundBaseContext() );
         }
         
         private static Category GetFirstCategory()

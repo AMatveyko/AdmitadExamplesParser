@@ -32,6 +32,9 @@ namespace AdmitadSqlData.Helpers
         private static Dictionary<string, UnknownBrands> UnknownBrands = new();
         private static bool UnknownBrandsNeedClean = true;
 
+        public static List<SettingsOption> GetSettingsOptions() =>
+            _theStoreRepository.GetSettingsOptions().Select( Convert ).ToList();
+        
         public static int GetUnknownBrandsCount()
         {
             return UnknownBrands.Count;
@@ -171,6 +174,7 @@ namespace AdmitadSqlData.Helpers
             tag.Gender = GenderHelper.ConvertFromTag( tagDb.Pol );
             tag.IdCategory = tagDb.IdCategory;
             tag.SpecifyWords = SplitComa( tagDb.SpecifyWords );
+            tag.ExcludePhrase = CreateTerms( tagDb.ExcludePhrase );
             return tag;
         }
         
@@ -186,6 +190,12 @@ namespace AdmitadSqlData.Helpers
                     ? SplitComa( fromDb.ExcludeWordsFields )
                     : SplitComa( fromDb.Fields ),
                 Name = fromDb.Name
+            };
+
+        private static SettingsOption Convert( OptionDb optionDb ) =>
+            new SettingsOption {
+                Option = optionDb.Option,
+                Value = optionDb.Value
             };
         
         #endregion

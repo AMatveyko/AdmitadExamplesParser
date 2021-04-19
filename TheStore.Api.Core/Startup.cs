@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Admitad.Converters;
+
+using AdmitadCommon.Entities;
+using AdmitadCommon.Helpers;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -39,6 +44,7 @@ namespace TheStore.Api.Core
                             Version = "v1"
                         } );
                 } );
+            services.AddTransient<ProcessorSettings>( provider => SettingsBuilder.GetSettings() );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

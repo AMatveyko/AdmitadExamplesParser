@@ -8,6 +8,7 @@ using System.Net;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 
@@ -21,8 +22,8 @@ namespace AdmitadExamplesParser.Workers.Components
         private readonly int _numberAttempts;
 
         public FeedsDownloader(
-            int numberAttempts )
-            : base( ComponentType.Downloader )
+            int numberAttempts, BackgroundBaseContext context  )
+            : base( ComponentType.Downloader, context )
         {
             _numberAttempts = Math.Max( numberAttempts, 1 );
         }

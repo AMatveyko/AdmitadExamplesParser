@@ -140,12 +140,16 @@ namespace AdmitadExamplesParserTests
         
         private static List<Offer> ConvertOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData );
+            var converter = new OfferConverter( shopData, new BackgroundBaseContext() );
             return converter.GetCleanOffers();
         }
         
         private static ShopData ParseFile( DownloadInfo fileInfo, bool enableExtendedStat ) {
-            var parser = new GeneralParser( fileInfo.FilePath, fileInfo.ShopName, enableExtendedStat );
+            var parser = new GeneralParser(
+                fileInfo.FilePath,
+                fileInfo.ShopName,
+                new BackgroundBaseContext(),
+                enableExtendedStat );
             return parser.Parse();
         }
     }

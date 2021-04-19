@@ -47,5 +47,11 @@ namespace AdmitadSqlData.Repositories
             db.SaveChanges();
         }
 
+        public List<OptionDb> GetSettingsOptions()
+        {
+            using var db = GetDb();
+            return db.SettingsOptions.ToList();
+        }
+
     }
 }

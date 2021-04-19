@@ -3,8 +3,6 @@
 using System;
 using System.Collections.Generic;
 
-using AdmitadExamplesParser.Entities;
-
 using Newtonsoft.Json;
 
 namespace AdmitadCommon.Entities

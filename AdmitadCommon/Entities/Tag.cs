@@ -10,5 +10,6 @@ namespace AdmitadCommon.Entities
         public string[] Fields { get; set; }
         public int IdCategory { get; set; }
         public string[] SpecifyWords { get; set; }
+        public string[] ExcludePhrase { get; set; }
     }
 }

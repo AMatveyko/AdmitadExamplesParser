@@ -6,43 +6,39 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
-
-using AdmitadExamplesParser.Entities;
-
-using AdmitadSqlData.Helpers;
+using AdmitadCommon.Workers;
 
 namespace AdmitadExamplesParser.Workers.Components
 {
-    public class ProductLinker : BaseComponent
+    public sealed class ProductLinker : BaseComponent
     {
 
         private static readonly Dictionary<string, List<int>> CategoryByProducts = new();
         private readonly IElasticClient<Product> _elasticClient;
 
-        public ProductLinker( ElasticSearchClientSettings settings )
-            : base( ComponentType.ProductLinker ) {
-            _elasticClient = new ElasticSearchClient<Product>( settings );
+        public ProductLinker( ElasticSearchClientSettings settings, BackgroundBaseContext context )
+            : base( ComponentType.ProductLinker, context ) {
+            _elasticClient = new ElasticSearchClient<Product>( settings, context );
         }
 
 
 
 
         #region Category
-        public void CategoryLink()
+        public void CategoryLink( IEnumerable<Category> categories )
         {
-            MeasureWorkTime( DoCategoryLink );
+            MeasureWorkTime( () => DoCategoryLink( categories ) );
         }
 
-        private void DoCategoryLink()
+        private void DoCategoryLink( IEnumerable<Category> categories )
         {
-            var categories = DbHelper.GetCategories();
-            var results = categories.Select( LinkCategory ).OrderByDescending( c => c.Item2 );
+            var results = categories.Select( LinkCategory ).OrderByDescending( c => c.Item2.Updated );
             foreach( var (id, count, time) in results ) {
-                Log( "category", id, count, time.ToString() );
+                Log( "category", id, count.Pretty, time.ToString() );
             }
         }
 
-        private ( string, string, long ) LinkCategory( Category category )
+        private ( string, UpdateResult, long ) LinkCategory( Category category )
         {
             var count = Measure( () => _elasticClient.UpdateProductsForCategoryFieldNameModel( category ), out var time );
             // var count = Measure( () => _elasticClient.UpdateProductsForCategory( category ), out var time );
@@ -51,19 +47,18 @@ namespace AdmitadExamplesParser.Workers.Components
         #endregion
         
         #region Tag
-        public void TagsLink() {
-            MeasureWorkTime( DoTagsLink );
+        public void TagsLink( IEnumerable<Tag> tags ) {
+            MeasureWorkTime( () => DoTagsLink( tags ) );
         }
 
-        private void DoTagsLink() {
-            var tags = DbHelper.GetTags();
-            var results = tags.Select( LinkTag ).OrderByDescending( t => t.Item2 );
+        private void DoTagsLink( IEnumerable<Tag> tags ) {
+            var results = tags.Select( LinkTag ).OrderByDescending( t => t.Item2.Updated );
             foreach( var (id, count, time) in results ) {
-                Log( "tag", id, count.ToString(), time.ToString() );
+                Log( "tag", id, count.Pretty, time.ToString() );
             }
         }
         
-        private ( string, string, long ) LinkTag( Tag tag )
+        private ( string, UpdateResult, long ) LinkTag( Tag tag )
         {
             var count = Measure( () => _elasticClient.UpdateProductsForTag( tag ), out var time );
             return ( tag.Id, count, time );
@@ -87,34 +82,40 @@ namespace AdmitadExamplesParser.Workers.Components
 
         #region Property
 
-        public void LinkProperties()
+        public void LinkProperties(
+            IEnumerable<BaseProperty> colors,
+            IEnumerable<BaseProperty> materials,
+            IEnumerable<BaseProperty> sizes )
         {
-            ColorsLink();
-            MaterialsLink();
-            SizesLink();
+            ColorsLink( colors );
+            MaterialsLink( materials );
+            SizesLink( sizes );
         }
 
-        public void UnlinkProperties()
+        public void UnlinkProperties(
+            IEnumerable<BaseProperty> colors,
+            IEnumerable<BaseProperty> materials,
+            IEnumerable<BaseProperty> sizes )
         {
-            ColorsUnlink();
-            MaterialsUnlink();
-            SizesUnlink();
+            ColorsUnlink( colors );
+            MaterialsUnlink( materials );
+            SizesUnlink( sizes );
         }
         
         
-        public void ColorsUnlink()
+        public void ColorsUnlink( IEnumerable<BaseProperty> colors )
         {
-            MeasureWorkTime( () => DoPropertyUnlink( DbHelper.GetColors(), "color-unlink" ) );
+            MeasureWorkTime( () => DoPropertyUnlink( colors, "color-unlink" ) );
         }
 
-        public void MaterialsUnlink()
+        public void MaterialsUnlink( IEnumerable<BaseProperty> materials )
         {
-            MeasureWorkTime( () => DoPropertyUnlink( DbHelper.GetMaterials(), "material-unlink" ) );
+            MeasureWorkTime( () => DoPropertyUnlink( materials, "material-unlink" ) );
         }
         
-        public void SizesUnlink()
+        public void SizesUnlink( IEnumerable<BaseProperty> sizes )
         {
-            MeasureWorkTime( () => DoPropertyUnlink( DbHelper.GetSizes(), "size-unlink" ) );
+            MeasureWorkTime( () => DoPropertyUnlink( sizes, "size-unlink" ) );
         }
         
         private void DoPropertyUnlink( IEnumerable<BaseProperty> properties, string entity ) {
@@ -129,19 +130,19 @@ namespace AdmitadExamplesParser.Workers.Components
             return ( property.Id, count, time );
         }
         
-        public void ColorsLink()
+        public void ColorsLink( IEnumerable<BaseProperty> colors )
         {
-            MeasureWorkTime( () => DoPropertyLink( DbHelper.GetColors(), "color-link" ) );
+            MeasureWorkTime( () => DoPropertyLink( colors, "color-link" ) );
         }
 
-        public void MaterialsLink()
+        public void MaterialsLink( IEnumerable<BaseProperty> materials )
         {
-            MeasureWorkTime( () => DoPropertyLink( DbHelper.GetMaterials(), "material-link" ) );
+            MeasureWorkTime( () => DoPropertyLink( materials, "material-link" ) );
         }
         
-        public void SizesLink()
+        public void SizesLink( IEnumerable<BaseProperty> sizes )
         {
-            MeasureWorkTime( () => DoPropertyLink( DbHelper.GetSizes(), "size-link" ) );
+            MeasureWorkTime( () => DoPropertyLink( sizes, "size-link" ) );
         }
         
         private void DoPropertyLink( IEnumerable<BaseProperty> properties, string entity ) {

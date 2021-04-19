@@ -1,5 +1,7 @@
 ﻿using System.IO;
 
+using AdmitadCommon.Entities;
+
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.Components;
 
@@ -17,7 +19,7 @@ namespace AdmitadExamplesParser
         {
             var configString = File.ReadAllText( SettingsPath );
             var settings = JsonConvert.DeserializeObject<ProcessorSettings>( configString );
-            var processor = new Processor( settings );
+            var processor = new Processor( settings, new BackgroundBaseContext() );
             processor.Start();
         }
     }
