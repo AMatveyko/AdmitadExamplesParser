@@ -16,7 +16,7 @@ namespace TheStore.Api.Core.Sources.Entity
             _settings = settings;
         }
 
-        protected ElasticSearchClient<Product> CreateClient( BackgroundBaseContext context ) =>
+        protected ElasticSearchClient<Product> CreateElasticClient( BackgroundBaseContext context ) =>
             new ( _settings, context );
 
         protected ProductLinker CreateLinker(

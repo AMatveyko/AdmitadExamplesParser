@@ -21,6 +21,9 @@ namespace AdmitadCommon.Entities
 
         public int GetDifferencePercent( UpdateResult otherResult )
         {
+            if( Updated == 0 ) {
+                return 100;
+            }
             var newCount = ( double ) otherResult.Updated;
             var oldCount = ( double ) Updated;
             var result = ( newCount - oldCount ) / oldCount * 100;

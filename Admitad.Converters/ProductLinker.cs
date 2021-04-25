@@ -40,8 +40,32 @@ namespace Admitad.Converters
             }
         }
 
+        public void RelinkCategory( Category category )
+        {
+            var before = ( int ) _elasticClient.CountProductsWithCategory( category.Id );
+            var unlinkResult = _elasticClient.UnlinkCategory( category );
+            _context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров" );
+            _context.PercentFinished = 50;
+
+            if( category.IsTermsEmpty() ) {
+                _context.PercentFinished = 100;
+                _context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}";
+                DbHelper.UpdateProductsByCategory( category, before, 0 );
+                return;
+            }
+            
+            var linkResult = LinkCategory( category );
+            _context.Messages.Add( $"Привязвали { linkResult.Item2.Pretty } товаров" );
+            _context.PercentFinished = 100;
+            _context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Item2.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult.Item2 ) }%";
+            DbHelper.UpdateProductsByCategory( category, before, (int)linkResult.Item2.Updated );
+        }
+        
         public ( string, UpdateResult, long ) LinkCategory( Category category )
         {
+            if( category.IsTermsEmpty() ) {
+                return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
+            }
             var before = ( int ) _elasticClient.CountProductsWithCategory( category.Id );
             var count = Measure( () => _elasticClient.UpdateProductsForCategoryFieldNameModel( category ), out var time );
             var after = (int)_elasticClient.CountProductsWithCategory( category.Id );
@@ -63,9 +87,30 @@ namespace Admitad.Converters
                 Log( "tag", id, count.Pretty, time.ToString() );
             }
         }
+
+        public void RelinkTag( Tag tag )
+        {
+            var unlinkResult = _elasticClient.UnlinkTag( tag );
+            _context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров" );
+            _context.PercentFinished = 50;
+            if( tag.SearchTerms == null ||
+                tag.SearchTerms.Any() == false ) {
+                _context.PercentFinished = 100;
+                _context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}";
+                return;
+            }
+
+            var linkResult = _elasticClient.UpdateProductsForTag( tag );
+            _context.Messages.Add( $"Привязвали { linkResult.Pretty } товаров" );
+            _context.PercentFinished = 100;
+            _context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
+        }
         
         private ( string, UpdateResult, long ) LinkTag( Tag tag )
         {
+            if( tag.IsSearchTermsEmpty() ) {
+                return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
+            }
             var count = Measure( () => _elasticClient.UpdateProductsForTag( tag ), out var time );
             return ( tag.Id, count, time );
         }

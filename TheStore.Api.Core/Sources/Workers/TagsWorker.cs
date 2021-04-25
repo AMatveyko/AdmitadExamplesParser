@@ -22,15 +22,8 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == context.TagId );
             context.Title = tag.Title;
-            var client = CreateClient( context );
-            var unlinkResult = client.UnlinkTag( tag );
-            context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров от тега" );
-            context.PercentFinished = 50;
-            var linkResult = client.UpdateProductsForTag( tag );
-            context.Messages.Add( $"Привязвали { linkResult.Pretty } товаров к тегу" );
-            context.PercentFinished = 100;
-            
-            context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
+            var linker = CreateLinker( context );
+            linker.RelinkTag( tag );
         }
 
         public void LinkTags( LinkTagsContext context )

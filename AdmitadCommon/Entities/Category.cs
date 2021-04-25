@@ -1,8 +1,10 @@
 ﻿// a.snegovoy@gmail.com
 
+using System.Linq;
+
 namespace AdmitadCommon.Entities
 {
-    public class Category
+    public sealed class Category
     {
         public string Id { get; set; }
         public string[] Terms { get; set; }
@@ -13,5 +15,6 @@ namespace AdmitadCommon.Entities
         public string Age { get; set; }
         public string Name { get; set; }
         public string NameH1 { get; set; }
+        public bool IsTermsEmpty() => Terms == null || Terms.Any() == false;
     }
 }

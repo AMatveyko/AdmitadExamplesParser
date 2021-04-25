@@ -1,5 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
+using System.Linq;
+
 namespace AdmitadCommon.Entities
 {
     public sealed class Tag
@@ -13,5 +15,6 @@ namespace AdmitadCommon.Entities
         public string[] ExcludePhrase { get; set; }
         public string Title { get; set; }
         public string[] Categories { get; set; }
+        public bool IsSearchTermsEmpty() => SearchTerms == null || SearchTerms.Any() == false;
     }
 }

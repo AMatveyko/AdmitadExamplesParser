@@ -106,7 +106,7 @@ namespace AdmitadSqlDataTests
         public void GetCategories()
         {
             var rep = new CategoryRepository();
-            var categories = rep.GetCategories();
+            var categories = rep.GetCategoriesWithTerms();
         }
 
         [ Test ]
