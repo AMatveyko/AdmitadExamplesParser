@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadExamplesParser.Entities;
-
 namespace AdmitadCommon.Entities
 {
     public sealed class Offer : IIndexedEntities, IExtendedOffer, IBaseOffer

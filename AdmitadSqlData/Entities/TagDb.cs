@@ -19,5 +19,11 @@ namespace AdmitadSqlData.Entities
         public bool Enabled { get; set; }
         [ Column( "id_category" ) ]
         public int IdCategory { get; set; }
+        [ Column( "name_specify" ) ]
+        public string SpecifyWords { get; set; }
+        [ Column( "exclude_phrase" ) ]
+        public string ExcludePhrase { get; set; }
+        [ Column( "name_title" ) ]
+        public string NameTitle { get; set; }
     }
 }

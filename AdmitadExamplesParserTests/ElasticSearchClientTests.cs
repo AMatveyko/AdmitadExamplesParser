@@ -2,6 +2,7 @@
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Extensions;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.Components;
@@ -42,7 +43,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings );
+            return new ( _settings, new BackgroundBaseContext("1") );
         }
     }
 }

@@ -18,6 +18,7 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
                 "asos" => new AsosWorker(),
                 "12storeez" => new TwelveStoreezWorker(),
                 "anabel" => new AnabelWorker(),
+                "vmeha" => new VmehaWorker(),
                 _ => new DefaultShopWorker()
             };
         }

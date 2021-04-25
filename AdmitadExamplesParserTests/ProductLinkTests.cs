@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Admitad.Converters;
+
 using AdmitadCommon.Entities;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.Components;
@@ -21,10 +24,10 @@ namespace AdmitadExamplesParserTests
     {
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
-            //ElasticSearchUrl = "http://127.0.0.1:9200",
-            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            // ElasticSearchUrl = "http://127.0.0.1:9200",
+            // ElasticSearchUrl = "http://elastic.matveyko.su:9200",
             ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-3",
+            DefaultIndex = "products-25",
             FrameSize = 10000
         };
 
@@ -44,10 +47,15 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void LinkProperties()
         {
-            var linker = new ProductLinker( _settings );
-            linker.ColorsLink();
-            linker.MaterialsLink();
-            linker.SizesLink();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            
+            var colors = DbHelper.GetColors();
+            var materials = DbHelper.GetMaterials();
+            var sizes = DbHelper.GetSizes();
+            
+            linker.ColorsLink( colors );
+            linker.MaterialsLink( materials );
+            linker.SizesLink( sizes );
             
             //LogWriter.WriteLog(  );
         }
@@ -55,12 +63,12 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoriesLinkTest()
         {
-            var linker = new ProductLinker( _settings );
-            linker.CategoryLink();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            linker.CategoryLink( DbHelper.GetCategories() );
         }
 
         [ Test ]
-        public void CategoryLinkTest()
+        public void CategoryRelinkTest()
         {
             //",jeans"
             var categoryId = "10101080";
@@ -70,12 +78,37 @@ namespace AdmitadExamplesParserTests
             var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
         }
+
+        [ Test ]
+        public void TagRelinkTest()
+        {
+            TagRelinkTest( "902" );
+        }
+
+        private void TagRelinkTest( string tagId )
+        {
+            var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
+            var client = CreateClient( "products-25" );
+            var unlinkResult = client.UnlinkTag( tag );
+            var linkResult = client.UpdateProductsForTag( tag );
+            Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
+        }
+        
+        [ Test ]
+        public void RelinkTagsForCategory()
+        {
+            var categoryId = 10103000;
+            var tagsForCategory = DbHelper.GetTags().Where( t => t.IdCategory == categoryId ).ToList();
+            foreach( var tag in tagsForCategory ) {
+                TagRelinkTest( tag.Id );
+            }
+        }
         
         [ Test ]
         public void TagLinkTest()
         {
-            var linker = new ProductLinker( _settings );
-            linker.TagsLink();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            linker.TagsLink( DbHelper.GetTags() );
         }
 
         [ Test ]
@@ -97,8 +130,13 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void UnlinkProperties()
         {
-            var linker = new ProductLinker( _settings );
-            linker.UnlinkProperties();
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            
+            var colors = DbHelper.GetColors();
+            var materials = DbHelper.GetMaterials();
+            var sizes = DbHelper.GetSizes();
+
+            linker.UnlinkProperties( colors, materials, sizes );
         }
         
         [ Test ]
@@ -188,7 +226,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings );
+            return new ( _settings, new BackgroundBaseContext("1") );
         }
         
         private static Category GetFirstCategory()

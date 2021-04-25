@@ -1,7 +1,5 @@
 ﻿// a.snegovoy@gmail.com
 
-using AdmitadExamplesParser.Entities;
-
 using Nest;
 
 using Newtonsoft.Json;

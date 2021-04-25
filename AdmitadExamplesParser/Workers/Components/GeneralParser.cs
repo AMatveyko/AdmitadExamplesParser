@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
+using AdmitadCommon.Workers;
 
 using AdmitadExamplesParser.Entities;
 
@@ -74,7 +75,11 @@ namespace AdmitadExamplesParser.Workers.Components
         public List<BrokenLine> BrokenLinesList => new();
         public static int Count { get; private set; }
 
-        public GeneralParser( string filePath, string shopNameLatin, bool enableExtendedStatistic = false ) : base( ComponentType.GeneralParser )
+        public GeneralParser(
+            string filePath,
+            string shopNameLatin,
+            BackgroundBaseContext context ,
+            bool enableExtendedStatistic = false ) : base( ComponentType.GeneralParser, context )
         {
             _filePath = filePath;
             _enableExtendedStatistic = enableExtendedStatistic;

@@ -9,6 +9,8 @@ namespace AdmitadSqlData.Entities
     {
         [ Column( "id" ) ]
         public int Id { get; set; }
+        [ Column( "id_parent" ) ]
+        public int ParentId { get; set; }
         [ Column( "enabled" ) ]
         public bool Enabled { get; set; }
         [ Column( "search" ) ]
@@ -25,6 +27,9 @@ namespace AdmitadSqlData.Entities
         public int Level { get; set; }
         [ Column("ExcludeWordsFields") ]
         public string ExcludeWordsFields { get; set; }
-
+        [ Column( "name" ) ]
+        public string Name { get; set; }
+        [ Column( "name_h1" ) ]
+        public string NameH1 { get; set; }
     }
 }

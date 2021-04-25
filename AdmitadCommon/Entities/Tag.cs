@@ -9,5 +9,9 @@ namespace AdmitadCommon.Entities
         public string Gender { get; set; }
         public string[] Fields { get; set; }
         public int IdCategory { get; set; }
+        public string[] SpecifyWords { get; set; }
+        public string[] ExcludePhrase { get; set; }
+        public string Title { get; set; }
+        public string[] Categories { get; set; }
     }
 }

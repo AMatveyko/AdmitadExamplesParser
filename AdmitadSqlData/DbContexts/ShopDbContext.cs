@@ -2,6 +2,8 @@
 
 using System;
 
+using AdmitadCommon.Entities;
+
 using AdmitadSqlData.Entities;
 
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +29,8 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<SizeDb> Sizes { get; set; }
         public DbSet<BrandDb> Brands { get; set; }
         public DbSet<UnknownBrands> UnknownBrands { get; set; }
+        public DbSet<OptionDb> SettingsOptions { get; set; }
+        public DbSet<ProductsByCategory> ProductsByCategories { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {
