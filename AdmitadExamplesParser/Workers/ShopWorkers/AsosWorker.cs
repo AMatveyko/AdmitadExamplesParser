@@ -22,6 +22,10 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
                 offer.Gender = Gender.Unisex;
             }
 
+            if( offer.Age == Age.Undefined ) {
+                offer.Age = Age.Adult;
+            }
+            
             return offer;
         }
     }
