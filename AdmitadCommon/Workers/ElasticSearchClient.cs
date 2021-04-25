@@ -364,9 +364,16 @@ namespace AdmitadCommon.Workers
             Category category )
         {
             var query = string.Join( " OR ", category.Terms );
+            if( category.SearchSpecify != null &&
+                category.SearchSpecify.Any() ) {
+                var queryWithSpecify = string.Join( " OR ", category.SearchSpecify );
+                query = $"( {query} ) AND ( {queryWithSpecify} )";
+            }
             var terms = new List<Func<QueryContainerDescriptor<Product>,QueryContainer>> {
-                queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, new [] { "name", "model", "categoryName" } )).Query( query ) ),
-                gender => gender.Term( t => t.Field( p => p.Gender ).Value( category.Gender ) ),
+                queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, category.Fields )).Query( query ) ),
+                gender => gender.Bool( gb => gb.Should(
+                    gbs => gbs.Term( t => t.Field( p => p.Gender ).Value( category.Gender ) ),
+                    gbs => gbs.Term( t => t.Field( p => p.Gender ).Value( GenderHelper.Convert( Gender.Unisex ) ) ) )),
                 age => age.Term( t => t.Field( p => p.Age ).Value( category.Age ) )
             };
             

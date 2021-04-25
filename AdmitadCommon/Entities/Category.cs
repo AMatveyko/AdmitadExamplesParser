@@ -11,6 +11,7 @@ namespace AdmitadCommon.Entities
         public string[] ExcludeTerms { get; set; }
         public string[] Fields { get; set; }
         public string[] ExcludeWordsFields { get; set; }
+        public string[] SearchSpecify { get; set; }
         public string Gender { get; set; }
         public string Age { get; set; }
         public string Name { get; set; }

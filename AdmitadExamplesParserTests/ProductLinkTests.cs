@@ -22,7 +22,7 @@ namespace AdmitadExamplesParserTests
 {
     public class ProductLinkTests
     {
-        
+
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
             // ElasticSearchUrl = "http://elastic.matveyko.su:9200",
@@ -43,27 +43,27 @@ namespace AdmitadExamplesParserTests
         {
             var count = CreateClient().CountDisabledProducts( DateTime.Now );
         }
-        
+
         [ Test ]
         public void LinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
-            
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1" ) );
+
             var colors = DbHelper.GetColors();
             var materials = DbHelper.GetMaterials();
             var sizes = DbHelper.GetSizes();
-            
+
             linker.ColorsLink( colors );
             linker.MaterialsLink( materials );
             linker.SizesLink( sizes );
-            
+
             //LogWriter.WriteLog(  );
         }
-        
+
         [ Test ]
         public void CategoriesLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1" ) );
             linker.CategoryLink( DbHelper.GetCategories() );
         }
 
@@ -77,6 +77,14 @@ namespace AdmitadExamplesParserTests
             var unlinkResult = client.UnlinkCategory( category );
             var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
+        }
+
+        [ Test ]
+        public void RelinkCategory()
+        {
+            var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == "20712020" ); 
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            linker.RelinkCategory( category );
         }
 
         [ Test ]

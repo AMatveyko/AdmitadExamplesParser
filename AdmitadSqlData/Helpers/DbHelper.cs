@@ -234,7 +234,8 @@ namespace AdmitadSqlData.Helpers
                     ? SplitComa( fromDb.ExcludeWordsFields )
                     : SplitComa( fromDb.Fields ),
                 Name = fromDb.Name,
-                NameH1 = fromDb.NameH1
+                NameH1 = fromDb.NameH1,
+                SearchSpecify = CreateTerms( fromDb.SearchSpecify )
             };
 
         private static SettingsOption Convert( OptionDb optionDb ) =>
