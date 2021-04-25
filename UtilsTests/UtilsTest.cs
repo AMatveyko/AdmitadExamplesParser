@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
@@ -17,6 +18,14 @@ namespace UtilsTests
             ChatId = "sdfaslkfjsladf"
         };
 
+        [ Test ]
+        public void TestUpdateResult()
+        {
+            var result1 = new UpdateResult( 39345, 432345 );
+            var result2 = new UpdateResult( 34594, 3434444 );
+            Console.WriteLine( result1.GetDifferencePercent( result2 ) );
+        }
+        
         [ Test ]
         public void CategoryEnd()
         {

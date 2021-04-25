@@ -20,6 +20,13 @@ namespace AdmitadSqlData.Repositories
                 .ToList();
         }
 
+        public List<CategoryDb> GetAllCategory() {
+            using var db = GetDb();
+            return db.Categories
+                // .OrderByDescending( c => c.Level )
+                .ToList();
+        }
+        
         public CategoryRepository(
             string connectionString = null )
             : base( connectionString ) { }

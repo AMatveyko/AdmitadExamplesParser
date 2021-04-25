@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.Linq;
 
 using AdmitadCommon.Entities;
@@ -20,6 +21,7 @@ namespace TheStore.Api.Core.Sources.Workers
         public void RelinkTag( RelinkTagContext context )
         {
             var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == context.TagId );
+            context.Title = tag.Title;
             var client = CreateClient( context );
             var unlinkResult = client.UnlinkTag( tag );
             context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров от тега" );
@@ -33,7 +35,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         public void LinkTags( LinkTagsContext context )
         {
-            
+            throw new NotImplementedException();
         }
 
     }

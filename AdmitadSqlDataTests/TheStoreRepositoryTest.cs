@@ -1,9 +1,11 @@
 ﻿// a.snegovoy@gmail.com
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
@@ -15,6 +17,32 @@ namespace AdmitadSqlDataTests
 {
     public sealed class TheStoreRepositoryTest
     {
+
+        [ Test ]
+        public void GetChildren()
+        {
+            List<Category> GetChildren(
+                int categoryId ) {
+                return DbHelper.GetCategoryChildren( categoryId );
+            }
+
+            var allCategory = DbHelper.GetAllCategories();
+            
+            var rootCategory = new List<int> {
+                10000000,
+                20000000,
+                30000000,
+                40000000,
+                50000000,
+                60000000,
+                70000000
+            };
+
+            var ch = rootCategory.Select( GetChildren ).ToList();
+            var sum = ch.Sum( l => l.Count );
+            var notFound = allCategory.Where( cc => ch.SelectMany( c => c ).All( c => c.Id != cc.Id ) ).ToList();
+        }
+        
         [ Test, Explicit ]
         public void GetShopsTest()
         {

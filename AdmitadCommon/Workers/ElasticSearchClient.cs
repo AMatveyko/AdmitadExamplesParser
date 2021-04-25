@@ -250,7 +250,8 @@ namespace AdmitadCommon.Workers
             descriptor = descriptor.Filter( 
                 queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, tag.Fields)).Query( query ) ),
                 //m => m.Term( t => t.Field( ld => ld.Categories ).Value( tag.IdCategory ) )
-                m => m.LongRange( r => r.Field( "categories" ).GreaterThanOrEquals( tag.IdCategory ).LessThanOrEquals( CategoryHelper.GetEndCategory( tag.IdCategory ) ) )
+                //m => m.LongRange( r => r.Field( "categories" ).GreaterThanOrEquals( tag.IdCategory ).LessThanOrEquals( CategoryHelper.GetEndCategory( tag.IdCategory ) ) )
+                m => m.Terms( t => t.Field( "categories" ).Terms( tag.Categories ) )
                  ); 
             
             descriptor =

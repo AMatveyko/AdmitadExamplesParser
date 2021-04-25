@@ -19,7 +19,7 @@ namespace AdmitadExamplesParser
         {
             var configString = File.ReadAllText( SettingsPath );
             var settings = JsonConvert.DeserializeObject<ProcessorSettings>( configString );
-            var processor = new Processor( settings, new BackgroundBaseContext() );
+            var processor = new Processor( settings, new BackgroundBaseContext("1") );
             processor.Start();
         }
     }

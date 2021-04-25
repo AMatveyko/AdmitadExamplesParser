@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using Admitad.Converters;
+
 using AdmitadCommon.Entities;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
@@ -22,8 +24,8 @@ namespace AdmitadExamplesParserTests
     {
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
-            //ElasticSearchUrl = "http://127.0.0.1:9200",
-            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            // ElasticSearchUrl = "http://127.0.0.1:9200",
+            // ElasticSearchUrl = "http://elastic.matveyko.su:9200",
             ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-25",
             FrameSize = 10000
@@ -45,7 +47,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void LinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
             
             var colors = DbHelper.GetColors();
             var materials = DbHelper.GetMaterials();
@@ -61,7 +63,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoriesLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
             linker.CategoryLink( DbHelper.GetCategories() );
         }
 
@@ -105,7 +107,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
             linker.TagsLink( DbHelper.GetTags() );
         }
 
@@ -128,7 +130,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void UnlinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext() );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
             
             var colors = DbHelper.GetColors();
             var materials = DbHelper.GetMaterials();
@@ -224,7 +226,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings, new BackgroundBaseContext() );
+            return new ( _settings, new BackgroundBaseContext("1") );
         }
         
         private static Category GetFirstCategory()

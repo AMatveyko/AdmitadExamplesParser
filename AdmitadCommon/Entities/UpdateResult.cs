@@ -19,7 +19,12 @@ namespace AdmitadCommon.Entities
             ? $"{Updated} ({Total - Updated} !)"
             : $"{Updated}";
 
-        public int GetDifferencePercent( UpdateResult otherResult ) =>
-            (int)(( otherResult.Updated - Updated ) / Updated * 100 );
+        public int GetDifferencePercent( UpdateResult otherResult )
+        {
+            var newCount = ( double ) otherResult.Updated;
+            var oldCount = ( double ) Updated;
+            var result = ( newCount - oldCount ) / oldCount * 100;
+            return ( int ) result;
+        }
     }
 }

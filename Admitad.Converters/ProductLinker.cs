@@ -8,7 +8,9 @@ using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 using AdmitadCommon.Workers;
 
-namespace AdmitadExamplesParser.Workers.Components
+using AdmitadSqlData.Helpers;
+
+namespace Admitad.Converters
 {
     public sealed class ProductLinker : BaseComponent
     {
@@ -38,10 +40,14 @@ namespace AdmitadExamplesParser.Workers.Components
             }
         }
 
-        private ( string, UpdateResult, long ) LinkCategory( Category category )
+        public ( string, UpdateResult, long ) LinkCategory( Category category )
         {
+            var before = ( int ) _elasticClient.CountProductsWithCategory( category.Id );
             var count = Measure( () => _elasticClient.UpdateProductsForCategoryFieldNameModel( category ), out var time );
-            // var count = Measure( () => _elasticClient.UpdateProductsForCategory( category ), out var time );
+            var after = (int)_elasticClient.CountProductsWithCategory( category.Id );
+            
+            DbHelper.UpdateProductsByCategory( category, before, after );
+            // var copeunt = Measure( () => _elasticClient.UpdateProductsForCategory( category ), out var time );
             return ( category.Id, count, time );
         }
         #endregion

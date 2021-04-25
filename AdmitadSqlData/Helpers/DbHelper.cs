@@ -40,6 +40,14 @@ namespace AdmitadSqlData.Helpers
             return UnknownBrands.Count;
         }
 
+        public static void UpdateProductsByCategory(
+            Category category,
+            int before,
+            int after )
+        {
+            _theStoreRepository.UpdateProductsByCategory( category, before, after );
+        }
+        
         public static void RememberVendorIfUnknown( string vendorName, string cleanName )
         {
             if( UnknownBrandsNeedClean ) {
@@ -94,7 +102,8 @@ namespace AdmitadSqlData.Helpers
         
         public static List<Tag> GetTags()
         {
-            return _tagRepository.GetTags().Select( Convert ).ToList();
+            var categories = GetDictionaryCategory();
+            return _tagRepository.GetTags().Select( t => Convert( t, categories ) ).ToList();
         }
 
         public static List<XmlFileInfo> GetEnableShops() =>
@@ -118,6 +127,37 @@ namespace AdmitadSqlData.Helpers
             return categories;
         }
 
+        public static List<Category> GetAllCategories()
+        {
+            return _categoryRepository.GetAllCategory().Select( Convert ).ToList();
+        }
+        
+        public static List<Category> GetCategoryChildren( int categoryId, Dictionary<int, List<CategoryDb>> allCategories = null )
+        {
+            var categories = allCategories ?? GetDictionaryCategory();
+            return DoGetCategoryChildren( categoryId, categories ).Select( Convert ).ToList();
+        }
+
+        private static Dictionary<int, List<CategoryDb>> GetDictionaryCategory() =>
+            _categoryRepository.GetAllCategory().GroupBy( c => c.ParentId ).ToDictionary( g => g.Key, g => g.ToList() );
+        
+        private static List<CategoryDb> DoGetCategoryChildren( int categoryId, Dictionary<int,List<CategoryDb>> allCategory )
+        {
+            if( allCategory.ContainsKey( categoryId ) == false ) {
+                return new List<CategoryDb>();
+            }
+
+            var children = allCategory[ categoryId ];
+            var newChildren = new List<CategoryDb>();
+            foreach( var child in children ) {
+                newChildren.AddRange( DoGetCategoryChildren( child.Id, allCategory ) );
+            }
+
+            children.AddRange( newChildren );
+            
+            return children;
+        }
+        
         public static List<ColorProperty> GetColors() => _theStoreRepository.GetColors().Select( Convert ).ToList();
 
         public static List<MaterialProperty> GetMaterials() =>
@@ -165,7 +205,7 @@ namespace AdmitadSqlData.Helpers
                 Names = NotEmptyStringsToList( sizeDb.Name, sizeDb.SynonymName )
             };
 
-        private static Tag Convert( TagDb tagDb )
+        private static Tag Convert( TagDb tagDb, Dictionary<int,List<CategoryDb>> allCategories )
         {
             var tag = new Tag();
             tag.Id = tagDb.Id.ToString();
@@ -175,6 +215,10 @@ namespace AdmitadSqlData.Helpers
             tag.IdCategory = tagDb.IdCategory;
             tag.SpecifyWords = SplitComa( tagDb.SpecifyWords );
             tag.ExcludePhrase = CreateTerms( tagDb.ExcludePhrase );
+            tag.Title = tagDb.NameTitle;
+            var categories = GetCategoryChildren( tagDb.IdCategory, allCategories ).Select( c => c.Id ).ToList();
+            categories.Add( tag.IdCategory.ToString() );
+            tag.Categories = categories.ToArray();
             return tag;
         }
         
@@ -189,7 +233,8 @@ namespace AdmitadSqlData.Helpers
                 ExcludeWordsFields = fromDb.ExcludeWordsFields.IsNotNullOrWhiteSpace()
                     ? SplitComa( fromDb.ExcludeWordsFields )
                     : SplitComa( fromDb.Fields ),
-                Name = fromDb.Name
+                Name = fromDb.Name,
+                NameH1 = fromDb.NameH1
             };
 
         private static SettingsOption Convert( OptionDb optionDb ) =>

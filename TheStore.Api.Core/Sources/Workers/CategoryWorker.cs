@@ -2,6 +2,8 @@
 
 using System.Linq;
 
+using Admitad.Converters;
+
 using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
@@ -16,19 +18,22 @@ namespace TheStore.Api.Core.Sources.Workers
         public CategoryWorker( ElasticSearchClientSettings settings ) 
             :base( settings ) {}
 
-        public void RelinkTag( RelinkCategoryContext context ) {
+        public void RelinkCategory( RelinkCategoryContext context ) {
             
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == context.CategoryId );
+            context.Name = category.NameH1;
             var client = CreateClient( context );
             var unlinkResult = client.UnlinkCategory( category );
             context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров от категории" );
             context.PercentFinished = 50;
-            
-            var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
-            context.Messages.Add( $"Привязвали { linkResult.Pretty } товаров к категории" );
+
+            var linker = CreateLinker( context );
+            var linkResult = linker.LinkCategory( category );
+            //var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
+            context.Messages.Add( $"Привязвали { linkResult.Item2.Pretty } товаров к категории" );
             context.PercentFinished = 100;
             
-            context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
+            context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Item2.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult.Item2 ) }%";
         }
 
     }

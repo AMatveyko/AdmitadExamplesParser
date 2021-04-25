@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 using Admitad.Converters;
 
@@ -83,12 +84,17 @@ namespace AdmitadExamplesParser.Workers.Components
             var files = GetDownloadInfos();
             var documentsBefore =
                 CreateElasticClient( _settings.ElasticSearchClientSettings ).GetCountAllDocuments();
+
             foreach( var fileInfo in files.Where( f => f.HasError == false ) ) {
                 TryProcess( fileInfo );
             }
             
-            var documentsAfter = CreateElasticClient( _settings.ElasticSearchClientSettings ).GetCountAllDocuments();
+            LogWriter.Log( "Уснули на 15 сек", true );
+            Thread.Sleep( 15000 );
+            LogWriter.Log( "Продолжаем...", true );
             
+            var documentsAfter = CreateElasticClient( _settings.ElasticSearchClientSettings ).GetCountAllDocuments();
+
             LogWriter.Log( $"{documentsAfter}/{documentsAfter - documentsBefore} всего товаров / новых товаров ", true );
             
             var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _context );

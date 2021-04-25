@@ -140,7 +140,7 @@ namespace AdmitadExamplesParserTests
         
         private static List<Offer> ConvertOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData, new BackgroundBaseContext() );
+            var converter = new OfferConverter( shopData, new BackgroundBaseContext("1") );
             return converter.GetCleanOffers();
         }
         
@@ -148,7 +148,7 @@ namespace AdmitadExamplesParserTests
             var parser = new GeneralParser(
                 fileInfo.FilePath,
                 fileInfo.ShopName,
-                new BackgroundBaseContext(),
+                new BackgroundBaseContext("1"),
                 enableExtendedStat );
             return parser.Parse();
         }

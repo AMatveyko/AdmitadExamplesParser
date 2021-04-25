@@ -43,7 +43,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings, new BackgroundBaseContext() );
+            return new ( _settings, new BackgroundBaseContext("1") );
         }
     }
 }

@@ -1,7 +1,10 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Entities;
 
@@ -51,6 +54,28 @@ namespace AdmitadSqlData.Repositories
         {
             using var db = GetDb();
             return db.SettingsOptions.ToList();
+        }
+
+        public void UpdateProductsByCategory( Category category, int before, int after )
+        {
+            using var db = GetDb();
+            int.TryParse( category.Id, out var id );
+            var entity = db.ProductsByCategories
+                    .FirstOrDefault( p => p.CategoryId == id );
+            if( entity == null ) {
+                entity = new ProductsByCategory {
+                    CategoryId = id,
+                    CategoryName = category.NameH1
+                };
+                db.ProductsByCategories.Add( entity );
+            }
+
+            entity.ProductsBeforeLinking = before;
+            entity.ProductsAfterLinking = after;
+            entity.UpdateDate = DateTime.Now;
+            
+            db.SaveChanges();
+            
         }
 
     }
