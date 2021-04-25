@@ -33,5 +33,11 @@ namespace AdmitadCommon.Workers
         string DisableOldProducts( DateTime indexTime );
         string UnlinkProductsByProperty( BaseProperty property );
         public long GetCountAllDocuments();
+
+        UpdateResult UnlinkCategory(
+            Category category );
+
+        UpdateResult UnlinkTag(
+            Tag tag );
     }
 }

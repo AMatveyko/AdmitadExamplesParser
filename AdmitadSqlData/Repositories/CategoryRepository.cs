@@ -12,15 +12,23 @@ namespace AdmitadSqlData.Repositories
 {
     internal sealed class CategoryRepository : BaseRepository
     {
-        public List<CategoryDb> GetCategories() {
+        public List<CategoryDb> GetCategoriesWithTerms() {
             using var db = GetDb();
             return db.Categories
                 .Where( c => c.Enabled && c.Search != null && c.Search != string.Empty )
                 // .OrderByDescending( c => c.Level )
                 .ToList();
         }
+        
+        public List<CategoryDb> GetEnabledCategories() {
+            using var db = GetDb();
+            return db.Categories
+                .Where( c => c.Enabled )
+                // .OrderByDescending( c => c.Level )
+                .ToList();
+        }
 
-        public List<CategoryDb> GetAllCategory() {
+        public List<CategoryDb> GetAllCategories() {
             using var db = GetDb();
             return db.Categories
                 // .OrderByDescending( c => c.Level )

@@ -2,8 +2,6 @@
 
 using System.Linq;
 
-using Admitad.Converters;
-
 using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
@@ -22,18 +20,8 @@ namespace TheStore.Api.Core.Sources.Workers
             
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == context.CategoryId );
             context.Name = category.NameH1;
-            var client = CreateClient( context );
-            var unlinkResult = client.UnlinkCategory( category );
-            context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров от категории" );
-            context.PercentFinished = 50;
-
             var linker = CreateLinker( context );
-            var linkResult = linker.LinkCategory( category );
-            //var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
-            context.Messages.Add( $"Привязвали { linkResult.Item2.Pretty } товаров к категории" );
-            context.PercentFinished = 100;
-            
-            context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Item2.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult.Item2 ) }%";
+            linker.RelinkCategory( category );
         }
 
     }

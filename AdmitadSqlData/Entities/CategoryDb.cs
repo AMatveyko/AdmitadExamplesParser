@@ -25,11 +25,13 @@ namespace AdmitadSqlData.Entities
         public int Age { get; set; }
         [ Column( "lvl" ) ]
         public int Level { get; set; }
-        [ Column("ExcludeWordsFields") ]
+        [ Column("search_minus_fields") ]
         public string ExcludeWordsFields { get; set; }
         [ Column( "name" ) ]
         public string Name { get; set; }
         [ Column( "name_h1" ) ]
         public string NameH1 { get; set; }
+        [ Column( "search_specify" ) ]
+        public string SearchSpecify { get; set; }
     }
 }

@@ -122,14 +122,14 @@ namespace AdmitadSqlData.Helpers
         }
 
         public static List<Category> GetCategories() {
-            var categories = _categoryRepository.GetCategories().Select( Convert ).ToList();
+            var categories = _categoryRepository.GetEnabledCategories().Select( Convert ).ToList();
             //categories = categories.Where( c => c.Id[ 0 ] == '1' || c.Id[ 0 ] == '2' ).ToList();
             return categories;
         }
 
         public static List<Category> GetAllCategories()
         {
-            return _categoryRepository.GetAllCategory().Select( Convert ).ToList();
+            return _categoryRepository.GetAllCategories().Select( Convert ).ToList();
         }
         
         public static List<Category> GetCategoryChildren( int categoryId, Dictionary<int, List<CategoryDb>> allCategories = null )
@@ -139,7 +139,7 @@ namespace AdmitadSqlData.Helpers
         }
 
         private static Dictionary<int, List<CategoryDb>> GetDictionaryCategory() =>
-            _categoryRepository.GetAllCategory().GroupBy( c => c.ParentId ).ToDictionary( g => g.Key, g => g.ToList() );
+            _categoryRepository.GetAllCategories().GroupBy( c => c.ParentId ).ToDictionary( g => g.Key, g => g.ToList() );
         
         private static List<CategoryDb> DoGetCategoryChildren( int categoryId, Dictionary<int,List<CategoryDb>> allCategory )
         {
@@ -234,7 +234,8 @@ namespace AdmitadSqlData.Helpers
                     ? SplitComa( fromDb.ExcludeWordsFields )
                     : SplitComa( fromDb.Fields ),
                 Name = fromDb.Name,
-                NameH1 = fromDb.NameH1
+                NameH1 = fromDb.NameH1,
+                SearchSpecify = CreateTerms( fromDb.SearchSpecify )
             };
 
         private static SettingsOption Convert( OptionDb optionDb ) =>
