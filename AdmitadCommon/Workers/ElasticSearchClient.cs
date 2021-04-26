@@ -205,6 +205,37 @@ namespace AdmitadCommon.Workers
         }
         #endregion
 
+
+
+
+        #region Brand
+
+        public long GetCountWithClearlyName( string clearlyName, string brandId = Constants.UndefinedBrandId )
+        {
+            var terms = new List<Func<QueryContainerDescriptor<Product>,QueryContainer>>();
+            terms.Add( f => f.Term( t => t.Field( p => p.VendorNameClearly ).Value( clearlyName ) ) );
+            if( brandId != Constants.UndefinedBrandId ) {
+                terms.Add( f => f.Term( t => t.Field( p => p.BrandId ).Value( brandId ) ) );
+            }
+            var response = _client.Count<Product>( c => c.Query( q => q.Bool( b => b.Filter( terms ) ) ) );
+            return response.Count;
+        }
+
+        public UpdateResult UpdateBrandId( string clearlyName, string brandId )
+        {
+            var response = _client.UpdateByQuery<Product>( upq =>
+                upq.Query( q => q.Bool( 
+                        b => b.Must( m => m.Term( t => t.Field( p => p.VendorNameClearly ).Value( clearlyName ) ) )
+                            .MustNot( mn => mn.Term( t => t.Field( p => p.BrandId ).Value( brandId ) ) )
+                        ) )
+                    .Script( script => script.Source( $"ctx._source.brandId = {brandId}" ) )
+                    .Conflicts( Conflicts.Proceed )
+                    .Refresh( true ) );
+            return new UpdateResult( response.Total, response.Updated );
+        }
+        
+        #endregion
+        
         #region Tags
         public UpdateResult UpdateProductsForTag( Tag tag ) {
             

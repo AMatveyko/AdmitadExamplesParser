@@ -66,6 +66,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 var context = Results[ id ];
                 context.WorkStatus = BackgroundStatus.InWork;
                 RunAction( action, context );
+                context.PercentFinished = 100;
                 context.WorkStatus = BackgroundStatus.Completed;
             }
 

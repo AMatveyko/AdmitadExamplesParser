@@ -39,5 +39,9 @@ namespace AdmitadCommon.Workers
 
         UpdateResult UnlinkTag(
             Tag tag );
+
+        long GetCountWithClearlyName(
+            string clearlyName,
+            string brandId = Constants.UndefinedBrandId );
     }
 }
