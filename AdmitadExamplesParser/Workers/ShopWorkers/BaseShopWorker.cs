@@ -159,7 +159,7 @@ namespace AdmitadExamplesParser.Workers.ShopWorkers
             extendedOffer.CountryId = GetCountryId( rawOffer );
             extendedOffer.VendorNameClearly = GetClearlyVendor( rawOffer.Vendor );
             
-            DbHelper.RememberVendorIfUnknown( rawOffer.Vendor, extendedOffer.VendorNameClearly );
+            DbHelper.RememberVendorIfUnknown( extendedOffer.VendorNameClearly );
             
             FillParams( extendedOffer, rawOffer );
         }

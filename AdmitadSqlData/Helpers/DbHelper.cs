@@ -48,15 +48,11 @@ namespace AdmitadSqlData.Helpers
             _theStoreRepository.UpdateProductsByCategory( category, before, after );
         }
         
-        public static void RememberVendorIfUnknown( string vendorName, string cleanName )
+        public static void RememberVendorIfUnknown( string cleanName )
         {
             if( UnknownBrandsNeedClean ) {
                 _theStoreRepository.ClearUnknownBrands();
                 UnknownBrandsNeedClean = false;
-            }
-
-            if( vendorName == null || vendorName.Trim().IsNullOrWhiteSpace() ) {
-                vendorName = "NoBrandName";
             }
 
             var brandId = GetBrandId( cleanName );
@@ -64,11 +60,11 @@ namespace AdmitadSqlData.Helpers
                 return;
             }
 
-            if( UnknownBrands.ContainsKey( vendorName ) == false ) {
-                UnknownBrands[ vendorName ] =  new UnknownBrands { Name = vendorName, NumberOfProducts = 0 };
+            if( UnknownBrands.ContainsKey( cleanName ) == false ) {
+                UnknownBrands[ cleanName ] =  new UnknownBrands { Name = cleanName, NumberOfProducts = 0 };
             }
 
-            UnknownBrands[ vendorName ].NumberOfProducts++;
+            UnknownBrands[ cleanName ].NumberOfProducts++;
             
         }
 
