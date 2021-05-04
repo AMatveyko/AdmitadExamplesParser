@@ -16,10 +16,20 @@ namespace AdmitadCommon.Types
             {QueuePriority.Hight, new Queue<BackgroundWork>()}
         };
 
+        private static Queue<BackgroundWork> _parallelQueue = new ();
+        
         public static bool Any() => _queues.Any( d => d.Value.Any() );
+        public static bool HasParallel() => _parallelQueue.Any();
 
-        public static void Enqueue( BackgroundWork work, QueuePriority priority ) =>
+        public static void Enqueue( BackgroundWork work, QueuePriority priority ) {
+            if( priority == QueuePriority.Parallel ) {
+                _parallelQueue.Enqueue( work );
+                return;
+            }
             _queues[ priority ].Enqueue( work );
+        }
+
+        public static BackgroundWork ParallelDequeue() => _parallelQueue.Dequeue();
 
         public static BackgroundWork Dequeue()
         {

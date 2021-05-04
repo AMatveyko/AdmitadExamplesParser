@@ -5,7 +5,7 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 
-using AdmitadSqlData.DbContexts;
+using AdmitadSqlData.Entities;
 
 namespace AdmitadSqlData.Repositories
 {
@@ -15,8 +15,13 @@ namespace AdmitadSqlData.Repositories
         {
             using var db = GetDb();
             return db.Shops.Where( s => s.Enabled )
-                .Select( s => new XmlFileInfo( s.Name, s.NameLatin, s.XmlFeed, s.Id ) )
-                .ToList();
+                .Select( s => new XmlFileInfo( s.Name, s.NameLatin, s.XmlFeed, s.Id ) ).ToList();
+        }
+
+        public Shop GetShop( int id )
+        {
+            using var db = GetDb();
+            return db.Shops.First( s => s.Id == id );
         }
 
         public int GetShopId( string shopNameLatin )

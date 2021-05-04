@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="NLog" Version="4.7.9" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
@@ -12,6 +13,22 @@
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="C:\Users\asneg\.nuget\packages\nlog.config\4.7.9\contentFiles\any\any\NLog.config">
+        <NuGetPackageId>NLog.Config</NuGetPackageId>
+        <NuGetPackageVersion>4.7.9</NuGetPackageVersion>
+        <NuGetItemType>None</NuGetItemType>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>NLog.config</TargetPath>
+        <Private>True</Private>
+        <Link>NLog.config</Link>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Sources\Entity" />
     </ItemGroup>
 
 </Project>

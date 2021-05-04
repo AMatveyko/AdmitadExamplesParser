@@ -6,6 +6,7 @@ namespace AdmitadCommon.Entities
     {
         Hight = 0,
         Medium = 1,
-        Low = 2
+        Low = 2,
+        Parallel = 3
     }
 }

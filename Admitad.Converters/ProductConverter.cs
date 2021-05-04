@@ -16,7 +16,7 @@ namespace Admitad.Converters
     public static class ProductConverter
     {
 
-        public static List<Product> GetProductsContainer( List<Offer> offers )
+        public static List<Product> GetProductsContainer( IEnumerable<Offer> offers )
         {
             var groupedOffers = offers.GroupBy( o => o.ProductId ).ToList();
             var products =

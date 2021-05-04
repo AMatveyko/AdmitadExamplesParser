@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1-beta1" />
+      <PackageReference Include="NLog" Version="4.7.9" />
+      <PackageReference Include="RestSharp" Version="106.11.8-alpha.0.12" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
+      <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
+      <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\Messenger\Messenger.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="C:\Users\asneg\.nuget\packages\nlog.config\4.7.9\contentFiles\any\any\NLog.config">
+        <NuGetPackageId>NLog.Config</NuGetPackageId>
+        <NuGetPackageVersion>4.7.9</NuGetPackageVersion>
+        <NuGetItemType>None</NuGetItemType>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>NLog.config</TargetPath>
+        <Private>True</Private>
+        <Link>NLog.config</Link>
+      </None>
+    </ItemGroup>
+
+</Project>

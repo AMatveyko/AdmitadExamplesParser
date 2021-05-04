@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
-      <ProjectReference Include="..\AdmitadExamplesParser\AdmitadExamplesParser.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,11 +1,10 @@
 ﻿// a.snegovoy@gmail.com
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Workers;
+using Admitad.Converters.Workers;
 
-using AdmitadExamplesParser.Entities;
-using AdmitadExamplesParser.Workers.Components;
+using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
+using AdmitadCommon.Extensions;
 
 using NUnit.Framework;
 
@@ -22,16 +21,6 @@ namespace AdmitadExamplesParserTests
         };
 
         [ Test ]
-        public void GetUnlinkedIds()
-        {
-            var client2 = CreateClient( "products-2" );
-            var client3 = CreateClient( "products-3" );
-            var ids2 = client2.GetIdsUnlinkedProductsByScroll();
-            var ids3 = client3.GetIdsUnlinkedProductsByScroll();
-
-        }
-
-        [ Test ]
         public void GetCountAllDocuments()
         {
             var client = CreateClient();
@@ -43,7 +32,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings, new BackgroundBaseContext("1") );
+            return new ( _settings, new BackgroundBaseContext("1", "name" ) );
         }
     }
 }

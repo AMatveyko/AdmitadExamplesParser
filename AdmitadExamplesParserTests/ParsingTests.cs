@@ -6,13 +6,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using Admitad.Converters;
+using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
-
-using AdmitadExamplesParser.Entities;
-
-using AdmitadExamplesParser.Workers.Components;
 
 using NUnit.Framework;
 
@@ -48,7 +46,7 @@ namespace AdmitadExamplesParserTests
             string shopName )
         {
             
-            var downloadInfo = new DownloadInfo {
+            var downloadInfo = new DownloadInfo( 0, shopName ) {
                 FilePath = $@"o:\admitad\feeds\{ shopName }.xml",
                 ShopName = shopName
             };
@@ -140,7 +138,7 @@ namespace AdmitadExamplesParserTests
         
         private static List<Offer> ConvertOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData, new BackgroundBaseContext("1") );
+            var converter = new OfferConverter( shopData, new BackgroundBaseContext("1", "name" ) );
             return converter.GetCleanOffers();
         }
         
@@ -148,7 +146,7 @@ namespace AdmitadExamplesParserTests
             var parser = new GeneralParser(
                 fileInfo.FilePath,
                 fileInfo.ShopName,
-                new BackgroundBaseContext("1"),
+                new BackgroundBaseContext("1", "name" ),
                 enableExtendedStat );
             return parser.Parse();
         }

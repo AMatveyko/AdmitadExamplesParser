@@ -3,14 +3,13 @@
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
-using TheStore.Api.Core.Sources.Entity;
-
 namespace TheStore.Api.Core.Sources.Workers
 {
-    public sealed class CategoryWorker : BaseLinkWorker
+    internal sealed class CategoryWorker : BaseLinkWorker
     {
 
         public CategoryWorker( ElasticSearchClientSettings settings ) 
@@ -22,6 +21,13 @@ namespace TheStore.Api.Core.Sources.Workers
             context.Name = category.NameH1;
             var linker = CreateLinker( context );
             linker.RelinkCategory( category );
+        }
+
+        public void LinkCategories( LinkCategoriesContext context )
+        {
+            var categories = DbHelper.GetCategories();
+            var linker = CreateLinker( context );
+            linker.LinkCategories( categories );
         }
 
     }

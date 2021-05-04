@@ -4,11 +4,9 @@ using System;
 using System.Linq;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Workers;
+using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
-
-using TheStore.Api.Core.Sources.Entity;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
@@ -28,7 +26,9 @@ namespace TheStore.Api.Core.Sources.Workers
 
         public void LinkTags( LinkTagsContext context )
         {
-            throw new NotImplementedException();
+            var tags = DbHelper.GetTags();
+            var linker = CreateLinker( context );
+            linker.LinkTags( tags );
         }
 
     }

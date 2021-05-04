@@ -31,6 +31,7 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<UnknownBrands> UnknownBrands { get; set; }
         public DbSet<OptionDb> SettingsOptions { get; set; }
         public DbSet<ProductsByCategory> ProductsByCategories { get; set; }
+        public DbSet<ShopStatisticsDb> ShopStatistics { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

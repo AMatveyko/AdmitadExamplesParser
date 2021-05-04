@@ -34,6 +34,34 @@ namespace AdmitadSqlData.Helpers
 
         public static List<SettingsOption> GetSettingsOptions() =>
             _theStoreRepository.GetSettingsOptions().Select( Convert ).ToList();
+
+
+        public static List<ShopStatistics> GetShopStatisticsList()
+        {
+            var raw = _theStoreRepository.GetShopStatistics();
+            var converted = raw.Select( Convert ).ToList();
+            var shops = _shopRepository.GetEnableShops();
+            foreach( var stat in converted ) {
+                var shop = shops.FirstOrDefault( s => s.ShopId == stat.ShopId );
+                if( shop == null ) {
+                    continue;
+                }
+
+                stat.ShopName = shop.Name;
+            }
+
+            return converted;
+        }
+        
+        public static ShopStatistics GetShopStatistics( int shopId )
+        {
+            return Convert( _theStoreRepository.GetShopStatistics( shopId ) );
+        }
+
+        public static void UpdateShopStatistics( ShopStatistics statistics )
+        {
+            _theStoreRepository.UpdateShopStatistics( statistics, DateTime.Now );
+        }
         
         public static int GetUnknownBrandsCount()
         {
@@ -109,6 +137,11 @@ namespace AdmitadSqlData.Helpers
         public static List<XmlFileInfo> GetEnableShops() =>
             _shopRepository.GetEnableShops();
 
+        public static XmlFileInfo GetShop( int id ) {
+            var shop = _shopRepository.GetShop( id );
+            return new XmlFileInfo( shop.Name, shop.NameLatin, shop.XmlFeed, shop.Id );
+        }
+
         public static int GetShopId(
             string shopNameLatin ) =>
             GetFromCache( ShopIdCache, shopNameLatin, _shopRepository.GetShopId );
@@ -123,7 +156,6 @@ namespace AdmitadSqlData.Helpers
 
         public static List<Category> GetCategories() {
             var categories = _categoryRepository.GetEnabledCategories().Select( Convert ).ToList();
-            //categories = categories.Where( c => c.Id[ 0 ] == '1' || c.Id[ 0 ] == '2' ).ToList();
             return categories;
         }
 
@@ -242,6 +274,17 @@ namespace AdmitadSqlData.Helpers
             new SettingsOption {
                 Option = optionDb.Option,
                 Value = optionDb.Value
+            };
+
+        private static ShopStatistics Convert(
+            ShopStatisticsDb statisticsDb ) =>
+            new ShopStatistics {
+                ShopId = statisticsDb.ShopId,
+                Error = statisticsDb.Error,
+                SoldoutAfter = statisticsDb.SoldoutAfter,
+                SoldoutBefore = statisticsDb.SoldoutBefore,
+                TotalAfter = statisticsDb.TotalAfter,
+                TotalBefore = statisticsDb.TotalBefore
             };
         
         #endregion

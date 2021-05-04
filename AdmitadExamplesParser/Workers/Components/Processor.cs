@@ -8,12 +8,11 @@ using System.Text.RegularExpressions;
 using System.Threading;
 
 using Admitad.Converters;
+using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
-using AdmitadCommon.Workers;
-
-using AdmitadExamplesParser.Entities;
 
 using AdmitadSqlData.Helpers;
 
@@ -98,8 +97,8 @@ namespace AdmitadExamplesParser.Workers.Components
             LogWriter.Log( $"{documentsAfter}/{documentsAfter - documentsBefore} всего товаров / новых товаров ", true );
             
             var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _context );
-            linker.CategoryLink( DbHelper.GetCategories() );
-            linker.TagsLink( DbHelper.GetTags() );
+            linker.LinkCategories( DbHelper.GetCategories() );
+            linker.LinkTags( DbHelper.GetTags() );
 
             var colors = DbHelper.GetColors();
             var materials = DbHelper.GetMaterials();
@@ -128,7 +127,7 @@ namespace AdmitadExamplesParser.Workers.Components
         {
             var fileInfos = Directory.GetFiles( _settings.DirectoryPath );
             return fileInfos.Where( f => f.Contains( "_" ) == false ).Select(
-                f => new DownloadInfo {
+                f => new DownloadInfo( 0, Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value ) {
                     DownloadTime = 0,
                     FilePath = f,
                     ShopName = Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value

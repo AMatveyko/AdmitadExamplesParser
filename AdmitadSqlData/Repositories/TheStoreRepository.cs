@@ -78,5 +78,57 @@ namespace AdmitadSqlData.Repositories
             
         }
 
+        public List<ShopStatisticsDb> GetShopStatistics()
+        {
+            var db = GetDb();
+            return db.ShopStatistics.ToList();
+        }
+        
+        public ShopStatisticsDb GetShopStatistics( int shopId )
+        {
+            var db = GetDb();
+            return db.ShopStatistics.FirstOrDefault( s => s.ShopId == shopId )
+                   ?? new ShopStatisticsDb { ShopId = shopId};
+        }
+
+        public void UpdateShopStatistics( ShopStatistics statistics, DateTime updateDate )
+        {
+            var db = GetDb();
+            var statisticsDb = db.ShopStatistics.FirstOrDefault( s => s.ShopId == statistics.ShopId );
+            if( statisticsDb == null ) {
+                statisticsDb = new ShopStatisticsDb { ShopId = statistics.ShopId };
+                db.ShopStatistics.Add( statisticsDb );
+            }
+
+            if( statistics.Error != null &&
+                statistics.Error != statisticsDb.Error ) {
+                statisticsDb.Error = statistics.Error;
+            }
+            
+            if( statistics.SoldoutAfter != null &&
+                statistics.SoldoutAfter != statisticsDb.SoldoutAfter ) {
+                statisticsDb.SoldoutAfter = statistics.SoldoutAfter.Value;
+            }
+            
+            if( statistics.SoldoutBefore != null &&
+                statistics.SoldoutBefore != statisticsDb.SoldoutBefore ) {
+                statisticsDb.SoldoutBefore = statistics.SoldoutBefore.Value;
+            }
+            
+            if( statistics.TotalAfter != null &&
+                statistics.TotalAfter != statisticsDb.TotalAfter ) {
+                statisticsDb.TotalAfter = statistics.TotalAfter.Value;
+            }
+            
+            if( statistics.TotalBefore != null &&
+                statistics.TotalBefore != statisticsDb.TotalBefore ) {
+                statisticsDb.TotalBefore = statistics.TotalBefore.Value;
+            }
+
+            statisticsDb.UpdateDate = updateDate;
+
+            db.SaveChanges();
+        }
+        
     }
 }

@@ -12,7 +12,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
-      <ProjectReference Include="..\AdmitadExamplesParser\AdmitadExamplesParser.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
     </ItemGroup>
 

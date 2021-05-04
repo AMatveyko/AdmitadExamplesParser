@@ -5,14 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Admitad.Converters;
+using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
-using AdmitadCommon.Workers;
-
-using AdmitadExamplesParser.Entities;
-using AdmitadExamplesParser.Workers.Components;
 
 using AdmitadSqlData.Helpers;
 
@@ -35,19 +33,19 @@ namespace AdmitadExamplesParserTests
         public void DisableOldProducts()
         {
             var client = CreateClient();
-            client.DisableOldProducts( DateTime.Now );
+            client.DisableOldProducts( DateTime.Now, "143" );
         }
 
         [ Test ]
         public void CountDisabledProducts()
         {
-            var count = CreateClient().CountDisabledProducts( DateTime.Now );
+            var count = CreateClient().CountForDisableProducts( DateTime.Now, null );
         }
 
         [ Test ]
         public void LinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1" ) );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1", "name" ) );
 
             var colors = DbHelper.GetColors();
             var materials = DbHelper.GetMaterials();
@@ -63,8 +61,8 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoriesLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1" ) );
-            linker.CategoryLink( DbHelper.GetCategories() );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1", "name" ) );
+            linker.LinkCategories( DbHelper.GetCategories() );
         }
 
         [ Test ]
@@ -83,7 +81,7 @@ namespace AdmitadExamplesParserTests
         public void RelinkCategory()
         {
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == "20712020" ); 
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1", "name") );
             linker.RelinkCategory( category );
         }
 
@@ -115,8 +113,8 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
-            linker.TagsLink( DbHelper.GetTags() );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1", "name") );
+            linker.LinkTags( DbHelper.GetTags() );
         }
 
         [ Test ]
@@ -138,7 +136,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void UnlinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1", "name") );
             
             var colors = DbHelper.GetColors();
             var materials = DbHelper.GetMaterials();
@@ -234,7 +232,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings, new BackgroundBaseContext("1") );
+            return new ( _settings, new BackgroundBaseContext("1", "name") );
         }
         
         private static Category GetFirstCategory()
