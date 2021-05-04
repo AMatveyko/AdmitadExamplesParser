@@ -47,7 +47,13 @@ namespace TheStore.Api.Core.Sources.Workers
             StartWorkIfNeed();
             
             var result = Results[ context.Id ];
+
             if( result.WorkStatus == BackgroundStatus.Completed && clean ) {
+                if( result is ParallelBackgroundContext parallelContext ) {
+                    foreach( var childContext in parallelContext.Contexts ) {
+                        Results.TryRemove( childContext.Id, out var childRes );
+                    }
+                }
                 Results.TryRemove( result.Id, out var res );
             }
             return new JsonResult( result );
@@ -55,7 +61,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private static void AddWork<T>( Action<T> action, T context, QueuePriority priority ) 
             where T : BackgroundBaseContext {
-            context.WorkStatus = BackgroundStatus.Awaiting;
+            context.Prepare();
             Results[ context.Id ] = context;
             PriorityQueue.Enqueue( new BackgroundWork( () => action( context ), context.Id ), priority );
         }
@@ -90,45 +96,16 @@ namespace TheStore.Api.Core.Sources.Workers
             while( workChecker() ) {
                 var (action, id) = workGetter();
                 var context = Results[ id ];
-                context.WorkStatus = BackgroundStatus.InWork;
-                context.Start();
                 RunAction( action, context );
-                context.WorkStatus = BackgroundStatus.Completed;
-                context.SetProgress( 100, 100 );
             }
 
             finisher();
         }
-        
-        public static IActionResult Run<T>( Action<T> action, T context, bool clean ) where T: BackgroundBaseContext
-        {
-            
-            if( _work != null ) {
-                
-                if( _work.IsFinished ) {
-                    var result = GetResult();
-                    if( clean ) {
-                        _work = null;
-                    }
-                    return result;
-                }
 
-                return NotFinishedResult();
-            }
-
-            _work = context;
-            
-            var thread = new Thread( () => RunAction( () => action( context ), context ) );
-            thread.Start();
-            
-            return GetResult( "В работе" );
-        }
-
-        private static void RunAction(
-            Action action,
-            BackgroundBaseContext context )
+        private static void RunAction( Action action, BackgroundBaseContext context )
         {
             try {
+                context.Start();
                 action();
             }
             catch( Exception e ) {
@@ -137,7 +114,9 @@ namespace TheStore.Api.Core.Sources.Workers
                 context.IsError = true;
                 Logger.Error( e );
             }
-            context.IsFinished = true;
+            finally {
+                context.Finish();
+            }
         }
         
         private static IActionResult NotFinishedResult()

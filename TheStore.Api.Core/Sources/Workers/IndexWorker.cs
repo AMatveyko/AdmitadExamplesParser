@@ -47,11 +47,14 @@ namespace TheStore.Api.Core.Sources.Workers
             var file = DoDownloadIfNeed( context, xmlInfo );
             context.SetProgress( 30, 100 );
             if( file.HasError ) {
-                context.SetProgress( 100, 100 );
+                
+                context.Finish();
+                context.IsError = true;
+                
                 return;
             }
             
-            DoIndexShop( xmlInfo.ShopId, file );
+            DoIndexShop( xmlInfo.ShopId, file, true );
             context.SetProgress( 60, 100 );
             DoLink();
             context.SetProgress( 90, 100 );
@@ -75,7 +78,8 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private void DownloadAll( List<XmlFileInfo> infos )
         {
-            var downloadContext = new BackgroundBaseContext( "Download:All", "download" ) { WorkStatus = BackgroundStatus.InWork };
+            var downloadContext = new BackgroundBaseContext( "Download:All", "download" );
+            downloadContext.Prepare();
             _context.AddContext( downloadContext );
             
             var downloader = new FeedsDownloader( _settings.AttemptsToDownload, downloadContext );
@@ -86,17 +90,14 @@ namespace TheStore.Api.Core.Sources.Workers
             
             downloader.DownloadsAll( _settings.DirectoryPath, infos );
             
-            downloadContext.SetProgress( 100, 100 );
-                
-            downloadContext.WorkStatus = BackgroundStatus.Completed;
             downloadContext.Content = "Все скачали";
-            downloadContext.IsFinished = true;
-            
+            downloadContext.Finish();
+
         }
 
         private void HandleDownloadEvent( object sender, DownloadEventArgs e )
         {
-            DoIndexShop( e.Info.ShopId, e.Info );
+            DoIndexShop( e.Info.ShopId, e.Info, false );
         }
 
         private void Wait()
@@ -106,10 +107,10 @@ namespace TheStore.Api.Core.Sources.Workers
             }
         }
         
-        private void DoIndexShop( int shopId, DownloadInfo fileInfo )
+        private void DoIndexShop( int shopId, DownloadInfo fileInfo, bool single )
         {
             var processShopContext = new ProcessShopContext(
-                shopId.ToString(),
+                $"{shopId}:{(single ? "single" : "all")}",
                 shopId,
                 fileInfo.FilePath,
                 fileInfo.NameLatin );
@@ -172,19 +173,18 @@ namespace TheStore.Api.Core.Sources.Workers
             var filePath = FilePathHelper.GetFilePath( _settings.DirectoryPath, xmlInfo );
             if( context.DownloadFresh ||
                 File.Exists( filePath ) == false ) {
-                var downloadContext = new BackgroundBaseContext($"Download:{xmlInfo.Name}", "download") { WorkStatus = BackgroundStatus.InWork };
+                var downloadContext = new BackgroundBaseContext($"Download:{xmlInfo.Name}", "download");
+                downloadContext.Prepare();
                 downloadContext.Start();
+                
                 context.Contexts.Add( downloadContext );
                 
                 var downloader = new FeedsDownloader( _settings.AttemptsToDownload, downloadContext );
                 var file = downloader.Download( xmlInfo, _settings.DirectoryPath );
-                
-                downloadContext.SetProgress( 100, 100 );
-                
-                downloadContext.WorkStatus = BackgroundStatus.Completed;
+
                 downloadContext.Content = "Все скачали";
-                downloadContext.IsFinished = true;
-                
+                downloadContext.Finish();
+
                 return file;
             }
 
