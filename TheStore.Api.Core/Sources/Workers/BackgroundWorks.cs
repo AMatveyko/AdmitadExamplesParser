@@ -2,12 +2,13 @@
 
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
+using AdmitadCommon.Entities.Queue;
 using AdmitadCommon.Types;
 
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ using NLog;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
-    public static class BackgroundWorks
+    internal static class BackgroundWorks
     {
 
         private static readonly Logger Logger = LogManager.GetLogger( "ErrorLogger" );
@@ -29,8 +30,28 @@ namespace TheStore.Api.Core.Sources.Workers
 
         public static IActionResult ShowAllWorks()
         {
-            var works = ( Work: _work, Works: Results.Select( i => i.Value ).OrderBy( i => i.Id ) );
-            return new JsonResult( works );
+            var result = new QueueStatus();
+            var singleContexts = Results.Values.Where( c => c is ParallelBackgroundContext == false ).ToList();
+            var parallelContexts = Results.Values.Where( c => c is ParallelBackgroundContext ).ToList();
+            if( singleContexts.Any() ) {
+                result.Single = GetQueueState( singleContexts );
+            }
+
+            if( parallelContexts.Any() ) {
+                result.Parallel = GetQueueState( parallelContexts );
+            }
+            return new JsonResult( result );
+        }
+
+        private static QueueState GetQueueState( List<BackgroundBaseContext> contexts )
+        {
+            return new QueueState {
+                InWork = contexts.FirstOrDefault( c => c.WorkStatus == BackgroundStatus.InWork )?.Id ?? "empty",
+                Awaiting =
+                    contexts.Where( c => c.WorkStatus == BackgroundStatus.Awaiting ).Select( c => c.Id ).ToList(),
+                Completed = contexts.Where( c => c.WorkStatus == BackgroundStatus.Completed ).Select( c => c.Id )
+                    .ToList()
+            };
         }
         
         public static IActionResult AddToQueue< T >(

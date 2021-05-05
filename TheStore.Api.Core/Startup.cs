@@ -53,10 +53,11 @@ namespace TheStore.Api.Core
         {
             if( env.IsDevelopment() ) {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI( c => c.SwaggerEndpoint( "/swagger/v1/swagger.json", "TheStore.Api.Core v1" ) );
             }
 
+            app.UseSwagger();
+            app.UseSwaggerUI( c => c.SwaggerEndpoint( "/swagger/v1/swagger.json", "TheStore.Api.Core v1" ) );
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
