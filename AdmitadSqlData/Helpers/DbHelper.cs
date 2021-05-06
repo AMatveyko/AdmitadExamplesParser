@@ -189,6 +189,11 @@ namespace AdmitadSqlData.Helpers
             
             return children;
         }
+
+        public static void ExcludeSearchField( string name )
+        {
+            _categoryRepository.ExcludeSearchField( name );
+        }
         
         public static List<ColorProperty> GetColors() => _theStoreRepository.GetColors().Select( Convert ).ToList();
 

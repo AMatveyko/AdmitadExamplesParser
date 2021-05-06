@@ -1,7 +1,14 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace TheStoreApi
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+
+namespace TheStore.Api.Front
 {
     public class Program
     {
@@ -16,7 +23,6 @@ namespace TheStoreApi
             Host.CreateDefaultBuilder( args ).ConfigureWebHostDefaults(
                 webBuilder => {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls( "http://0.0.0.0:5000/" );
                 } );
     }
 }

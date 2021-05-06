@@ -79,6 +79,15 @@ namespace TheStore.Api.Core.Controllers
         }
 
         [ HttpGet ]
+        [ Route( "RelinkAllCategories" ) ]
+        public IActionResult RelinkAllCategories( bool clean = true )
+        {
+            var context = new RelinkAllCategories();
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings );
+            return BackgroundWorks.AddToQueue( worker.RelinkAllCategories, context, QueuePriority.Parallel, clean );
+        }
+
+        [ HttpGet ]
         [ Route( "LinkTags" ) ]
         public IActionResult LinkTags( bool clean = false )
         {

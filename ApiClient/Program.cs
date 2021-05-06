@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -37,9 +38,11 @@ namespace ApiClient
                 TotalBefore = statBefore.Products,
                 SoldOutBefore = statBefore.SoldOut
             };
-            
-            
+
+            var iterationCount = 0;
             while( _finish == false ) {
+                iterationCount++;
+                Console.Write( $"{iterationCount } " );
                 var response = ApiClient.RunAndCheckIndex();
                 _lastResult = response;
                 _finish = response.IsFinished || response.IsError;

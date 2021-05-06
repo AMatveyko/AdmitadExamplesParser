@@ -61,6 +61,12 @@ namespace AdmitadSqlDataTests
         {
             DbHelper.DeleteWordFromTag( "блузки", 10103000 );
         }
+
+        [ Test ]
+        public void ExcludeSearchField()
+        {
+            DbHelper.ExcludeSearchField( "categoryName" );
+        }
         
         [ Test ]
         public void WarmCategories()
