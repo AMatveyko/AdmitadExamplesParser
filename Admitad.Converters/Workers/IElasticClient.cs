@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Responses;
 
 namespace Admitad.Converters.Workers
 {
@@ -53,5 +54,7 @@ namespace Admitad.Converters.Workers
         long CountProducts();
         long CountSoldOutProducts();
 
+        ProductResponse GetProduct(
+            string id );
     }
 }

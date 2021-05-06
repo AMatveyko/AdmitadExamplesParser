@@ -7,6 +7,7 @@ using System.Threading;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
+using AdmitadCommon.Entities.Responses;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
 
@@ -36,6 +37,7 @@ namespace Admitad.Converters.Workers
             : base( ComponentType.ElasticSearch, context )
         {
             var clientSettings = new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
+                .Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
                 .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
             _withStatistics = withStatics;
@@ -43,6 +45,19 @@ namespace Admitad.Converters.Workers
             _settings = settings;
         }
 
+
+
+
+        #region Product
+
+        public ProductResponse GetProduct( string id )
+        {
+            var result = _client.Get<ProductResponse>( id, d => d.Routing( $"R-{id}" ) );
+            return result.Source;
+        }
+        
+        #endregion
+        
         #region Bulk
         
         public void IndexMany(

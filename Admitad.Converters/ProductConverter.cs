@@ -75,6 +75,9 @@ namespace Admitad.Converters
             DateTime updateDate )
         {
             var offer = offers.First();
+            
+            DbHelper.RememberVendorIfUnknown( offer.VendorNameClearly );
+            
             return new Product {
                 Id = offer.ProductId,
                 Url = offer.Url,

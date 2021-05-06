@@ -24,25 +24,25 @@ namespace ApiClient
         public override string ToString()
         {
             var text = new StringBuilder();
-            text.AppendLine( $"Status: { ( IsError ? "Error" : "Ok" ) }" );
-            text.AppendLine( $"Downloaded: { DownloadedShops }{( DownloadedShops != TotalShops ? $" ({TotalShops}!)" : String.Empty )}" );
+            text.AppendLine( $"Статус: { ( IsError ? "Ошибка" : "Без ошибок" ) }" );
+            text.AppendLine( $"Скачали фидо: { DownloadedShops }{( DownloadedShops != TotalShops ? $" ({TotalShops}!)" : String.Empty )}" );
             if( ClosedStores.Any() ) {
-                text.AppendLine( $"Closed: { string.Join( ",", ClosedStores ) }" );
+                text.AppendLine( $"Закрылись: { string.Join( ",", ClosedStores ) }" );
             }
 
             var totalNew = TotalAfter - TotalBefore;
             var soldOutNew = SoldOutAfter - SoldOutBefore;
             
-            text.AppendLine( $"Total: {TotalAfter}, new: { totalNew }, soldout total: { SoldOutAfter }, soldout new: { soldOutNew }" );
-            text.AppendLine( $"Number of new versus sold out: { totalNew - soldOutNew }" );
-            text.AppendLine( $"Suitable for disable: 'Неуспел реализовать'" );
+            text.AppendLine( $"Всего: {TotalAfter}, новых: { totalNew }, всего распроданных: { SoldOutAfter }, распродали: { soldOutNew }" );
+            text.AppendLine( $"Разница: { totalNew - soldOutNew }" );
+            text.AppendLine( $"Подходящих для пометки 'soldout': 'Неуспел реализовать'" );
             if( WorkErrors > 0 ) {
-                text.AppendLine( $"The number of errors during work: {WorkErrors}" );
+                text.AppendLine( $"Количество ошибок во время работы: {WorkErrors}" );
             }
 
             var t = TimeSpan.FromMilliseconds( Time );
-            var time = $"{t.Hours:D2}h:{t.Minutes:D2}m:{t.Seconds:D2}s:{t.Milliseconds:D3}ms";
-            text.AppendLine( $"Time: {time}" );
+            var time = $"{t.Hours:D2}ч:{t.Minutes:D2}м:{t.Seconds:D2}с:{t.Milliseconds:D3}мс";
+            text.AppendLine( $"Общее время работы: {time}" );
             
             return text.ToString();
         }
