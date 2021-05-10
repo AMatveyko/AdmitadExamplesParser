@@ -27,6 +27,15 @@ namespace TheStore.Api.Core.Controllers
         }
 
         [ HttpGet ]
+        [ Route( "FillBrandId" ) ]
+        public IActionResult FillBrandId( string clearlyName, bool clean = true )
+        {
+            var context = new FillBrandIdContext( clearlyName );
+            var worker = new BrandWorker( _settings );
+            return BackgroundWorks.AddToQueue( worker.FillBrandId, context, QueuePriority.Low, clean );
+        }
+        
+        [ HttpGet ]
         [ Route( "ShowWorks" ) ]
         public IActionResult ShowWorks() => _works.ShowAllWorks();
 
