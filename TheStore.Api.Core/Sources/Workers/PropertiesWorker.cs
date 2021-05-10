@@ -12,8 +12,8 @@ namespace TheStore.Api.Core.Sources.Workers
     internal sealed class PropertiesWorker : BaseLinkWorker
     {
         public PropertiesWorker(
-            ElasticSearchClientSettings settings )
-            : base( settings ) { }
+            ElasticSearchClientSettings settings, BackgroundWorks works )
+            : base( settings, works ) { }
 
         public void LinkProperties( LinkPropertiesContext context )
         {

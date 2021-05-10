@@ -1,10 +1,11 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
-namespace ApiClient
+namespace ApiClient.Responces
 {
     public class Context
     {
@@ -26,5 +27,7 @@ namespace ApiClient
         public long Time { get; set; }
         [ JsonProperty( "messages" ) ]
         public List<string> Messages { get; set; }
+        [ JsonProperty( "StartDate" ) ]
+        public DateTime StartDate { get; set; }
     }
 }

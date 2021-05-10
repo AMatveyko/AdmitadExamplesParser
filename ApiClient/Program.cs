@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 
 using Admitad.Converters;
 
 using AdmitadCommon.Entities;
+
+using ApiClient.Responces;
 
 using Messenger;
 
@@ -16,7 +17,7 @@ using NLog;
 
 namespace ApiClient
 {
-    class Program
+    static class Program
     {
         
         private static readonly Logger IndexLogger = LogManager.GetLogger( "IndexLogger" );
@@ -32,7 +33,7 @@ namespace ApiClient
 
         static void Main( string[] args )
         {
-            
+
             var statBefore = ApiClient.GetTotalStatistics();
             var report = new Report {
                 TotalBefore = statBefore.Products,
@@ -54,9 +55,11 @@ namespace ApiClient
             report.IsError = _lastResult.IsError || _lastResult.Contexts.Any( c => c.IsError );
 
 
-            var statAfter = ApiClient.GetTotalStatistics();
+            var statAfter = ApiClient.GetTotalStatistics( _lastResult.StartDate );
+
             report.TotalAfter = statAfter.Products;
             report.SoldOutAfter = statAfter.SoldOut;
+            report.ProductsForDisable = statAfter.CountForSoldOut;
             
             var shopStats = ApiClient.GetShopStatistics();
             StatisticsLogger.Info( JsonConvert.SerializeObject( shopStats ) );

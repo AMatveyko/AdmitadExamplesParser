@@ -28,8 +28,8 @@ namespace TheStore.Api.Core.Sources.Workers
         private readonly ProcessorSettings _settings;
         private readonly ParallelBackgroundContext _context;
 
-        public IndexWorker( ProcessorSettings settings, ParallelBackgroundContext context )
-            : base( settings.ElasticSearchClientSettings )
+        public IndexWorker( ProcessorSettings settings, ParallelBackgroundContext context, BackgroundWorks works )
+            : base( settings.ElasticSearchClientSettings, works )
         {
             _settings = settings;
             _context = context;
@@ -115,7 +115,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 fileInfo.FilePath,
                 fileInfo.NameLatin );
             _context.AddContext( processShopContext );
-            BackgroundWorks.AddToQueue( UpdateShop, processShopContext, QueuePriority.Medium, false );
+            Works.AddToQueue( UpdateShop, processShopContext, QueuePriority.Medium, false );
         }
 
         private void UpdateShop( ProcessShopContext context )
@@ -136,36 +136,36 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkTagsContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, Works );
             
-            BackgroundWorks.AddToQueue( worker.LinkTags, linkContext, QueuePriority.Medium, false );
+            Works.AddToQueue( worker.LinkTags, linkContext, QueuePriority.Medium, false );
         }
         
         private void LinkCategories()
         {
             var linkContext = new LinkCategoriesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings );
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, Works );
             
-            BackgroundWorks.AddToQueue( worker.LinkCategories, linkContext, QueuePriority.Medium, false );
+            Works.AddToQueue( worker.LinkCategories, linkContext, QueuePriority.Medium, false );
         }
 
         private void UnlinkProperties()
         {
             var linkContext = new UnlinkPropertiesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings );
+            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works );
             
-            BackgroundWorks.AddToQueue( worker.UnlinkProperties, linkContext, QueuePriority.Medium, false );
+            Works.AddToQueue( worker.UnlinkProperties, linkContext, QueuePriority.Medium, false );
         }
         
         private void LinkProperties()
         {
             var linkContext = new LinkPropertiesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings );
+            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works );
             
-            BackgroundWorks.AddToQueue( worker.LinkProperties, linkContext, QueuePriority.Medium, false );
+            Works.AddToQueue( worker.LinkProperties, linkContext, QueuePriority.Medium, false );
         }
 
         private DownloadInfo DoDownloadIfNeed( IndexShopContext context, XmlFileInfo xmlInfo )

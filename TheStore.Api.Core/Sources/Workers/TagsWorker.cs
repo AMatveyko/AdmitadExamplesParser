@@ -13,8 +13,8 @@ namespace TheStore.Api.Core.Sources.Workers
     internal sealed class TagsWorker : BaseLinkWorker
     {
 
-        public TagsWorker( ElasticSearchClientSettings settings ) 
-            :base( settings ) { }
+        public TagsWorker( ElasticSearchClientSettings settings, BackgroundWorks works ) 
+            :base( settings, works ) { }
 
         public void RelinkTag( RelinkTagContext context )
         {

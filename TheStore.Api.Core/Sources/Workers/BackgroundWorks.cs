@@ -17,7 +17,7 @@ using NLog;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
-    internal static class BackgroundWorks
+    public sealed class BackgroundWorks
     {
 
         private static readonly Logger Logger = LogManager.GetLogger( "ErrorLogger" );
@@ -28,7 +28,11 @@ namespace TheStore.Api.Core.Sources.Workers
         private static bool _parallelWorkInProgress;
         private static readonly object Locker = new ();
 
-        public static IActionResult ShowAllWorks()
+        private readonly PriorityQueue _queue;
+
+        public BackgroundWorks( PriorityQueue queue ) => _queue = queue;
+
+        public IActionResult ShowAllWorks()
         {
             var result = new QueueStatus();
             var singleContexts = Results.Values.Where( c => c is ParallelBackgroundContext == false ).ToList();
@@ -54,7 +58,7 @@ namespace TheStore.Api.Core.Sources.Workers
             };
         }
         
-        public static IActionResult AddToQueue< T >(
+        public IActionResult AddToQueue< T >(
             Action<T> action,
             T context,
             QueuePriority priority,
@@ -80,22 +84,22 @@ namespace TheStore.Api.Core.Sources.Workers
             return new JsonResult( result );
         }
 
-        private static void AddWork<T>( Action<T> action, T context, QueuePriority priority ) 
+        private void AddWork<T>( Action<T> action, T context, QueuePriority priority ) 
             where T : BackgroundBaseContext {
             context.Prepare();
             Results[ context.Id ] = context;
-            PriorityQueue.Enqueue( new BackgroundWork( () => action( context ), context.Id ), priority );
+            _queue.Enqueue( new BackgroundWork( () => action( context ), context.Id ), priority );
         }
         
-        private static void StartWorkIfNeed()
+        private void StartWorkIfNeed()
         {
             lock( Locker ) {
                 if( _workInProgress == false ) {
                     _workInProgress = true;
                     
                     var thread = new Thread( () => DoWork(
-                        PriorityQueue.Dequeue,
-                        PriorityQueue.Any,
+                        _queue.Dequeue,
+                        _queue.Any,
                         () => _workInProgress = false ) );
                     thread.Start();
                 }
@@ -104,8 +108,8 @@ namespace TheStore.Api.Core.Sources.Workers
                     _parallelWorkInProgress = true;
                     
                     var thread = new Thread( () => DoWork(
-                        PriorityQueue.ParallelDequeue,
-                        PriorityQueue.HasParallel,
+                        _queue.ParallelDequeue,
+                        _queue.HasParallel,
                         () => _parallelWorkInProgress = false ) );
                     thread.Start();
                 }

@@ -18,15 +18,17 @@ namespace TheStore.Api.Core.Controllers
     {
 
         private readonly ProcessorSettings _settings;
+        private readonly BackgroundWorks _works;
         
-        public IndexController( ProcessorSettings settings )
+        public IndexController( ProcessorSettings settings, BackgroundWorks works )
         {
+            _works = works;
             _settings = settings;
         }
 
         [ HttpGet ]
         [ Route( "ShowWorks" ) ]
-        public IActionResult ShowWorks() => BackgroundWorks.ShowAllWorks();
+        public IActionResult ShowWorks() => _works.ShowAllWorks();
 
         [ HttpGet ]
         [ Route( "GetStatistics" ) ]
@@ -47,8 +49,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult IndexShop( int id, bool downloadFresh = false, bool clean = true )
         {
             var context = new IndexShopContext( id, downloadFresh );
-            var worker = new IndexWorker( _settings, context );
-            return BackgroundWorks.AddToQueue( worker.Index, context, QueuePriority.Parallel, clean );
+            var worker = new IndexWorker( _settings, context, _works );
+            return _works.AddToQueue( worker.Index, context, QueuePriority.Parallel, clean );
         }
 
         [ HttpGet ]
@@ -56,8 +58,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult IndexAllShops( bool clean = true )
         {
             var context = new IndexAllShopsContext();
-            var worker = new IndexWorker( _settings, context );
-            return BackgroundWorks.AddToQueue( worker.IndexAll, context, QueuePriority.Parallel, clean );
+            var worker = new IndexWorker( _settings, context, _works );
+            return _works.AddToQueue( worker.IndexAll, context, QueuePriority.Parallel, clean );
         }
         
         [ HttpGet ]
@@ -65,8 +67,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult RelinkTag( int id, bool clean = true )
         {
             var context = new RelinkTagContext( id.ToString() );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings );
-            return BackgroundWorks.AddToQueue( worker.RelinkTag, context, QueuePriority.Low, clean );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, _works );
+            return _works.AddToQueue( worker.RelinkTag, context, QueuePriority.Low, clean );
         }
         
         [ HttpGet ]
@@ -74,8 +76,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult RelinkCategory( string id, bool clean = true )
         {
             var context = new RelinkCategoryContext( id );
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings );
-            return BackgroundWorks.AddToQueue( worker.RelinkCategory, context, QueuePriority.Low, clean );
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, _works );
+            return _works.AddToQueue( worker.RelinkCategory, context, QueuePriority.Low, clean );
         }
 
         [ HttpGet ]
@@ -83,8 +85,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult RelinkAllCategories( bool clean = true )
         {
             var context = new RelinkAllCategories();
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings );
-            return BackgroundWorks.AddToQueue( worker.RelinkAllCategories, context, QueuePriority.Parallel, clean );
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, _works );
+            return _works.AddToQueue( worker.RelinkAllCategories, context, QueuePriority.Parallel, clean );
         }
 
         [ HttpGet ]
@@ -92,8 +94,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult LinkTags( bool clean = false )
         {
             var context = new LinkTagsContext( "" );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings );
-            return BackgroundWorks.AddToQueue( worker.LinkTags, context, QueuePriority.Low, clean );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, _works );
+            return _works.AddToQueue( worker.LinkTags, context, QueuePriority.Low, clean );
         }
 
     }

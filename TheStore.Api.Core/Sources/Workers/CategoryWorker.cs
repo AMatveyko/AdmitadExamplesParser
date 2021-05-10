@@ -13,8 +13,8 @@ namespace TheStore.Api.Core.Sources.Workers
     internal sealed class CategoryWorker : BaseLinkWorker
     {
 
-        public CategoryWorker( ElasticSearchClientSettings settings ) 
-            :base( settings ) {}
+        public CategoryWorker( ElasticSearchClientSettings settings, BackgroundWorks works ) 
+            :base( settings, works ) { }
 
         public void RelinkCategory( RelinkCategoryContext context ) {
             
@@ -37,7 +37,7 @@ namespace TheStore.Api.Core.Sources.Workers
             foreach( var category in categories ) {
                 var singleContext = new RelinkCategoryContext( category.Id );
                 context.AddContext( singleContext );
-                BackgroundWorks.AddToQueue( RelinkCategory, singleContext, QueuePriority.Low, true );
+                Works.AddToQueue( RelinkCategory, singleContext, QueuePriority.Low, true );
                 context.AddMessage( $"Добавили перепривязку для категории { category.Id }" );
             }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
-namespace ApiClient
+namespace ApiClient.Responces
 {
     public class TopContext : Context
     {

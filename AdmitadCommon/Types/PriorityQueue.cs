@@ -8,7 +8,7 @@ using AdmitadCommon.Entities;
 
 namespace AdmitadCommon.Types
 {
-    public static class PriorityQueue
+    public sealed class PriorityQueue
     {
         private static Dictionary<QueuePriority, Queue<BackgroundWork>> _queues = new() {
             {QueuePriority.Low, new Queue<BackgroundWork>()},
@@ -18,10 +18,10 @@ namespace AdmitadCommon.Types
 
         private static Queue<BackgroundWork> _parallelQueue = new ();
         
-        public static bool Any() => _queues.Any( d => d.Value.Any() );
-        public static bool HasParallel() => _parallelQueue.Any();
+        public bool Any() => _queues.Any( d => d.Value.Any() );
+        public bool HasParallel() => _parallelQueue.Any();
 
-        public static void Enqueue( BackgroundWork work, QueuePriority priority ) {
+        public void Enqueue( BackgroundWork work, QueuePriority priority ) {
             if( priority == QueuePriority.Parallel ) {
                 _parallelQueue.Enqueue( work );
                 return;
@@ -29,9 +29,9 @@ namespace AdmitadCommon.Types
             _queues[ priority ].Enqueue( work );
         }
 
-        public static BackgroundWork ParallelDequeue() => _parallelQueue.Dequeue();
+        public BackgroundWork ParallelDequeue() => _parallelQueue.Dequeue();
 
-        public static BackgroundWork Dequeue()
+        public BackgroundWork Dequeue()
         {
             foreach( var queue in _queues.OrderBy( q => q.Key ).Select( q => q.Value) ) {
                 if( queue.Any() ) {

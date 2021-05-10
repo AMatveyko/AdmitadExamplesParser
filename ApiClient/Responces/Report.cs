@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ApiClient
+namespace ApiClient.Responces
 {
     internal sealed class Report
     {
@@ -35,7 +35,7 @@ namespace ApiClient
             
             text.AppendLine( $"Всего: {TotalAfter}, новых: { totalNew }, всего распроданных: { SoldOutAfter }, распродали: { soldOutNew }" );
             text.AppendLine( $"Разница: { totalNew - soldOutNew }" );
-            text.AppendLine( $"Подходящих для пометки 'soldout': 'Неуспел реализовать'" );
+            text.AppendLine( $"Подходящих для пометки 'soldout': { ProductsForDisable }" );
             if( WorkErrors > 0 ) {
                 text.AppendLine( $"Количество ошибок во время работы: {WorkErrors}" );
             }

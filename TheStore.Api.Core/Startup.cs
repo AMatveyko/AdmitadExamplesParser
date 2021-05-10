@@ -7,6 +7,7 @@ using Admitad.Converters;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
+using AdmitadCommon.Types;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -16,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+
+using TheStore.Api.Core.Sources.Workers;
 
 namespace TheStore.Api.Core
 {
@@ -43,7 +46,9 @@ namespace TheStore.Api.Core
                             Version = "v1"
                         } );
                 } );
-            services.AddTransient<ProcessorSettings>( provider => SettingsBuilder.GetSettings() );
+            services.AddTransient( provider => SettingsBuilder.GetSettings() );
+            services.AddSingleton<PriorityQueue>();
+            services.AddSingleton<BackgroundWorks>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

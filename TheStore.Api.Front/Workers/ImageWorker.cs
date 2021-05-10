@@ -1,7 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -30,7 +29,8 @@ namespace TheStore.Api.Front.Workers
         private static readonly Logger Logger = LogManager.GetLogger( "DownloadError" );
 
         private const string CacheDirectoryTemplate = "cache/{0}/{1}/{2}.jpg";
-        private static readonly Dictionary<string, string> HashCache = new Dictionary<string, string>();
+        //private static readonly ConcurrentDictionary<string, string> HashCache = new ConcurrentDictionary<string, string>();
+        //private static readonly ConcurrentDictionary<string, bool> FsCache = new ConcurrentDictionary<string, bool>();
         
         public static async Task<IActionResult> Get( string rawUrl )
         {
@@ -80,9 +80,9 @@ namespace TheStore.Api.Front.Workers
         private static async Task<byte[]> DownloadImage( string url )
         {
             try {
-                return await DoDownloadImage( url, false );
+                return await DoDownloadImage( url, true );
             }
-            catch( Exception e ) {
+            catch( Exception e ) when ( e.Message.Contains( "(Not Found)" ) == false ) {
                 Logger.Error( e, $"{url} first attempt" );
                 return await DoDownloadImage( url, true );
             }
@@ -145,12 +145,8 @@ namespace TheStore.Api.Front.Workers
         
         private static string GetHash( string url )
         {
-            if( HashCache.ContainsKey( url ) ) {
-                return HashCache[ url ];
-            }
-
-            HashCache[ url ] = CreateMD5( url );
-            return HashCache[ url ];
+            //return HashCache.GetOrAdd( url, CreateMD5 );
+            return CreateMD5( url );
         }
         
         private static string CreateMD5(string input)
@@ -158,7 +154,7 @@ namespace TheStore.Api.Front.Workers
             // Use input string to calculate MD5 hash
             using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
             {
-                var inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+                var inputBytes = Encoding.ASCII.GetBytes(input);
                 var hashBytes = md5.ComputeHash(inputBytes);
 
                 // Convert the byte array to hexadecimal string

@@ -15,12 +15,16 @@ using Elasticsearch.Net;
 
 using Nest;
 
+using NLog;
+
 namespace Admitad.Converters.Workers
 {
     public sealed class ElasticSearchClient< T > : BaseComponent, IElasticClient<T>
         where T : class, IIndexedEntities
     {
 
+        private static readonly Logger Logger = LogManager.GetLogger( "ErrorLogger" );
+        
         private const ComponentType Type = ComponentType.ElasticSearch;
         private ElasticClient _client;
         private bool _withStatistics;
@@ -37,7 +41,7 @@ namespace Admitad.Converters.Workers
             : base( ComponentType.ElasticSearch, context )
         {
             var clientSettings = new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
-                .Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
+                //.Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
                 .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
             _withStatistics = withStatics;
@@ -488,6 +492,7 @@ namespace Admitad.Converters.Workers
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {
                     _context.AddMessage( "Update error!", true );
+                    Logger.Error( result.DebugInformation );
                 }
                 
             }
