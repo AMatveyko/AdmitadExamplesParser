@@ -22,7 +22,6 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private static readonly Logger Logger = LogManager.GetLogger( "ErrorLogger" );
         
-        private static BackgroundBaseContext _work;
         private static readonly ConcurrentDictionary<string, BackgroundBaseContext> Results = new ();
         private static bool _workInProgress;
         private static bool _parallelWorkInProgress;
@@ -144,18 +143,5 @@ namespace TheStore.Api.Core.Sources.Workers
             }
         }
         
-        private static IActionResult NotFinishedResult()
-        {
-            return GetResult( $"Фоновая задача ещё не завершилась, выполненно {_work.PercentFinished}%" );
-        }
-        
-        private static IActionResult GetResult( string text = null )
-        {
-            var context = _work ?? new BackgroundBaseContext("1", "empty" );
-            if( text != null ) {
-                context.Content = text;
-            }
-            return new JsonResult( context );
-        }
     }
 }

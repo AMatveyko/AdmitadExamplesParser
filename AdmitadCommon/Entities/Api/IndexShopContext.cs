@@ -6,14 +6,14 @@ namespace AdmitadCommon.Entities.Api
 {
     public sealed class IndexShopContext : ParallelBackgroundContext
     {
-        public IndexShopContext( int id, bool downloadFresh ) : base( $"{nameof(IndexShopContext)}:{id}", id.ToString() )
+        public IndexShopContext( int shopId, bool downloadFresh ) : base( $"{nameof(IndexShopContext)}:{shopId}", shopId.ToString() )
         {
-            Id = id;
+            ShopId = shopId;
             DownloadFresh = downloadFresh;
         }
         
-        public int Id { get; }
-        public string Name { get; set; }
+        public int ShopId { get; }
+        public string ShopName { get; set; }
         [ JsonIgnore ]
         public bool DownloadFresh { get; }
     }

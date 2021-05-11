@@ -51,7 +51,7 @@ namespace Admitad.Converters
                 var option = _options.First( o => o.Option == name );
                 return option.Value;
             }
-            catch( Exception e ) {
+            catch( Exception ) {
                 throw new ArgumentOutOfRangeException( $"Unknown option {name}" );
             }
         }

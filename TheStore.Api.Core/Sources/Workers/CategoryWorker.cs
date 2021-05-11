@@ -19,7 +19,7 @@ namespace TheStore.Api.Core.Sources.Workers
         public void RelinkCategory( RelinkCategoryContext context ) {
             
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == context.CategoryId );
-            context.Name = category.NameH1;
+            context.CategoryName = category.NameH1;
             var linker = CreateLinker( context );
             linker.RelinkCategory( category );
         }

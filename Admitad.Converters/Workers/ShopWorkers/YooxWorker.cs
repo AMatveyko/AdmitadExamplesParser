@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.Linq;
 
 using AdmitadCommon.Entities;
@@ -28,7 +29,8 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 var gender = genderParam.Value switch {
                     "женщина" => Gender.Woman,
                     "мужчина" => Gender.Man,
-                    "none" => Gender.Unisex
+                    "none" => Gender.Unisex,
+                    _ => throw new ArgumentOutOfRangeException()
                 };
                 if( offer.Age == Age.Adult ) {
                     offer.Gender = gender;

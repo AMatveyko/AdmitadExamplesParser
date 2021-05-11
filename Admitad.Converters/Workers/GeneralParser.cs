@@ -48,30 +48,26 @@ namespace Admitad.Converters.Workers
         private static readonly Regex EndCategory = new( @"<\/categories>", RegexOptions.Compiled );
         
         private readonly ShopData _shopData;
-        private bool _startParsing;
-        private bool _findShopData;
         private const int FindShopDataDeep = 10;
 
         private int _brokenOffers = 0;
         private List<string> _brokenLines = new();
 
 
-        private StringBuilder _offerBuffer = new();
+        private readonly StringBuilder _offerBuffer = new();
         private StringBuilder _categoryBuffer = new();
         private List<string> _offerLines = new();
 
         private readonly string _filePath;
         private readonly bool _enableExtendedStatistic;
-        private string _shopId;
 
-        private DateTime _updateTime;
+        private readonly DateTime _updateTime;
         private readonly string _shopNameLatin;
 
         private bool _categoryFilled = false;
-        
-        
-        public List<BrokenLine> BrokenLinesList => new();
-        public static int Count { get; private set; }
+
+        private List<BrokenLine> BrokenLinesList => new();
+        private static int Count { get; set; }
 
         public GeneralParser(
             string filePath,
@@ -262,11 +258,7 @@ namespace Admitad.Converters.Workers
                 line => {
                     lineNumber++;
                     var m = StartOffer.Match( line );
-                    if( m.Success ) {
-                        return true;
-                    }
-
-                    return false;
+                    return m.Success;
                 });
             
             ProcessFile( filePath, func );

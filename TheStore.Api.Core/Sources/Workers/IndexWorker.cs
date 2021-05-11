@@ -41,8 +41,8 @@ namespace TheStore.Api.Core.Sources.Workers
                 throw new ArgumentException( "Разные контексты!" );
             }
             
-            var xmlInfo = DbHelper.GetShop( context.Id );
-            context.Name = xmlInfo.Name;
+            var xmlInfo = DbHelper.GetShop( context.ShopId );
+            context.ShopName = xmlInfo.Name;
 
             var file = DoDownloadIfNeed( context, xmlInfo );
             context.SetProgress( 30, 100 );
@@ -73,6 +73,7 @@ namespace TheStore.Api.Core.Sources.Workers
             DoLink();
             context.SetProgress( 100, 100 );
             Wait();
+            DbHelper.WriteUnknownBrands();
             LogResult();
         }
 

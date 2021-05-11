@@ -1,14 +1,12 @@
 ﻿// a.snegovoy@gmail.com
 
-using AdmitadCommon.Entities;
-
-namespace TheStore.Api.Core.Sources.Entity
+namespace AdmitadCommon.Entities.Api
 {
     public class FillBrandIdContext : BackgroundBaseContext
     {
         public FillBrandIdContext(
             string clearlyName )
-            : base( $"{nameof(FillBrandIdContext)}:{clearlyName}" )
+            : base( GetCollectedId( nameof(FillBrandIdContext), clearlyName ), "FillBrandId" )
         {
             ClearlyName = clearlyName;
         }

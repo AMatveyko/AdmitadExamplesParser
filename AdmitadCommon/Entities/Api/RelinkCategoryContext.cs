@@ -10,6 +10,6 @@ namespace AdmitadCommon.Entities.Api
             CategoryId = categoryId;
         }
         public string CategoryId { get; }
-        public string Name { get; set; }
+        public string CategoryName { get; set; }
     }
 }

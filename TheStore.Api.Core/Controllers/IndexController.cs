@@ -31,8 +31,8 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult FillBrandId( string clearlyName, bool clean = true )
         {
             var context = new FillBrandIdContext( clearlyName );
-            var worker = new BrandWorker( _settings );
-            return BackgroundWorks.AddToQueue( worker.FillBrandId, context, QueuePriority.Low, clean );
+            var worker = new BrandWorker( _settings, _works );
+            return _works.AddToQueue( worker.FillBrandId, context, QueuePriority.Low, clean );
         }
         
         [ HttpGet ]

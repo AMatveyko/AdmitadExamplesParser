@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 
 using AdmitadCommon.Extensions;
 
@@ -48,18 +49,20 @@ namespace ApiClient.Requests
             if( _parameters != null &&
                 _parameters.Any() ) {
                 var @params = 
-                    string.Join( "&", _parameters.Select( p => $"{p.Item1}={p.Item2}" ) );
-                url += $"?{@params}";
+                    string.Join( 
+                        "&", 
+                        _parameters.Select( p => $"{p.Item1}={ HttpUtility.UrlEncode(  p.Item2 ) }" ) );
+                url += $"?{ @params }";
             }
 
-            return DoExecute<T>( new Uri( url ) );
+            return DoExecute( new Uri( url ) );
         }
         
-        private static T DoExecute<T>( Uri uri )
+        private static T DoExecute( Uri uri )
         {
             try {
                 var response = GetResponse( uri );
-                return GetContent<T>( response.Content );
+                return GetContent( response.Content );
             }
             catch( Exception e ) {
                 Logger.Error( e );
@@ -67,7 +70,7 @@ namespace ApiClient.Requests
             }
         }
         
-        private static T GetContent<T>( string content ) =>
+        private static T GetContent( string content ) =>
             JsonConvert.DeserializeObject<T>( content );
         
         private static IRestResponse GetResponse( Uri uri )

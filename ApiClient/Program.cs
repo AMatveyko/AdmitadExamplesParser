@@ -34,6 +34,9 @@ namespace ApiClient
         static void Main( string[] args )
         {
 
+            
+            var statTest = ApiClient.GetTotalStatistics( DateTime.Now );
+            
             var statBefore = ApiClient.GetTotalStatistics();
             var report = new Report {
                 TotalBefore = statBefore.Products,

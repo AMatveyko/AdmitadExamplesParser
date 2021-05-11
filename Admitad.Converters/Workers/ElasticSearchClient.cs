@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
+using AdmitadCommon;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Entities.Responses;
@@ -74,8 +75,6 @@ namespace Admitad.Converters.Workers
             IEnumerable<T> entities )
         {
             var entitiesList = entities.ToList();
-            var valid = 0;
-            var invalid = 0;
             var count = entitiesList.Count;
             var frameSize = _frameSize;
             AddStatisticLine( $"Index {entitiesList.Count}" );
