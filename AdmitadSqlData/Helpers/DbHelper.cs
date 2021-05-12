@@ -35,7 +35,6 @@ namespace AdmitadSqlData.Helpers
         public static List<SettingsOption> GetSettingsOptions() =>
             _theStoreRepository.GetSettingsOptions().Select( Convert ).ToList();
 
-
         public static List<ShopStatistics> GetShopStatisticsList()
         {
             var raw = _theStoreRepository.GetShopStatistics();

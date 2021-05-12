@@ -10,8 +10,9 @@ using AdmitadSqlData.Entities;
 
 namespace AdmitadSqlData.Repositories
 {
-    internal class TheStoreRepository : BaseRepository {
-
+    internal class TheStoreRepository : BaseRepository
+    {
+        #region Properties
         public List<ColorDb> GetColors()
         {
             using var db = GetDb();
@@ -29,7 +30,12 @@ namespace AdmitadSqlData.Repositories
             using var db = GetDb();
             return db.Sizes.ToList();
         }
+        #endregion
 
+
+
+
+        #region Brands
         public List<BrandDb> GetBrands()
         {
             using var db = GetDb();
@@ -43,25 +49,33 @@ namespace AdmitadSqlData.Repositories
             db.SaveChanges();
         }
 
-        public void AddUnknownBrands( IEnumerable<UnknownBrands> brands )
+        public void AddUnknownBrands(
+            IEnumerable<UnknownBrands> brands )
         {
             using var db = GetDb();
             db.UnknownBrands.AttachRange( brands );
             db.SaveChanges();
         }
+        #endregion
 
+
+
+
+        #region Statistics
         public List<OptionDb> GetSettingsOptions()
         {
             using var db = GetDb();
             return db.SettingsOptions.ToList();
         }
 
-        public void UpdateProductsByCategory( Category category, int before, int after )
+        public void UpdateProductsByCategory(
+            Category category,
+            int before,
+            int after )
         {
             using var db = GetDb();
             int.TryParse( category.Id, out var id );
-            var entity = db.ProductsByCategories
-                    .FirstOrDefault( p => p.CategoryId == id );
+            var entity = db.ProductsByCategories.FirstOrDefault( p => p.CategoryId == id );
             if( entity == null ) {
                 entity = new ProductsByCategory {
                     CategoryId = id,
@@ -73,9 +87,8 @@ namespace AdmitadSqlData.Repositories
             entity.ProductsBeforeLinking = before;
             entity.ProductsAfterLinking = after;
             entity.UpdateDate = DateTime.Now;
-            
+
             db.SaveChanges();
-            
         }
 
         public List<ShopStatisticsDb> GetShopStatistics()
@@ -83,52 +96,54 @@ namespace AdmitadSqlData.Repositories
             var db = GetDb();
             return db.ShopStatistics.ToList();
         }
-        
-        public ShopStatisticsDb GetShopStatistics( int shopId )
+
+        public ShopStatisticsDb GetShopStatistics(
+            int shopId )
         {
             var db = GetDb();
-            return db.ShopStatistics.FirstOrDefault( s => s.ShopId == shopId )
-                   ?? new ShopStatisticsDb { ShopId = shopId};
+            return db.ShopStatistics.FirstOrDefault( s => s.ShopId == shopId ) ?? new ShopStatisticsDb {
+                ShopId = shopId
+            };
         }
 
-        public void UpdateShopStatistics( ShopStatistics statistics, DateTime updateDate )
+        public void UpdateShopStatistics(
+            ShopStatistics statistics,
+            DateTime updateDate )
         {
             var db = GetDb();
             var statisticsDb = db.ShopStatistics.FirstOrDefault( s => s.ShopId == statistics.ShopId );
             if( statisticsDb == null ) {
-                statisticsDb = new ShopStatisticsDb { ShopId = statistics.ShopId };
+                statisticsDb = new ShopStatisticsDb {
+                    ShopId = statistics.ShopId
+                };
                 db.ShopStatistics.Add( statisticsDb );
             }
 
             if( statistics.Error != null &&
-                statistics.Error != statisticsDb.Error ) {
+                statistics.Error != statisticsDb.Error )
                 statisticsDb.Error = statistics.Error;
-            }
-            
+
             if( statistics.SoldoutAfter != null &&
-                statistics.SoldoutAfter != statisticsDb.SoldoutAfter ) {
+                statistics.SoldoutAfter != statisticsDb.SoldoutAfter )
                 statisticsDb.SoldoutAfter = statistics.SoldoutAfter.Value;
-            }
-            
+
             if( statistics.SoldoutBefore != null &&
-                statistics.SoldoutBefore != statisticsDb.SoldoutBefore ) {
+                statistics.SoldoutBefore != statisticsDb.SoldoutBefore )
                 statisticsDb.SoldoutBefore = statistics.SoldoutBefore.Value;
-            }
-            
+
             if( statistics.TotalAfter != null &&
-                statistics.TotalAfter != statisticsDb.TotalAfter ) {
+                statistics.TotalAfter != statisticsDb.TotalAfter )
                 statisticsDb.TotalAfter = statistics.TotalAfter.Value;
-            }
-            
+
             if( statistics.TotalBefore != null &&
-                statistics.TotalBefore != statisticsDb.TotalBefore ) {
+                statistics.TotalBefore != statisticsDb.TotalBefore )
                 statisticsDb.TotalBefore = statistics.TotalBefore.Value;
-            }
 
             statisticsDb.UpdateDate = updateDate;
 
             db.SaveChanges();
         }
-        
+
+        #endregion"
     }
 }

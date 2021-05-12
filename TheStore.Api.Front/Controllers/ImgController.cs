@@ -10,7 +10,7 @@ namespace TheStoreApi.Controllers
 {
     [ ApiController ]
     [ Route( "[controller]" ) ]
-    public class Img : ControllerBase
+    public class ImgController : ControllerBase
     {
 
         [ HttpGet ]

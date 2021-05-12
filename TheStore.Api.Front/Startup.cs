@@ -14,6 +14,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
+using TheStore.Api.Front.Data.Repositories;
+
 namespace TheStore.Api.Front
 {
     public class Startup
@@ -40,6 +42,9 @@ namespace TheStore.Api.Front
                             Version = "v1"
                         } );
                 } );
+            services.AddTransient( r => 
+                new TheStoreRepository( "server=elastic.matveyko.su;user=thestore;password=moonlike-mitts-0Concord;database=theStore;", "10.3.27" ) );
+                //new TheStoreRepository( "server=localhost;user=thestore;password=moonlike-mitts-0Concord;database=theStore;", "10.3.27" ) );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

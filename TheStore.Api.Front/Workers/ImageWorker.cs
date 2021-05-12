@@ -41,7 +41,7 @@ namespace TheStore.Api.Front.Workers
                 }
 
                 var image = await DownloadImage( url );
-                SaveImage( url, image );
+                Task.Run( () => SaveImage( url, image ) );
                 return GetResult( image );
             }
             catch( Exception e ) {

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -8,6 +8,10 @@
         <PackageReference Include="NLog" Version="4.7.9" />
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
     </ItemGroup>
 
     <ItemGroup>
