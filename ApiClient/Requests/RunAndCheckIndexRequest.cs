@@ -1,8 +1,9 @@
 ﻿// a.snegovoy@gmail.com
 
-using System.Collections.Generic;
-
 using ApiClient.Responces;
+
+using Web.Common.Entities;
+using Web.Common.Entities.Requests;
 
 namespace ApiClient.Requests
 {
@@ -11,8 +12,8 @@ namespace ApiClient.Requests
         private const string Controller = "Index";
         private const string MethodName = "IndexAllShops";
 
-        public RunAndCheckIndexRequest( bool clean = true )
-            : base( Controller, MethodName )
+        public RunAndCheckIndexRequest( RequestSettings settings, bool clean = true )
+            : base( Controller, MethodName, settings )
         {
             AddParam( nameof(clean), clean.ToString().ToLower() );
         }

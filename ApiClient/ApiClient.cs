@@ -7,18 +7,27 @@ using AdmitadCommon.Entities.Statistics;
 using ApiClient.Requests;
 using ApiClient.Responces;
 
+using Web.Common.Entities;
+
 namespace ApiClient
 {
-    internal static class ApiClient
+    internal class ApiClient
     {
-        public static TopContext RunAndCheckIndex() => new RunAndCheckIndexRequest().Execute();
 
-        public static TotalShopsStatistics GetShopStatistics() => new GetShopStatisticsRequest().Execute();
+        private readonly RequestSettings _settings;
 
-        public static TotalStatistics GetTotalStatistics( DateTime? start = null ) =>
+        public ApiClient(
+            RequestSettings settings ) =>
+            _settings = settings;
+        
+        public TopContext RunAndCheckIndex() => new RunAndCheckIndexRequest( _settings ).Execute();
+
+        public TotalShopsStatistics GetShopStatistics() => new GetShopStatisticsRequest( _settings ).Execute();
+
+        public TotalStatistics GetTotalStatistics( DateTime? start = null ) =>
             start != null
-                ? new GetTotalStatisticsRequest( start.Value ).Execute()
-                : new GetTotalStatisticsRequest().Execute();
+                ? new GetTotalStatisticsRequest( start.Value, _settings ).Execute()
+                : new GetTotalStatisticsRequest( _settings ).Execute();
 
     }
 }

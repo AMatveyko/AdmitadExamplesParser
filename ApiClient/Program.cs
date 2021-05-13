@@ -15,6 +15,8 @@ using Newtonsoft.Json;
 
 using NLog;
 
+using Web.Common.Entities;
+
 namespace ApiClient
 {
     static class Program
@@ -22,6 +24,7 @@ namespace ApiClient
         
         private static readonly Logger IndexLogger = LogManager.GetLogger( "IndexLogger" );
         private static readonly Logger StatisticsLogger = LogManager.GetLogger( "StatisticsLogger" );
+        private static readonly Logger ErrorLogger = LogManager.GetLogger( "ErrorLogger" );
 
         private static readonly Regex ShopPattern =
             new(@"Info: Всего (?<numberShops>\d+) c ошибками \d+ time \d+", RegexOptions.Compiled);
@@ -34,10 +37,10 @@ namespace ApiClient
         static void Main( string[] args )
         {
 
+
+            var apiClient = new ApiClient( new RequestSettings( "http://localhost:8080", ErrorLogger ) );
             
-            var statTest = ApiClient.GetTotalStatistics( DateTime.Now );
-            
-            var statBefore = ApiClient.GetTotalStatistics();
+            var statBefore = apiClient.GetTotalStatistics();
             var report = new Report {
                 TotalBefore = statBefore.Products,
                 SoldOutBefore = statBefore.SoldOut
@@ -47,7 +50,7 @@ namespace ApiClient
             while( _finish == false ) {
                 iterationCount++;
                 Console.Write( $"{iterationCount } " );
-                var response = ApiClient.RunAndCheckIndex();
+                var response = apiClient.RunAndCheckIndex();
                 _lastResult = response;
                 _finish = response.IsFinished || response.IsError;
                 Thread.Sleep( 30000 );
@@ -58,13 +61,13 @@ namespace ApiClient
             report.IsError = _lastResult.IsError || _lastResult.Contexts.Any( c => c.IsError );
 
 
-            var statAfter = ApiClient.GetTotalStatistics( _lastResult.StartDate );
+            var statAfter = apiClient.GetTotalStatistics( _lastResult.StartDate );
 
             report.TotalAfter = statAfter.Products;
             report.SoldOutAfter = statAfter.SoldOut;
             report.ProductsForDisable = statAfter.CountForSoldOut;
             
-            var shopStats = ApiClient.GetShopStatistics();
+            var shopStats = apiClient.GetShopStatistics();
             StatisticsLogger.Info( JsonConvert.SerializeObject( shopStats ) );
             
             report.TotalShops = shopStats.TotalEnabledShops;
@@ -98,13 +101,8 @@ namespace ApiClient
 
         private static void SendMessage( string message )
         {
-            var settings = SettingsBuilder.GetSettings();
-
-            var messengerSettings = new MessengerSettings();
-            foreach( var client in new IClientSettings[] { settings.TelegramSettings } ) {
-                messengerSettings.Clients.Add( client );
-            }
-            var messenger = new Messenger.Messenger( messengerSettings );
+            var settings = SettingsBuilder.GetMessengerSettings();
+            var messenger = new Messenger.Messenger( settings );
             messenger.Send( message );
         }
     }

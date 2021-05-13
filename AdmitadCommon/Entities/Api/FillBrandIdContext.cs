@@ -2,7 +2,7 @@
 
 namespace AdmitadCommon.Entities.Api
 {
-    public class FillBrandIdContext : BackgroundBaseContext
+    public sealed class FillBrandIdContext : BackgroundBaseContext
     {
         public FillBrandIdContext(
             string clearlyName )

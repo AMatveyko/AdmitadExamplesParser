@@ -88,7 +88,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagRelinkTest()
         {
-            TagRelinkTest( "902" );
+            TagRelinkTest( "3242" );
         }
 
         private void TagRelinkTest( string tagId )

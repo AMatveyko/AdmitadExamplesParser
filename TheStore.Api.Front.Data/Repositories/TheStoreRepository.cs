@@ -21,9 +21,19 @@ namespace TheStore.Api.Front.Data.Repositories
         
         public void UpdateCompareList( IEnumerable<CompareListingDb> compareList )
         {
+
+            var listFromDb =
+                _db.CompareListings.ToDictionary( l => l.Url, l => l );
+            
             foreach( var compare in compareList ) {
+
+                if( listFromDb.ContainsKey( compare.Url ) == false ) {
+                    _db.CompareListings.Add( compare );
+                    return;
+                }
+
+                var compareDb = listFromDb[ compare.Url ];
                 
-                var compareDb = _db.CompareListings.FirstOrDefault( c => c.Url == compare.Url );
                 if( compareDb == null ) {
                     compareDb = new CompareListingDb { Url = compare.Url, AddDate = DateTime.Now };
                     _db.CompareListings.Add( compareDb );

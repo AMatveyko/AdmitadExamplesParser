@@ -16,15 +16,13 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 
-using TheStore.Api.Front.Entity;
-
 namespace TheStore.Api.Front.Workers
 {
 
     public static class ImageWorker
     {
 
-        private static readonly ProxyInfo Proxy = new ProxyInfo( "http://193.47.45.60:8000", "U0acrR", "qHYQ0o" );
+        //private static readonly ProxyInfo Proxy = new ProxyInfo( "http://193.47.45.60:8000", "U0acrR", "qHYQ0o" );
         
         private static readonly Logger Logger = LogManager.GetLogger( "DownloadError" );
 
@@ -40,8 +38,8 @@ namespace TheStore.Api.Front.Workers
                     return GetResult( imageFromFs );
                 }
 
-                var image = await DownloadImage( url );
-                Task.Run( () => SaveImage( url, image ) );
+                var image = await DownloadAndSaveImage( url );
+                //Task.Run( () => SaveImage( url, image ) );
                 return GetResult( image );
             }
             catch( Exception e ) {
@@ -77,15 +75,27 @@ namespace TheStore.Api.Front.Workers
 
         #region Download
 
-        private static async Task<byte[]> DownloadImage( string url )
+        private static async Task<byte[]> DownloadAndSaveImage( string url )
         {
             try {
-                return await DoDownloadImage( url, true );
+                var result = await DoDownloadImage( url, true );
+                SaveImage( url, result );
+                return result;
             }
-            catch( Exception e ) when ( e.Message.Contains( "(Not Found)" ) == false ) {
+            catch( Exception e ) {
+                if( e.Message.Contains( "(Not Found)" ) ) {
+                    //Logger.Error( e, $"{url} NotFound" );
+                    return GetNotFound();
+                }
                 Logger.Error( e, $"{url} first attempt" );
                 return await DoDownloadImage( url, true );
             }
+        }
+
+        private static byte[] GetNotFound()
+        {
+            const string path = "i/nophoto.jpg";
+            return File.Exists( path ) ? File.ReadAllBytes( path ) : new byte[0];
         }
         
         private static async Task<byte[]> DoDownloadImage( string url, bool useProxy )
@@ -98,9 +108,7 @@ namespace TheStore.Api.Front.Workers
                     BypassProxyOnLocal = false,
                     UseDefaultCredentials = false,
                     
-                    Credentials = new NetworkCredential(
-                        userName: "U0acrR",
-                        password: "qHYQ0o" )
+                    Credentials = new NetworkCredential( userName: "U0acrR", password: "qHYQ0o" )
                 };
                 
                 var httpClientHandler = new HttpClientHandler
@@ -117,13 +125,16 @@ namespace TheStore.Api.Front.Workers
                 var imageBytes = await httpClient.GetByteArrayAsync( uri );
                 return ResizeImage( imageBytes );
             }
-            //return new FileContentResult( resizedImage, "image/jpeg" );
         }
         
         private static byte[] ResizeImage( byte[] imageByte )
         {
             var image = Image.Load( imageByte );
-            image.Mutate( x => x.Resize( 322, 450 ) );
+            var resizeOptions = new ResizeOptions {
+                Mode = ResizeMode.Crop,
+                Size = new Size( 322, 450 ),
+            };
+            image.Mutate( a => a.Resize( resizeOptions ) );
             using var ms = new MemoryStream();
             image.Save( ms, new JpegEncoder() );
             return ms.ToArray();
@@ -145,7 +156,6 @@ namespace TheStore.Api.Front.Workers
         
         private static string GetHash( string url )
         {
-            //return HashCache.GetOrAdd( url, CreateMD5 );
             return CreateMD5( url );
         }
         

@@ -16,6 +16,7 @@
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
       <ProjectReference Include="..\Messenger\Messenger.csproj" />
+      <ProjectReference Include="..\Web.Common\Web.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

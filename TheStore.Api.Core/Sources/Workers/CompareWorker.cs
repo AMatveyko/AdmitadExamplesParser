@@ -8,13 +8,15 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using AdmitadCommon.Entities.Api;
+
 using NLog;
 
+using TheStore.Api.Core.Sources.Entities;
 using TheStore.Api.Front.Data.Entities;
 using TheStore.Api.Front.Data.Repositories;
-using TheStore.Api.Front.Entity;
 
-namespace TheStore.Api.Front.Workers
+namespace TheStore.Api.Core.Sources.Workers
 {
     internal sealed class CompareWorker
     {
@@ -23,29 +25,34 @@ namespace TheStore.Api.Front.Workers
         private static readonly Logger LoggerInfo = LogManager.GetLogger( "DownloadPageInfo" );
         
         private readonly TheStoreRepository _repository;
+        private readonly BackgroundBaseContext _context;
 
-        private static Regex _countPattern = new Regex( @"<code>(?<products>(\d+))\|(?<shops>(\d+))?<\/code>", RegexOptions.Compiled );
+        private static Regex _countPattern = new ( @"<code>(?<products>(\d+))\|(?<shops>(\d+))?<\/code>", RegexOptions.Compiled );
+        private static Regex _emptyPagePattern =
+            new(@"К сожалению (.*), но обратите внимание на популярное сегодня", RegexOptions.Compiled);
 
         public CompareWorker(
-            TheStoreRepository repository ) =>
-            _repository = repository;
+            TheStoreRepository repository, BackgroundBaseContext context ) =>
+            ( _repository, _context ) = ( repository, context );
         
         public void CompareAndWrite( List<UrlInfo> infos )
         {
-            DoCompareAndWrite( infos );
-        }
-
-        private void DoCompareAndWrite( List<UrlInfo> infos )
-        {
             try {
-                var compareList = infos
-                    .AsParallel()
-                    .Select( Convert ).ToList();
-                _repository.UpdateCompareList( compareList );
+                DoCompareAndWrite( infos );
             } catch( Exception e ) {
                 LoggerError.Error( e );
                 throw new Exception();
             }
+        }
+
+        private void DoCompareAndWrite( List<UrlInfo> infos )
+        {
+            var compareList = infos
+                .AsParallel()
+                .Select( Convert ).ToList();
+            _context.AddMessage( "Собрали количества товаров" );
+            _repository.UpdateCompareList( compareList );
+            _context.AddMessage( "Записали в бд" );
         }
 
         private CompareListingDb Convert( UrlInfo info )
@@ -58,6 +65,8 @@ namespace TheStore.Api.Front.Workers
             var oldSitePage = oldSitePageTask.Result;
             var newSitePage = newSitePageTask.Result;
 
+            _context.CalculatePercent();
+            
             return new CompareListingDb {
                 AddDate = DateTime.Now,
                 Url = info.NewSiteUrl,
@@ -77,6 +86,11 @@ namespace TheStore.Api.Front.Workers
         
         private PageInfo Parse( string data )
         {
+            var emptyMatch = _emptyPagePattern.Match( data );
+            if( emptyMatch.Success ) {
+                return new PageInfo( 0, 0 );
+            }
+            
             var m = _countPattern.Match( data );
             if( m.Success == false ) {
                 return new PageInfo( -1, -1 );

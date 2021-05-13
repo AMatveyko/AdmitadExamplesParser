@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using TheStore.Api.Front.Workers;
 
-namespace TheStoreApi.Controllers
+namespace TheStore.Api.Front.Controllers
 {
     [ ApiController ]
     [ Route( "[controller]" ) ]

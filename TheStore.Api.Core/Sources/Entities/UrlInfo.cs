@@ -1,6 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
-namespace TheStore.Api.Front.Entity
+namespace TheStore.Api.Core.Sources.Entities
 {
     internal sealed class UrlInfo
     {

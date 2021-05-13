@@ -8,6 +8,8 @@ using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
 
+using Messenger;
+
 namespace Admitad.Converters
 {
     public static class SettingsBuilder
@@ -19,6 +21,18 @@ namespace Admitad.Converters
         {
             FillSettings();
         }
+
+        public static MessengerSettings GetMessengerSettings()
+        {
+            var settings = GetSettings();
+
+            var messengerSettings = new MessengerSettings();
+            foreach( var client in new IClientSettings[] { settings.TelegramSettings } ) {
+                messengerSettings.Clients.Add( client );
+            }
+
+            return messengerSettings;
+        } 
         
         public static ProcessorSettings GetSettings()
         {
