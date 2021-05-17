@@ -4,14 +4,12 @@ namespace AdmitadCommon.Entities.Api
 {
     public sealed class ProcessShopContext : BackgroundBaseContext
     {
-        public ProcessShopContext( string id, int shopId, string filePath, string shopName )
-            : base( GetCollectedId( nameof(ProcessShopContext), id ), shopName ) {
-            FilePath = filePath;
-            ShopName = shopName;
+        public ProcessShopContext( string id, int shopId, DownloadInfo downloadInfo )
+            : base( GetCollectedId( nameof(ProcessShopContext), id ), downloadInfo.ShopName ) {
             ShopId = shopId;
+            DownloadInfo = downloadInfo;
         }
         public int ShopId { get; }
-        public string FilePath { get; }
-        public string ShopName { get; }
+        public DownloadInfo DownloadInfo { get; }  
     }
 }

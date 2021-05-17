@@ -106,6 +106,7 @@ namespace Admitad.Converters
             string directoryPath )
         {
             var downloadInfo = new DownloadInfo( fileInfo.ShopId, fileInfo.NameLatin ) {
+                StartTime = DateTime.Now,
                 ShopName = fileInfo.Name,
                 Url = fileInfo.XmlFeed,
                 FilePath = FilePathHelper.GetFilePath( directoryPath, fileInfo )
@@ -125,6 +126,7 @@ namespace Admitad.Converters
                     },
                     out var workTime );
                 info.Error = DownloadError.Ok;
+                info.FileSize = new FileInfo( info.FilePath ).Length;
                 info.DownloadTime = workTime;
                 LogWriter.Log( $"Downloaded {info.ShopName}, time {workTime} " );
             }

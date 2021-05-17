@@ -2,7 +2,7 @@
 
 namespace AdmitadCommon.Entities
 {
-    public sealed class ShopStatistics
+    public sealed class ShopProductStatistics
     {
         public int ShopId { get; set; }
         public string ShopName { get; set; }

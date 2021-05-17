@@ -10,7 +10,7 @@ namespace AdmitadSqlData.Repositories
 {
     internal sealed class CountryRepository : BaseRepository
     {
-        public List<Country> GetAllCountries()
+        public List<CountryDb> GetAllCountries()
         {
             using var db = GetDb();
             return db.Countries.ToList();

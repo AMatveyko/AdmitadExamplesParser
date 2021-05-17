@@ -4,7 +4,7 @@ using AdmitadCommon.Entities;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    public class AsosWorker : BaseShopWorker, IShopWorker {
+    internal class AsosWorker : BaseShopWorker, IShopWorker {
         protected override Offer GetTunedOffer( Offer offer, RawOffer rawOffer )
         {
 

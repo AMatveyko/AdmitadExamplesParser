@@ -1,5 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
+
 namespace AdmitadCommon.Entities
 {
     public sealed class DownloadInfo
@@ -13,6 +15,7 @@ namespace AdmitadCommon.Entities
             NameLatin = nameLatin;
         } 
         
+        public DateTime StartTime { get; set; }
         public string NameLatin { get; }
         public int ShopId { get; }
         public string Url { get; set; }
@@ -20,6 +23,7 @@ namespace AdmitadCommon.Entities
         public string FilePath { get; set; }
         public long DownloadTime { get; set; }
         public DownloadError Error { get; set; }
+        public long FileSize { get; set; }
         public bool HasError => Error != DownloadError.Ok;
     }
 }

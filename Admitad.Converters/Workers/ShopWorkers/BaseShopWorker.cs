@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
+using Admitad.Converters.Handlers;
+
 using AdmitadCommon;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Extensions;
@@ -13,13 +15,15 @@ using AdmitadSqlData.Helpers;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    public abstract class BaseShopWorker
+    internal abstract class BaseShopWorker
     {
         private static readonly string[] RequiredParams = { Constants.Params.ColorName, Constants.Params.SizeName, Constants.Params.MaterialName };
         private const string SkipValue = "none";
         private const string CountryParam = "Страна-изготовитель";
+        
         protected const string AgeParamName = "возраст";
-        protected const string GenderParamName = "пол";
+        protected string[] GenderParamName = { "пол", "gender" };
+        protected List<IOfferHandler> _handlers = new ();
 
         private static Regex _pricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
@@ -41,10 +45,20 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
             FillBaseOffer( offer, rawOfer );
             DoFillExtendedOffer( offer, rawOfer );
-
-            return GetTunedOffer( offer, rawOfer );
+            var tunedOffer = GetTunedOffer( offer, rawOfer );
+            var processedOffer = RunOfferHandlers( tunedOffer, rawOfer );
+            return processedOffer;
         }
 
+        private Offer RunOfferHandlers( Offer offer, RawOffer rawOffer )
+        {
+            foreach( var offerHandler in _handlers ) {
+                offer = offerHandler.Process( offer, rawOffer );
+            }
+
+            return offer;
+        }
+        
         protected virtual Offer GetTunedOffer(
             Offer offer,
             RawOffer rawOffer ) =>
@@ -89,7 +103,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
             offer.UpdateDate = rawOffer.UpdateTime;
             offer.Delivery = rawOffer.IsDelivered ?? false;
             offer.SalesNotes = rawOffer.SalesNotes;
-
         }
 
         
@@ -157,13 +170,15 @@ namespace Admitad.Converters.Workers.ShopWorkers
             
             extendedOffer.CountryId = GetCountryId( rawOffer );
             extendedOffer.VendorNameClearly = GetClearlyVendor( rawOffer.Vendor );
+            extendedOffer.CategoryId = rawOffer.CategoryId;
 
             FillParams( extendedOffer, rawOffer );
         }
 
         protected virtual int GetCountryId( RawOffer rawOffer )
         {
-            var value = GetParamValueByName( CountryParam, rawOffer.Params ) ?? rawOffer.Country?.ToLower();
+            var value = GetParamValueByName( rawOffer.Params, new [] { CountryParam } )
+                        ?? rawOffer.Country?.ToLower();
             return DbHelper.GetCountryId( value );
         }
 
@@ -174,11 +189,11 @@ namespace Admitad.Converters.Workers.ShopWorkers
         }
 
         protected virtual Age GetAgeFromParam( IEnumerable<RawParam> @params ) {
-            var value = GetParamValueByName( AgeParamName, @params );
+            var value = GetParamValueByName( @params, new [] { AgeParamName } );
             return AgeHelper.GetAge( value );
         }
 
-        private static Gender GetGender( RawOffer rawOffer )
+        private Gender GetGender( RawOffer rawOffer )
         {
             var gender = GetGenderFromParam( rawOffer.Params );
             return gender == Gender.Undefined ? GetGenderFromCategory( rawOffer ) : gender;
@@ -187,15 +202,15 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private static Gender GetGenderFromCategory( RawOffer rawOffer ) =>
             GenderHelper.GetGender( new[] {rawOffer.CategoryPath, rawOffer.MarketCategory} );
 
-        private static Gender GetGenderFromParam( IEnumerable<RawParam> @params ) {
-            var value = GetParamValueByName( GenderParamName, @params );
+        private Gender GetGenderFromParam( IEnumerable<RawParam> @params ) {
+            var value = GetParamValueByName( @params, GenderParamName );
             return GenderHelper.GetGender( value );
         }
 
         protected static string GetParamValueByName(
-            string name,
-            IEnumerable<RawParam> @params ) =>
-            @params.FirstOrDefault( p => p.Name.ToLower() == name.ToLower() )?.Value.ToLower();
+            IEnumerable<RawParam> @params,
+            string[] param ) =>
+            @params.FirstOrDefault( p => param.Contains( p.Name.ToLower() ) )?.Value.ToLower();
 
 
         protected virtual string GetClearlyVendor( string vendor )

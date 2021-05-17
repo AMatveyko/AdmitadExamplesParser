@@ -198,10 +198,7 @@ namespace Admitad.Converters.Workers
             return boolQuery;
         }
         #endregion
-
-
-
-
+        
         #region Brand
 
         public long GetCountWithClearlyName( string clearlyName, string brandId = Constants.UndefinedBrandId )
@@ -227,6 +224,37 @@ namespace Admitad.Converters.Workers
                     .Refresh( true ) );
             return new UpdateResult( response.Total, response.Updated );
         }
+        
+        #endregion
+
+
+
+
+        #region Countries
+
+        public UpdateResult UpdateProductsFroCountry(
+            Country country )
+        {
+            var response = _client.UpdateByQuery<Product>(
+                r => r.Query( q => q.Bool( b => BuildBoolQuery( b, country ) ) )
+                    .Script( script => script.Source( $"ctx._source.countryId = { country.Id }" ) )
+                    .Conflicts( Conflicts.Proceed )
+                    .Refresh( true ) );
+            return new UpdateResult( response );
+        }
+
+        private static BoolQueryDescriptor<Product> BuildBoolQuery(
+            BoolQueryDescriptor<Product> descriptor,
+            Country country )
+        {
+            var query = string.Join( " OR ", country.SearchTerms );
+            descriptor = descriptor.Filter(
+                queryString => queryString.QueryString(
+                    qs => qs.Fields( fields => GetFields( fields, new[] {"jsonParams", "description", "name"} ) )
+                        .Query( query ) ),
+                q => q.Term( t => t.Field( p => p.CountryId).Value( Constants.UndefinedCountryId ) ) );
+            return descriptor;
+        } 
         
         #endregion
         

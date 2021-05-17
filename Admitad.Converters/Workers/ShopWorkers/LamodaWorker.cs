@@ -30,40 +30,9 @@ namespace Admitad.Converters.Workers.ShopWorkers
             }
         }
 
-        // protected override List<Param> GetParams( RawOffer rawOffer )
-        // {
-        //     var @params = base.GetParams( rawOffer );
-        //     @params.AddRange( GetMaterialParam( rawOffer ) );
-        //     return @params;
-        // }
-
-        // private static IEnumerable<Param> GetMaterialParam( RawOffer rawOffer )
-        // {
-        //     var materialParams = rawOffer.Params.Where( p => p.Name.Contains( Constants.Params.MaterialName ) );
-        //     var cleanParams = new List<Param>();
-        //     foreach( var param in materialParams ) {
-        //         if( param.Value.Contains( ParamSplitter ) ) {
-        //             cleanParams.AddRange( SplitMaterialParam( param ) );
-        //         }
-        //         else {
-        //             cleanParams.Add( new Param( Constants.Params.MaterialName, param.Unit, param.Value ) );
-        //         }
-        //     }
-        //
-        //     return cleanParams;
-        // }
-
-        // private static IEnumerable<Param> SplitMaterialParam( RawParam param )
-        // {
-        //     var values = param.Value.Split( ParamSplitter );
-        //     foreach( var value in values ) {
-        //         yield return new Param( Constants.Params.MaterialName, param.Unit, value );
-        //     }
-        // }
-
         protected override Age GetAgeFromParam( IEnumerable<RawParam> @params )
         {
-            var value = GetParamValueByName( AgeParamName, @params );
+            var value = GetParamValueByName( @params, new []{ AgeParamName } );
             return value switch {
                 "от 55 лет" => Age.Adult,
                 "от 35 лет" => Age.Adult,

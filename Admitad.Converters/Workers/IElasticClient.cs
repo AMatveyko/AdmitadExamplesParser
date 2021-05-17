@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 
+using AdmitadCommon;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Responses;
 
@@ -56,5 +57,8 @@ namespace Admitad.Converters.Workers
 
         ProductResponse GetProduct(
             string id );
+
+        UpdateResult UpdateProductsFroCountry(
+            Country country );
     }
 }

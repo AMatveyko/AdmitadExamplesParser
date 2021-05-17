@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AdmitadSqlData.Entities
 {
     [ Table( "country" ) ]
-    public class Country {
+    public sealed class CountryDb {
         [ Column( "id" ) ]
         public int Id { get; set; }
         [ Column( "name" ) ]
@@ -16,5 +16,8 @@ namespace AdmitadSqlData.Entities
         public string Synonym { get; set; }
         [ Column( "name_lat" ) ]
         public string LatinName { get; set; }
+        [ Column("name_search" ) ]
+        public string SearchTerms { get; set; }
+
     }
 }

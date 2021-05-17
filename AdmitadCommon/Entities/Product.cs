@@ -12,6 +12,7 @@ namespace AdmitadCommon.Entities
         [ JsonProperty( "view" ) ] public long View { get; set; }
 
         [ JsonProperty( "categories" ) ] public string[] Categories { get; set; }
+        [ JsonProperty( "originalCategoryId" ) ] public string OriginalCategoryId { get; set; }
         [ JsonProperty( "tags" ) ] public string[] Tags { get; set; }
         [ JsonProperty( "colors" ) ] public string[] Colors { get; set; }
         [ JsonProperty( "materials" ) ] public string[] Materials { get; set; }

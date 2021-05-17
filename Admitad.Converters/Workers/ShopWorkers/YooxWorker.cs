@@ -7,13 +7,13 @@ using AdmitadCommon.Entities;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    public class YooxWorker : BaseShopWorker, IShopWorker {
+    internal class YooxWorker : BaseShopWorker, IShopWorker {
         protected override Offer GetTunedOffer(
             Offer offer,
             RawOffer rawOffer )
         {
             var ageParam = rawOffer.Params.FirstOrDefault( p => p.Name == AgeParamName );
-            var genderParam = rawOffer.Params.FirstOrDefault( p => p.Name == GenderParamName );
+            var genderParam = rawOffer.Params.FirstOrDefault( p => GenderParamName.Contains( p.Name ) );
             if( ageParam != null ) {
                 offer.Age = ageParam.Value switch {
                     "взрослый" => Age.Adult,

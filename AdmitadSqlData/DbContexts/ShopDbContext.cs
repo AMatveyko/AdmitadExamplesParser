@@ -21,7 +21,7 @@ namespace AdmitadSqlData.DbContexts
         }
         
         public DbSet<Shop> Shops { get; set; }
-        public DbSet<Country> Countries { get; set; }
+        public DbSet<CountryDb> Countries { get; set; }
         public DbSet<CategoryDb> Categories { get; set; }
         public DbSet<TagDb> Tags { get; set; }
         public DbSet<ColorDb> Colors { get; set; }
@@ -32,6 +32,9 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<OptionDb> SettingsOptions { get; set; }
         public DbSet<ProductsByCategory> ProductsByCategories { get; set; }
         public DbSet<ShopStatisticsDb> ShopStatistics { get; set; }
+        public DbSet<UnknownCountry> UnknownCountries { get; set; }
+        public DbSet<ShopCategoryDb> ShopCategories { get; set; }
+        public DbSet<ParseLog> ParseLogs { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

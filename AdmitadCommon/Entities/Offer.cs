@@ -36,7 +36,7 @@ namespace AdmitadCommon.Entities
         public string SalesNotes { get; set; }
         public Gender Gender { get; set; }
         public Age Age { get; set; }
-        public int CategoryId { get; set; } = -1;
+        public string CategoryId { get; set; }
         public int BrandId { get; set; }
         public string VendorNameClearly { get; set; }
         public int CountryId { get; set; }

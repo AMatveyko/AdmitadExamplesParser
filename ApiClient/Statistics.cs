@@ -15,15 +15,15 @@ namespace ApiClient
         
         private static readonly Logger Logger = LogManager.GetLogger( "StatisticLogger" );
         
-        public static void Calculate( List<ShopStatistics> statistics )
+        public static void Calculate( List<ShopProductStatistics> statistics )
         {
             var strings = statistics.Select( GetString ).ToList();
             Logger.Info( string.Join( "\n", strings ) );
         }
 
-        public static string GetResult( List<ShopStatistics> statistics )
+        public static string GetResult( List<ShopProductStatistics> statistics )
         {
-            var all = new ShopStatistics();
+            var all = new ShopProductStatistics();
             statistics.ForEach(
                 s => {
                     all.SoldoutAfter += s.SoldoutAfter;
@@ -35,14 +35,14 @@ namespace ApiClient
         }
 
         private static string GetString(
-            ShopStatistics statistic )
+            ShopProductStatistics productStatistic )
         {
-            var name = statistic.ShopName;
-            var total = statistic.TotalAfter;
-            var soldout = statistic.SoldoutAfter;
+            var name = productStatistic.ShopName;
+            var total = productStatistic.TotalAfter;
+            var soldout = productStatistic.SoldoutAfter;
 
             return
-                $"{name}: total {total} new {total - statistic.TotalBefore}, soldout {soldout} new {soldout - statistic.SoldoutBefore}";
+                $"{name}: total {total} new {total - productStatistic.TotalBefore}, soldout {soldout} new {soldout - productStatistic.SoldoutBefore}";
         }
     }
 }

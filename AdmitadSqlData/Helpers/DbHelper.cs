@@ -4,19 +4,25 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Statistics;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Entities;
 using AdmitadSqlData.Repositories;
 
+using Country = AdmitadCommon.Country;
+
 namespace AdmitadSqlData.Helpers
 {
     public static class DbHelper
     {
+
+        private static Regex _categoryName = new(@"([^a-zA-zа-яА-Я\d\s])", RegexOptions.Compiled);
         
         #region Repository
         private static ShopRepository _shopRepository = new();
@@ -30,12 +36,34 @@ namespace AdmitadSqlData.Helpers
         private static Dictionary<int, string[]> CountriesCache;
         private static Dictionary<string, string> BrandCache;
         private static Dictionary<string, UnknownBrands> UnknownBrands = new();
+        private static Dictionary<string, int> UnknownCountries = new();
         private static bool UnknownBrandsNeedClean = true;
 
+
+        public static void WriteShopStatistics( ShopProcessingStatistics statistics )
+        {
+            var container = new DbWorkersContainer(
+                UpdateShopCategory,
+                UpdateShopStatistics,
+                WriteShopProcessLog,
+                UpdateShopUpdateDate );
+            statistics.Write( container );
+        }
+
+        private static void UpdateShopUpdateDate( int shopDate, DateTime dateTime )
+        {
+            _shopRepository.UpdateDate( shopDate, dateTime );
+        }
+        
+        private static void WriteShopProcessLog( IShopStatisticsForDb statistics )
+        {
+            _theStoreRepository.WriteShopProcessingLog( Convert( statistics ) );
+        }
+        
         public static List<SettingsOption> GetSettingsOptions() =>
             _theStoreRepository.GetSettingsOptions().Select( Convert ).ToList();
 
-        public static List<ShopStatistics> GetShopStatisticsList()
+        public static List<ShopProductStatistics> GetShopStatisticsList()
         {
             var raw = _theStoreRepository.GetShopStatistics();
             var converted = raw.Select( Convert ).ToList();
@@ -52,14 +80,14 @@ namespace AdmitadSqlData.Helpers
             return converted;
         }
         
-        public static ShopStatistics GetShopStatistics( int shopId )
+        private static ShopProductStatistics GetShopStatistics( int shopId )
         {
             return Convert( _theStoreRepository.GetShopStatistics( shopId ) );
         }
 
-        public static void UpdateShopStatistics( ShopStatistics statistics )
+        private static void UpdateShopStatistics( ShopProductStatistics productStatistics )
         {
-            _theStoreRepository.UpdateShopStatistics( statistics, DateTime.Now );
+            _theStoreRepository.UpdateShopStatistics( productStatistics, DateTime.Now );
         }
         
         public static int GetUnknownBrandsCount()
@@ -153,6 +181,21 @@ namespace AdmitadSqlData.Helpers
             return GetCountryIdFromCache( countryName );
         }
 
+        public static List<Country> GetCountries()
+        {
+            return _countryRepository.GetAllCountries().Select( Convert ).ToList();
+        }
+        
+        public static void SaveUnknownCountries()
+        {
+            var newCountries = UnknownCountries.Select(
+                c => new UnknownCountry {
+                    Name = c.Key,
+                    OfferCount = c.Value
+                } ).ToList();
+            _theStoreRepository.SaveUnknownCountries( newCountries );
+        }
+        
         public static List<Category> GetCategories() {
             var categories = _categoryRepository.GetEnabledCategories().Select( Convert ).ToList();
             return categories;
@@ -213,8 +256,45 @@ namespace AdmitadSqlData.Helpers
             _tagRepository.DeleteWordFromTagSearch( word, categoryId );
         }
 
+
+
+
+        #region OriginalCategory
+
+        private static void UpdateShopCategory( string shopName, List<ShopCategory> categories )
+        {
+            if( categories == null ||
+                categories.Any() == false ) {
+                return;
+            }
+
+            var shopId = GetShopId( shopName );
+            
+            var categoriesForDb = categories.Select( c => Convert( shopId, c ) ).ToList();
+            _theStoreRepository.UpdateShopCategories( categoriesForDb );
+
+        }
+        
+        #endregion
+        
         #region Convert
 
+        private static ShopCategoryDb Convert(
+            int shopId,
+            ShopCategory category ) =>
+            new ShopCategoryDb {
+                CategoryId = category.Id ?? string.Empty,
+                ParentId = category.ParentId ?? string.Empty,
+                Name = PrepareCategoryName( category.Name ),
+                UpdateDate = DateTime.Now,
+                ShopId = shopId
+            };
+
+        private static string PrepareCategoryName( string data )
+        {
+            return _categoryName.Replace( data ?? string.Empty, string.Empty );
+        }
+        
         private static ColorProperty Convert( ColorDb colorDb ) =>
             new () {
                 Id = colorDb.Id.ToString(),
@@ -280,15 +360,34 @@ namespace AdmitadSqlData.Helpers
                 Value = optionDb.Value
             };
 
-        private static ShopStatistics Convert(
+        private static ParseLog Convert(
+            IShopStatisticsForDb statistics ) =>
+            new ParseLog {
+                Date = statistics.StartDownloadFeed,
+                ShopId = statistics.ShopId,
+                FileSize = statistics.FileSize,
+                OfferCount = statistics.OfferCount,
+                SoldOutOfferCount = statistics.SoldOutOfferCount,
+                CategoryCount = statistics.CategoryCount,
+                DownloadTime = statistics.DownloadTime
+            };
+        
+        private static ShopProductStatistics Convert(
             ShopStatisticsDb statisticsDb ) =>
-            new ShopStatistics {
+            new ShopProductStatistics {
                 ShopId = statisticsDb.ShopId,
                 Error = statisticsDb.Error,
                 SoldoutAfter = statisticsDb.SoldoutAfter,
                 SoldoutBefore = statisticsDb.SoldoutBefore,
                 TotalAfter = statisticsDb.TotalAfter,
                 TotalBefore = statisticsDb.TotalBefore
+            };
+
+        private static Country Convert( CountryDb data ) =>
+            new Country {
+                Id = data.Id,
+                Name = data.Name,
+                SearchTerms = CreateTerms( data.SearchTerms )
             };
         
         #endregion
@@ -325,6 +424,11 @@ namespace AdmitadSqlData.Helpers
                 }
             }
 
+            if( UnknownCountries.ContainsKey( countryName ) == false ) {
+                UnknownCountries[ countryName ] = 0;
+            }
+            UnknownCountries[ countryName ]++;
+
             return Constants.UndefinedCountryId;
         }
         
@@ -334,6 +438,7 @@ namespace AdmitadSqlData.Helpers
             foreach( var country in countries ) {
                 var synonyms = new List<string>();
                 FillSynonyms( synonyms, country.From );
+                FillSynonyms( synonyms, country.From.Replace( "из ", string.Empty ) );
                 FillSynonyms( synonyms, country.Name );
                 FillSynonyms( synonyms, country.Synonym );
                 FillSynonyms( synonyms, country.LatinName );

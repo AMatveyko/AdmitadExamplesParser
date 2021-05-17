@@ -10,55 +10,65 @@ using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
+using AdmitadCommon.Entities.Statistics;
 
 using AdmitadSqlData.Helpers;
+
+using NLog;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
     internal sealed class ShopHandler
     {
+        
+        private static readonly Logger Logger = LogManager.GetLogger( "ErrorLogger" );
 
         private readonly ProcessShopContext _context;
         private readonly ProcessorSettings _settings;
+        private readonly ShopProcessingStatistics _statistics;
+        private readonly DateTime _startDate;
         
         public ShopHandler( ProcessShopContext context, ProcessorSettings settings ) {
             _context = context;
             _settings = settings;
+            _statistics = new ShopProcessingStatistics( context.DownloadInfo, AddMessage, Logger );
+            _startDate = DateTime.Now;
         }
 
         public void Process()
         {
-            var startDate = DateTime.Now;
-            SetStatistics( "Before" );
-            var shopData = ParseShop();
-            AddMessage( "Parsing complete" );
+            SetProductsStatistics( "Before" );
+            var shopData = _statistics.GetShopData( ParseShop );
             var cleanOffers = CleanOffers( shopData );
-            AddMessage( "Clearing offers complete" );
             var products = ConvertOffers( cleanOffers );
-            AddMessage( "Convert to products complete" );
             UpdateProducts( products );
-            AddMessage( "Update products complete" );
-            Thread.Sleep( 5000 );
-            DisableProducts( startDate );
-            SetStatistics( "After" );
+            DisableProducts();
             _context.Content = $"{products.Count} products";
+            Finish();
         }
 
-        private void DisableProducts( DateTime startDate )
+        private void Finish()
+        {
+            SetProductsStatistics( "After" );
+            DbHelper.WriteShopStatistics( _statistics );
+        }
+        
+        private void DisableProducts()
         {
             var client = CreateElasticClient( _context );
-            var result = client.DisableOldProducts( startDate, _context.ShopId.ToString() );
+            var result = client.DisableOldProducts( _startDate, _context.ShopId.ToString() );
             AddMessage( $"Disable { result.Pretty } products", result.IsError );
         }
         
         private ShopData ParseShop() {
             var parser = new GeneralParser(
-                _context.FilePath,
-                _context.ShopName,
+                _context.DownloadInfo.FilePath,
+                _context.DownloadInfo.NameLatin,
                 _context,
                 _settings.EnableExtendedStatistics );
             var shopData = parser.Parse();
             SetProgress( 20 );
+            AddMessage( "Parsing complete" );
             return shopData;
         }
 
@@ -67,6 +77,7 @@ namespace TheStore.Api.Core.Sources.Workers
             var cleaner = new OfferConverter( shopData, _context ); 
             var cleanOffers = cleaner.GetCleanOffers();
             SetProgress( 40 );
+            AddMessage( "Clearing offers complete" );
             return cleanOffers;
         }
 
@@ -74,6 +85,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var products = ProductConverter.GetProductsContainer( offers ); 
             SetProgress( 80 );
+            AddMessage( "Convert to products complete" );
             return products;
         }
 
@@ -83,27 +95,23 @@ namespace TheStore.Api.Core.Sources.Workers
             var client = CreateElasticClient( _context );
             client.BulkAll( iProducts );
             SetProgress( 100 );
+            Thread.Sleep( 5000 );
+            AddMessage( "Update products complete" );
         }
 
-        private void SetStatistics( string condition )
+        private void SetProductsStatistics( string condition )
         {
             var client = CreateElasticClient( _context );
-            var statistics = DbHelper.GetShopStatistics( _context.ShopId );
-            if( condition == "Before" ) {
-                var count = client.CountProductsForShop( _context.ShopId.ToString() );
-                var soldout = client.CountDisabledProductsByShop( _context.ShopId.ToString() );
-                statistics.TotalBefore = (int) count;
-                statistics.SoldoutBefore = ( int ) soldout;
+            var count = client.CountProductsForShop( _context.ShopId.ToString() );
+            var soldout = client.CountDisabledProductsByShop( _context.ShopId.ToString() );
+            switch( condition ) {
+                case "Before" :
+                    _statistics.SetProductStatisticsBefore( (int)count, (int)soldout );
+                    break;
+                case "After" :
+                    _statistics.SetProductsStatisticsAfter( (int)count, (int)soldout );
+                    break;
             }
-
-            if( condition == "After" ) {
-                var count = client.CountProductsForShop( _context.ShopId.ToString() );
-                var soldout = client.CountDisabledProductsByShop( _context.ShopId.ToString() );
-                statistics.TotalAfter = (int) count;
-                statistics.SoldoutAfter = ( int ) soldout;
-            }
-            
-            DbHelper.UpdateShopStatistics( statistics );
         }
         
         private void SetProgress( int percents ) => _context.SetProgress( percents, 100 );

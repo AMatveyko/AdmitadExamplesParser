@@ -6,6 +6,7 @@ using System.Linq;
 
 using Admitad.Converters.Workers;
 
+using AdmitadCommon;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
@@ -85,6 +86,52 @@ namespace Admitad.Converters
             
             return ( category.Id, result, time );
         }
+        #endregion
+
+
+
+
+        #region Countries
+
+        public void LinkCounties(
+            IEnumerable<Country> countries )
+        {
+            MeasureWorkTime( () => DoLinkCountries( countries.ToList() ) );
+        }
+
+        private void DoLinkCountries(
+            List<Country> countries )
+        {
+            _context.TotalActions = countries.Count;
+
+            var results = countries.Select( LinkCountry ).OrderBy( t => t.Item2.Updated );
+            foreach( var ( id, count, time ) in results ) {
+                Log( "country", id, count.Pretty, time.ToString() );
+            }
+
+            var updatedCount = results.Sum( r => r.Item2.Updated );
+            var totalCount = results.Sum( r => r.Item2.Total );
+            _context.Content =
+                $"Linked: {updatedCount}{( totalCount > updatedCount ? $" ({totalCount})!" : string.Empty )}";
+
+        }
+        
+        private ( string, UpdateResult, long ) LinkCountry( Country country )
+        {
+            if( country.IsSearchTermsEmpty() ) {
+                _context.CalculatePercent();
+                return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
+            }
+            var result = Measure( () => _elasticClient.UpdateProductsFroCountry( country ), out var time );
+            _context.CalculatePercent();
+            
+            if( result.IsError ) {
+                _context.AddMessage( $"id {country.Id} updated { result.Pretty }", result.IsError );
+            }
+            
+            return ( country.Id.ToString(), result, time );
+        }
+        
         #endregion
         
         #region Tag

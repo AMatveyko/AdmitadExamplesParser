@@ -92,6 +92,16 @@ namespace AdmitadSqlDataTests
             }
             DbHelper.WriteUnknownBrands();
         }
+
+        [ Test ]
+        public void UnknownCountries()
+        {
+            var countries = new[] {"Китай", "Шмитай"};
+            foreach( var country in countries ) {
+                Console.WriteLine( DbHelper.GetCountryId( country ) );
+            }
+            DbHelper.SaveUnknownCountries();
+        }
         
         [ Test ]
         public void GetCountryTest()

@@ -9,7 +9,7 @@ using AdmitadSqlData.Helpers;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    public class TwelveStoreezWorker : BaseShopWorker, IShopWorker {
+    internal class TwelveStoreezWorker : BaseShopWorker, IShopWorker {
         
         private static readonly Regex DefineCountry = new ( @"Сделано в (?<country>[a-zA-Zа-яА-Я0-9_]+)\.", RegexOptions.Compiled );
         

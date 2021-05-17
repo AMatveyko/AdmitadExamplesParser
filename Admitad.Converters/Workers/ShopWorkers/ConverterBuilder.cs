@@ -17,6 +17,11 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 "12storeez" => new TwelveStoreezWorker(),
                 "anabel" => new AnabelWorker(),
                 "vmeha" => new VmehaWorker(),
+                "brandshop" => new BrandshopWorker(),
+                "gretta" => new GrettaWorker(),
+                "goods" => new GoodsWorker(),
+                "gloriajeans" => new GloriaJeansWorker(),
+                "tamaris" => new TamarisWorker(),
                 _ => new DefaultShopWorker()
             };
         }

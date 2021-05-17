@@ -73,10 +73,21 @@ namespace TheStore.Api.Core.Sources.Workers
             DoLink();
             context.SetProgress( 100, 100 );
             Wait();
-            DbHelper.WriteUnknownBrands();
+            DbWork( context );
             LogResult();
         }
 
+        private static void DbWork( IndexAllShopsContext context )
+        {
+            try {
+                DbHelper.WriteUnknownBrands();
+                DbHelper.SaveUnknownCountries();
+            }
+            catch( Exception e ) {
+                context.AddMessage( $"Db work error", true );
+            }
+        }
+        
         private void DownloadAll( List<XmlFileInfo> infos )
         {
             var downloadContext = new BackgroundBaseContext( "Download:All", "download" );
@@ -113,8 +124,7 @@ namespace TheStore.Api.Core.Sources.Workers
             var processShopContext = new ProcessShopContext(
                 $"{shopId}:{(single ? "single" : "all")}",
                 shopId,
-                fileInfo.FilePath,
-                fileInfo.NameLatin );
+                fileInfo );
             _context.AddContext( processShopContext );
             Works.AddToQueue( UpdateShop, processShopContext, QueuePriority.Medium, false );
         }
@@ -127,12 +137,21 @@ namespace TheStore.Api.Core.Sources.Workers
         
         private void DoLink()
         {
+            LinkCountries();
             LinkProperties();
             UnlinkProperties();
             LinkCategories();
             LinkTags();
         }
 
+        private void LinkCountries()
+        {
+            var linkContext = new CountriesLinkContext( _context.Id );
+            _context.AddContext( linkContext );
+            var worker = new CountryWorker( _settings.ElasticSearchClientSettings, Works );
+            Works.AddToQueue( worker.LinkAll, linkContext, QueuePriority.Medium, false );
+        }
+        
         private void LinkTags()
         {
             var linkContext = new LinkTagsContext( _context.Id );

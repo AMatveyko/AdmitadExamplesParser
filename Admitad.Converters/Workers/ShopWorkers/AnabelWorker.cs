@@ -7,7 +7,7 @@ using AdmitadCommon.Helpers;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    public class AnabelWorker : BaseShopWorker, IShopWorker
+    internal sealed class AnabelWorker : BaseShopWorker, IShopWorker
     {
         protected override void FillParams(
             IExtendedOffer extendedOffer,

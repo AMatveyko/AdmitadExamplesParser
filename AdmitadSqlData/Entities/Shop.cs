@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AdmitadSqlData.Entities
@@ -17,5 +18,7 @@ namespace AdmitadSqlData.Entities
         public string XmlFeed { get; set; }
         [ Column( "enabled" ) ]
         public bool Enabled { get; set; }
+        [ Column( "date_update" ) ]
+        public DateTime? UpdateDate { get; set; }
     }
 }

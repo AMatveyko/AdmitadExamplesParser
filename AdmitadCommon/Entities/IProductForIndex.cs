@@ -9,6 +9,7 @@ namespace AdmitadCommon.Entities
 {
     public interface IProductForIndex : IIndexedEntities
     {
+        [ JsonProperty( "originalCategoryId" ) ] public string OriginalCategoryId { get; set; }
         [ JsonProperty ( "url" ) ] public string Url { get; }
         [ JsonProperty ( "delivery" ) ] public byte Delivery { get; }
         [ JsonProperty ( "dateUpdate" ) ] public DateTime UpdateDate { get; }

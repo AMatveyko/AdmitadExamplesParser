@@ -86,9 +86,18 @@ namespace AdmitadExamplesParserTests
         }
 
         [ Test ]
+        public void CountryLinkTest()
+        {
+            var countries = DbHelper.GetCountries().FirstOrDefault();
+            var client = CreateClient( "products-25" );
+            var result = client.UpdateProductsFroCountry( countries );
+            Console.WriteLine( $"Linked: {result.Updated}/{result.Updated}");
+        }
+        
+        [ Test ]
         public void TagRelinkTest()
         {
-            TagRelinkTest( "3242" );
+            TagRelinkTest( "2877" );
         }
 
         private void TagRelinkTest( string tagId )

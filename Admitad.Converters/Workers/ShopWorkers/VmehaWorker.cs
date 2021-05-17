@@ -4,7 +4,7 @@ using AdmitadCommon.Entities;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    public class VmehaWorker : BaseShopWorker, IShopWorker
+    internal class VmehaWorker : BaseShopWorker, IShopWorker
     {
         protected override void FillParams(
             IExtendedOffer extendedOffer,

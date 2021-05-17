@@ -102,7 +102,8 @@ namespace Admitad.Converters
                 Soldout = 0,
                 Delivery = 0,
                 BrandId = DbHelper.GetBrandId( offer.VendorNameClearly ),
-                SalesNotes = offer.SalesNotes
+                SalesNotes = offer.SalesNotes,
+                OriginalCategoryId = offer.CategoryId
             };
         }
     }

@@ -6,7 +6,10 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.DbContexts;
 using AdmitadSqlData.Entities;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace AdmitadSqlData.Repositories
 {
@@ -31,10 +34,7 @@ namespace AdmitadSqlData.Repositories
             return db.Sizes.ToList();
         }
         #endregion
-
-
-
-
+        
         #region Brands
         public List<BrandDb> GetBrands()
         {
@@ -57,11 +57,16 @@ namespace AdmitadSqlData.Repositories
             db.SaveChanges();
         }
         #endregion
-
-
-
-
+        
         #region Statistics
+
+        public void WriteShopProcessingLog( ParseLog logEntry )
+        {
+            var db = GetDb();
+            db.ParseLogs.Attach( logEntry );
+            db.SaveChanges();
+        }
+        
         public List<OptionDb> GetSettingsOptions()
         {
             using var db = GetDb();
@@ -107,43 +112,88 @@ namespace AdmitadSqlData.Repositories
         }
 
         public void UpdateShopStatistics(
-            ShopStatistics statistics,
+            ShopProductStatistics productStatistics,
             DateTime updateDate )
         {
             var db = GetDb();
-            var statisticsDb = db.ShopStatistics.FirstOrDefault( s => s.ShopId == statistics.ShopId );
+            var statisticsDb = db.ShopStatistics.FirstOrDefault( s => s.ShopId == productStatistics.ShopId );
             if( statisticsDb == null ) {
                 statisticsDb = new ShopStatisticsDb {
-                    ShopId = statistics.ShopId
+                    ShopId = productStatistics.ShopId
                 };
                 db.ShopStatistics.Add( statisticsDb );
             }
 
-            if( statistics.Error != null &&
-                statistics.Error != statisticsDb.Error )
-                statisticsDb.Error = statistics.Error;
+            if( productStatistics.Error != null &&
+                productStatistics.Error != statisticsDb.Error )
+                statisticsDb.Error = productStatistics.Error;
 
-            if( statistics.SoldoutAfter != null &&
-                statistics.SoldoutAfter != statisticsDb.SoldoutAfter )
-                statisticsDb.SoldoutAfter = statistics.SoldoutAfter.Value;
+            if( productStatistics.SoldoutAfter != null &&
+                productStatistics.SoldoutAfter != statisticsDb.SoldoutAfter )
+                statisticsDb.SoldoutAfter = productStatistics.SoldoutAfter.Value;
 
-            if( statistics.SoldoutBefore != null &&
-                statistics.SoldoutBefore != statisticsDb.SoldoutBefore )
-                statisticsDb.SoldoutBefore = statistics.SoldoutBefore.Value;
+            if( productStatistics.SoldoutBefore != null &&
+                productStatistics.SoldoutBefore != statisticsDb.SoldoutBefore )
+                statisticsDb.SoldoutBefore = productStatistics.SoldoutBefore.Value;
 
-            if( statistics.TotalAfter != null &&
-                statistics.TotalAfter != statisticsDb.TotalAfter )
-                statisticsDb.TotalAfter = statistics.TotalAfter.Value;
+            if( productStatistics.TotalAfter != null &&
+                productStatistics.TotalAfter != statisticsDb.TotalAfter )
+                statisticsDb.TotalAfter = productStatistics.TotalAfter.Value;
 
-            if( statistics.TotalBefore != null &&
-                statistics.TotalBefore != statisticsDb.TotalBefore )
-                statisticsDb.TotalBefore = statistics.TotalBefore.Value;
+            if( productStatistics.TotalBefore != null &&
+                productStatistics.TotalBefore != statisticsDb.TotalBefore )
+                statisticsDb.TotalBefore = productStatistics.TotalBefore.Value;
 
             statisticsDb.UpdateDate = updateDate;
 
             db.SaveChanges();
         }
 
-        #endregion"
+        #endregion
+
+        #region Countries
+
+        public void SaveUnknownCountries(
+            List<UnknownCountry> countries )
+        {
+            var db = GetDb();
+            
+            db.UnknownCountries.RemoveRange( db.UnknownCountries );
+            db.SaveChanges();
+            
+            db.UnknownCountries.AddRange( countries );
+            db.SaveChanges();
+        }
+        
+        #endregion
+        
+        #region Categories
+
+        public void UpdateShopCategories( List<ShopCategoryDb> categories )
+        {
+            if( categories.Any() == false ) {
+                return;
+            }
+            
+            var shopId = categories.First().ShopId;
+            var db = GetDb();
+            var listFromDb = db.ShopCategories.Where( c => c.ShopId == shopId ).ToList();
+            foreach( var category in categories ) {
+                var fromDb = listFromDb.FirstOrDefault( c => c.CategoryId == category.CategoryId );
+                if( fromDb == null ) {
+                    db.ShopCategories.Add( category );
+                    continue;
+                }
+
+                fromDb.Name = category.Name;
+                fromDb.ParentId = category.ParentId;
+                fromDb.UpdateDate = category.UpdateDate;
+            }
+
+            db.SaveChanges();
+        }
+
+        #endregion
+        
     }
 }

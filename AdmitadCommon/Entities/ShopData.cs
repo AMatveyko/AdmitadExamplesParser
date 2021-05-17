@@ -6,7 +6,8 @@ using AdmitadCommon.Helpers;
 
 namespace AdmitadCommon.Entities
 {
-    public sealed class ShopData {
+    public sealed class ShopData
+    {
         public string Name { get; set; }
         public List<RawOffer> Offers { get; set; } = new();
         public Dictionary<string, ShopCategory> Categories { get; } = new ();

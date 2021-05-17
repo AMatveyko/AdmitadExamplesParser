@@ -30,6 +30,11 @@ namespace AdmitadExamplesParserTests
         [ TestCase( "akusherstvo" ) ]
         [ TestCase( "amersport" ) ]
         [ TestCase( "anabel" ) ]
+        [ TestCase( "brandshop" ) ]
+        [ TestCase( "vipavenue" ) ]
+        [ TestCase( "gloriajeans" ) ]
+        [ TestCase( "tamaris" ) ]
+        [ TestCase( "laredoute" ) ]
         public void ParsingTest( string shopName )
         {
             DoParsing( shopName );
@@ -47,7 +52,7 @@ namespace AdmitadExamplesParserTests
         {
             
             var downloadInfo = new DownloadInfo( 0, shopName ) {
-                FilePath = $@"o:\admitad\feeds\{ shopName }.xml",
+                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
                 ShopName = shopName
             };
             
@@ -55,6 +60,8 @@ namespace AdmitadExamplesParserTests
             var sortedRawOffers = shopData.Offers.OrderBy( o => o.OldPrice ).ToList();
             var unique = GetUnique( shopData.Offers, shopName );
             var offers = ConvertOffers( shopData );
+            var years = offers.SelectMany( o => o.Params ).Where( p => p.Unit.ToLower() == "Years" )
+                .SelectMany( p => p.Values ).ToList();
             var sortedOffers = offers.OrderBy( o => o.OldPrice ).ToList();
             var countryIds = offers.Select( o => o.CountryId ).Distinct().ToList();
             var genders = offers.Select( o => o.Gender ).Distinct().ToList();
@@ -67,6 +74,7 @@ namespace AdmitadExamplesParserTests
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
             var products = ProductConverter.GetProductsContainer( offers );
+            var clothesCount = products.Count( p => p.CategoryName.ToLower().Contains( "рюкзаки" ) );
             var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
         }
@@ -79,6 +87,7 @@ namespace AdmitadExamplesParserTests
             public string AgeFromParam { get; set; }
             public List<string> CategoryPaths { get; set; }
             public List<string> Countries { get; set; }
+            public List<string> Sizes { get; set; }
         }
         
         private static ShopUnique GetUnique( List<RawOffer> offers, string shopName )
@@ -93,6 +102,7 @@ namespace AdmitadExamplesParserTests
                     ",",
                     offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() == "возраст" ) )
                         .Select( p => p.Value ).Distinct() ),
+                Sizes = offers.SelectMany( o => o.Params ).Select( p => $"{p.Name} {p.UnitFromXml} {p.Value}").Distinct().ToList(),
                 CategoryPaths = offers.Select( o => o.CategoryPath ).Distinct().ToList(),
                 Countries = offers.Select( GetCountryGetter( shopName ) ).Distinct().ToList()
             };
