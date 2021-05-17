@@ -23,7 +23,7 @@ namespace AdmitadExamplesParserTests
 
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            // ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
             ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-25",
             FrameSize = 10000
@@ -42,6 +42,15 @@ namespace AdmitadExamplesParserTests
             var count = CreateClient().CountForDisableProducts( DateTime.Now, null );
         }
 
+        [ Test ]
+        public void LinkCountries()
+        {
+            var linker = new ProductLinker( _settings, new CountriesLinkContext( "1" ) );
+
+            var countries = DbHelper.GetCountries();
+            linker.LinkCountries( countries );
+        }
+        
         [ Test ]
         public void LinkProperties()
         {
@@ -97,7 +106,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagRelinkTest()
         {
-            TagRelinkTest( "2877" );
+            TagRelinkTest( "427" );
         }
 
         private void TagRelinkTest( string tagId )

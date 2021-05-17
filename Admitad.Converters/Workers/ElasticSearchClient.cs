@@ -182,7 +182,7 @@ namespace Admitad.Converters.Workers
             BoolQueryDescriptor<Product> query, BaseProperty property )
         {
 
-            var queryString = string.Join(" OR ", property.Names );
+            var queryString = string.Join(" OR ", property.SearchNames );
 
             
             
@@ -250,9 +250,9 @@ namespace Admitad.Converters.Workers
             var query = string.Join( " OR ", country.SearchTerms );
             descriptor = descriptor.Filter(
                 queryString => queryString.QueryString(
-                    qs => qs.Fields( fields => GetFields( fields, new[] {"jsonParams", "description", "name"} ) )
+                    qs => qs.Fields( fields => GetFields( fields, new[] {"params", "description", "name"} ) )
                         .Query( query ) ),
-                q => q.Term( t => t.Field( p => p.CountryId).Value( Constants.UndefinedCountryId ) ) );
+                q => q.Term( t => t.Field( "countryId.keyword" ).Value( Constants.UndefinedCountryId.ToString() ) ) );
             return descriptor;
         } 
         
@@ -287,26 +287,26 @@ namespace Admitad.Converters.Workers
             BoolQueryDescriptor<Product> descriptor,
             Tag tag )
         {
-            var query = string.Join( " OR ", tag.SearchTerms );
+            var query = $"( { string.Join( " OR ", tag.SearchTerms ) } )";
 
             if( tag.ExcludePhrase.Any() ) {
                 var queryExcludePhrase = string.Join( " AND ", tag.ExcludePhrase.Select( ep => $"NOT {ep}" ) );
-                query = $"( {query} ) AND ( {queryExcludePhrase} )";
+                query = $"{query} AND ( {queryExcludePhrase} )";
+            }
+
+            if( tag.SpecifyWords != null &&
+                tag.SpecifyWords.Any() ) {
+                var specifyQuery = string.Join( " OR ", tag.SpecifyWords );
+                query += $" AND ( {specifyQuery} )";
             }
             
-            // if( tag.SpecifyWords != null &&
-            //     tag.SpecifyWords.Length > 0 ) {
-            //     var specifyQuery = string.Join( " OR ", tag.SpecifyWords );
-            //     query = $"( {query} ) AND ( {specifyQuery} )";
-            // }
-
             descriptor = descriptor.Filter( 
                 queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, tag.Fields)).Query( query ) ),
                 //m => m.Term( t => t.Field( ld => ld.Categories ).Value( tag.IdCategory ) )
                 //m => m.LongRange( r => r.Field( "categories" ).GreaterThanOrEquals( tag.IdCategory ).LessThanOrEquals( CategoryHelper.GetEndCategory( tag.IdCategory ) ) )
                 m => m.Terms( t => t.Field( "categories" ).Terms( tag.Categories ) )
-                 ); 
-            
+                 );
+
             descriptor =
                 descriptor.MustNot( mn => mn.Term( t => t.Field( ld => ld.Tags ).Value( tag.Id ) ) );
             

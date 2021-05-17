@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.ForElastic;
 using AdmitadCommon.Entities.Statistics;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
@@ -294,31 +295,52 @@ namespace AdmitadSqlData.Helpers
         {
             return _categoryName.Replace( data ?? string.Empty, string.Empty );
         }
-        
-        private static ColorProperty Convert( ColorDb colorDb ) =>
-            new () {
+
+        private static ColorProperty Convert(
+            ColorDb colorDb )
+        {
+            var color = new ColorProperty {
                 Id = colorDb.Id.ToString(),
                 ParentId = colorDb.ParentId.ToString(),
                 Names = NotEmptyStringsToList(
-                    colorDb.Name,
-                    colorDb.Name2,
-                    colorDb.Name3,
-                    colorDb.Name4,
-                    colorDb.SynonymName )
+                    CombineSearchWords(
+                        colorDb.SynonymName, 
+                        colorDb.Name,
+                        colorDb.Name2,
+                        colorDb.Name3,
+                        colorDb.Name4 ) )
             };
+            return FillSearchNames( color, colorDb );
+        }
 
-        private static MaterialProperty Convert(
-            SostavDb sostavDb ) =>
-            new() {
+        private static MaterialProperty Convert( SostavDb sostavDb )
+        {
+            var material = new MaterialProperty {
                 Id = sostavDb.Id.ToString(),
-                Names = NotEmptyStringsToList( sostavDb.Name, sostavDb.Name2, sostavDb.Name3, sostavDb.SynonymName )
+                Names = NotEmptyStringsToList( CombineSearchWords(
+                    sostavDb.SynonymName,
+                    sostavDb.Name,
+                    sostavDb.Name2,
+                    sostavDb.Name3 ))
             };
+            
+            return FillSearchNames( material, sostavDb );
+        }
+            
 
+        private static T FillSearchNames<T>( T entity, ISearchNamesDb entityFromDb ) where T : ISearchNames
+        {
+            entity.SearchNames = CreateTermsList( entityFromDb.SearchNames );
+            return entity;
+        }
+        
         private static SizeProperty Convert(
             SizeDb sizeDb ) =>
             new() {
                 Id = sizeDb.Id.ToString(),
-                Names = NotEmptyStringsToList( sizeDb.Name, sizeDb.SynonymName )
+                Names = NotEmptyStringsToList( CombineSearchWords( sizeDb.SynonymName, sizeDb.Name ) ),
+                // TODO> неоднозначное поведение, берем поисковые слова неиз того поля. подсмотреть у цвета и у состава
+                SearchNames = new List<string> { sizeDb.Name }
             };
 
         private static Tag Convert( TagDb tagDb, Dictionary<int,List<CategoryDb>> allCategories )
@@ -329,7 +351,7 @@ namespace AdmitadSqlData.Helpers
             tag.SearchTerms = CreateTerms( tagDb.Name );
             tag.Gender = GenderHelper.ConvertFromTag( tagDb.Pol );
             tag.IdCategory = tagDb.IdCategory;
-            tag.SpecifyWords = SplitComa( tagDb.SpecifyWords );
+            tag.SpecifyWords = CreateTerms( tagDb.SpecifyWords );
             tag.ExcludePhrase = CreateTerms( tagDb.ExcludePhrase );
             tag.Title = tagDb.NameTitle;
             var categories = GetCategoryChildren( tagDb.IdCategory, allCategories ).Select( c => c.Id ).ToList();
@@ -394,9 +416,20 @@ namespace AdmitadSqlData.Helpers
 
         #region Routin
 
+        private static string[] CombineSearchWords( string comaSeparated, params string[] searchWords )
+        {
+            var terms = CreateTerms( comaSeparated );
+            return terms.Concat( searchWords ).ToArray();
+        }
+        
         private static List<string> NotEmptyStringsToList(
             params string[] strings ) =>
             strings.Where( s => s.IsNotNullOrWhiteSpace() ).Select( CreateTerm ).ToList();
+
+
+        private static List<string> CreateTermsList(
+            string terms ) =>
+            CreateTerms( terms ).ToList();
         
         private static string[] CreateTerms( string terms )
         {

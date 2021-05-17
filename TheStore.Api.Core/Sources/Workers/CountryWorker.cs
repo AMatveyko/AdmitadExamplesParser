@@ -16,7 +16,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var countries = DbHelper.GetCountries();
             var linker = CreateLinker( context );
-            linker.LinkCounties( countries );
+            linker.LinkCountries( countries );
         }
     }
 }

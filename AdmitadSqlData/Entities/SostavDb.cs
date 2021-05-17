@@ -5,12 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AdmitadSqlData.Entities
 {
     [ Table( "sostav" ) ]
-    public class SostavDb
+    public class SostavDb : ISearchNamesDb
     {
         [ Column( "id" ) ] public int Id { get; set; }
         [ Column( "name" ) ] public string Name { get; set; }
         [ Column( "name_sin" ) ] public string SynonymName { get; set; }
         [ Column( "name2" ) ] public string Name2 { get; set; }
         [ Column( "name3" ) ] public string Name3 { get; set; }
+        
+        [ Column( "name_search" ) ] public string SearchNames { get; set; }
     }
 }

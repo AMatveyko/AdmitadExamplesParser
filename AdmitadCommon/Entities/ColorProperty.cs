@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AdmitadCommon.Entities
 {
-    public class ColorProperty : BaseProperty
+    public sealed class ColorProperty : BaseProperty
     {
         public string ParentId { get; set; }
         public override string FieldName => "colors";

@@ -93,7 +93,7 @@ namespace Admitad.Converters
 
         #region Countries
 
-        public void LinkCounties(
+        public void LinkCountries(
             IEnumerable<Country> countries )
         {
             MeasureWorkTime( () => DoLinkCountries( countries.ToList() ) );
@@ -104,8 +104,8 @@ namespace Admitad.Converters
         {
             _context.TotalActions = countries.Count;
 
-            var results = countries.Select( LinkCountry ).OrderBy( t => t.Item2.Updated );
-            foreach( var ( id, count, time ) in results ) {
+            var results = countries.Select( LinkCountry ).ToList();
+            foreach( var ( id, count, time ) in results.OrderBy( t => t.Item2.Updated ) ) {
                 Log( "country", id, count.Pretty, time.ToString() );
             }
 
