@@ -35,6 +35,7 @@ namespace AdmitadExamplesParserTests
         [ TestCase( "gloriajeans" ) ]
         [ TestCase( "tamaris" ) ]
         [ TestCase( "laredoute" ) ]
+        [ TestCase( "gullivermarket" ) ]
         public void ParsingTest( string shopName )
         {
             DoParsing( shopName );

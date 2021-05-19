@@ -83,7 +83,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 DbHelper.WriteUnknownBrands();
                 DbHelper.SaveUnknownCountries();
             }
-            catch( Exception e ) {
+            catch( Exception ) {
                 context.AddMessage( $"Db work error", true );
             }
         }

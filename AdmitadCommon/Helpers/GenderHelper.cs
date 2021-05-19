@@ -65,10 +65,10 @@ namespace AdmitadCommon.Helpers
                 ( _womanPattern, Gender.Woman ),
                 ( _menPattern, Gender.Man ),
                 ( _unisexPattern, Gender.Unisex ),
-                ( _childPattern, Gender.Child ),
                 //( _babyPattern, Gender.Child ),
                 ( _girlPattern, Gender.Girl ),
-                ( _boyPattern, Gender.Boy )
+                ( _boyPattern, Gender.Boy ),
+                ( _childPattern, Gender.Child ),
             };
             foreach( var ( pattern, gender ) in patterns ) {
                 var m = pattern.Match( line.ToLower() );

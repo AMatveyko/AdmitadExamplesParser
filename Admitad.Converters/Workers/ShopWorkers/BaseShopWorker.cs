@@ -152,8 +152,9 @@ namespace Admitad.Converters.Workers.ShopWorkers
             var gender = GetGenderFromParam( rawOffer.Params );
             var age = GetAgeFromParam( rawOffer.Params );
 
-            if( gender == Gender.Undefined ) {
-                gender = GetGenderFromCategory( rawOffer );
+            if( gender is Gender.Undefined or Gender.Unisex ) {
+                var genderFromCategory = GetGenderFromCategory( rawOffer );
+                gender = genderFromCategory == Gender.Undefined ? gender : genderFromCategory;
             }
 
 
@@ -191,12 +192,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
         protected virtual Age GetAgeFromParam( IEnumerable<RawParam> @params ) {
             var value = GetParamValueByName( @params, new [] { AgeParamName } );
             return AgeHelper.GetAge( value );
-        }
-
-        private Gender GetGender( RawOffer rawOffer )
-        {
-            var gender = GetGenderFromParam( rawOffer.Params );
-            return gender == Gender.Undefined ? GetGenderFromCategory( rawOffer ) : gender;
         }
 
         private static Gender GetGenderFromCategory( RawOffer rawOffer ) =>
