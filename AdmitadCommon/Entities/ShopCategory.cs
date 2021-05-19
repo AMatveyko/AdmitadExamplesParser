@@ -11,5 +11,11 @@ namespace AdmitadCommon.Entities
         [ XmlAttribute( "parentId" ) ] public string ParentId { get; set; }
         [ XmlText ]
         public string Name { get; set; }
+        // [ XmlIgnore ]
+        // public int WomenProductsNumber { get; set; }
+        // [ XmlIgnore ]
+        // public int MenProductsNumber { get; set; }
+        // [ XmlIgnore ]
+        // public int TotalProductsNumber { get; set; }
     }
 }

@@ -41,6 +41,5 @@ namespace AdmitadCommon.Entities
             }
             return string.Join( "\\", path );
         }
-
     }
 }

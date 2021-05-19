@@ -22,6 +22,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 "goods" => new GoodsWorker(),
                 "gloriajeans" => new GloriaJeansWorker(),
                 "tamaris" => new TamarisWorker(),
+                "Incanto" => new IncantoShopWorker(),
                 _ => new DefaultShopWorker()
             };
         }

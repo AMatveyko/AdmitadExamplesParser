@@ -45,10 +45,13 @@ namespace TheStore.Api.Core.Sources.Workers
             DisableProducts();
             _context.Content = $"{products.Count} products";
             Finish();
+            // Finish( products );
         }
 
         private void Finish()
+        // private void Finish( List<Product> products )
         {
+            // _statistics.FillCategories( products );
             SetProductsStatistics( "After" );
             DbHelper.WriteShopStatistics( _statistics );
         }

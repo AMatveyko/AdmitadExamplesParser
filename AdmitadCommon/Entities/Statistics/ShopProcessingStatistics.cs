@@ -97,6 +97,38 @@ namespace AdmitadCommon.Entities.Statistics
                 _logger.Error( e );
             }
         }
+        
+        // public void FillCategories( List<Product> products )
+        // {
+        //     if( products != null &&
+        //         products.Any() &&
+        //         _shopData.Categories != null &&
+        //         _shopData.Categories.Any() ) {
+        //         var groupedProducts = products.Where( p => p.OriginalCategoryId.IsNotNullOrWhiteSpace() )
+        //             .GroupBy( p => p.OriginalCategoryId ).ToArray();
+        //         
+        //         if( groupedProducts.Any() == false ) {
+        //             return;
+        //         }
+        //
+        //         foreach( var group in groupedProducts ) {
+        //             FillCategory( group );
+        //         }
+        //         
+        //     }
+        // }
+
+        // private void FillCategory( IGrouping<string, Product> group )
+        // {
+        //     if( _shopData.Categories.ContainsKey( group.Key ) == false ) {
+        //         return;
+        //     }
+        //
+        //     var category = _shopData.Categories[ group.Key ];
+        //     category.TotalProductsNumber = group.Count();
+        //     category.MenProductsNumber = group.Count( p => p.Gender == "m" );
+        //     category.WomenProductsNumber = group.Count( p => p.Gender == "w" );
+        // }
 
     }
 }

@@ -250,8 +250,7 @@ namespace Admitad.Converters.Workers
             var query = string.Join( " OR ", country.SearchTerms );
             descriptor = descriptor.Filter(
                 queryString => queryString.QueryString(
-                    qs => qs.Fields( fields => GetFields( fields, new[] {"params", "description", "name"} ) )
-                        .Query( query ) ),
+                    qs => qs.Query( query ) ),
                 q => q.Term( t => t.Field( "countryId.keyword" ).Value( Constants.UndefinedCountryId.ToString() ) ) );
             return descriptor;
         } 

@@ -23,8 +23,8 @@ namespace AdmitadExamplesParserTests
 
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            //ElasticSearchUrl = "http://elastic.matveyko.su:9200",
-            ElasticSearchUrl = "http://127.0.0.1:8888",
+            ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            //ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-25",
             FrameSize = 10000
         };
@@ -49,6 +49,15 @@ namespace AdmitadExamplesParserTests
 
             var countries = DbHelper.GetCountries();
             linker.LinkCountries( countries );
+        }
+
+        [ Test ]
+        public void LinkCountry()
+        {
+            var country = DbHelper.GetCountries().FirstOrDefault( c => c.Id == 19 );
+            var client = CreateClient();
+            var result = client.UpdateProductsFroCountry( country );
+            ;
         }
         
         [ Test ]

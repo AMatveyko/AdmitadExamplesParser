@@ -288,7 +288,10 @@ namespace AdmitadSqlData.Helpers
                 ParentId = category.ParentId ?? string.Empty,
                 Name = PrepareCategoryName( category.Name ),
                 UpdateDate = DateTime.Now,
-                ShopId = shopId
+                ShopId = shopId,
+                // WomenProductsNumber = category.WomenProductsNumber,
+                // MenProductsNumber = category.MenProductsNumber,
+                // TotalProductsCount = category.TotalProductsNumber
             };
 
         private static string PrepareCategoryName( string data )

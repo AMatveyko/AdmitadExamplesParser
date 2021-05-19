@@ -187,6 +187,9 @@ namespace AdmitadSqlData.Repositories
 
                 fromDb.Name = category.Name;
                 fromDb.ParentId = category.ParentId;
+                // fromDb.WomenProductsNumber = category.WomenProductsNumber;
+                // fromDb.MenProductsNumber = category.MenProductsNumber;
+                
                 fromDb.UpdateDate = category.UpdateDate;
             }
 
