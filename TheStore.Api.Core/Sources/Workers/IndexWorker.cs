@@ -35,11 +35,25 @@ namespace TheStore.Api.Core.Sources.Workers
             _context = context;
         }
 
-        public void Index( IndexShopContext context )
+        public void LinkAll( LinkAllContext context )
+        {
+            CheckContextType( context );
+            DoLink();
+            Wait();
+            LogResult();
+        }
+
+        private void CheckContextType< T >( T context )
         {
             if( ReferenceEquals( context, _context ) == false ) {
                 throw new ArgumentException( "Разные контексты!" );
             }
+        }
+        
+        public void Index( IndexShopContext context )
+        {
+            
+            CheckContextType( context );
             
             var xmlInfo = DbHelper.GetShop( context.ShopId );
             context.ShopName = xmlInfo.Name;
@@ -64,9 +78,9 @@ namespace TheStore.Api.Core.Sources.Workers
 
         public void IndexAll( IndexAllShopsContext context )
         {
-            if( ReferenceEquals( context, _context ) == false ) {
-                throw new ArgumentException( "Разные контексты!" );
-            }
+            
+            CheckContextType( context );
+            
             var xmlInfos = DbHelper.GetEnableShops();
             DownloadAll( xmlInfos );
             context.SetProgress( 60, 100 );

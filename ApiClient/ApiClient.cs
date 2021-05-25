@@ -20,7 +20,7 @@ namespace ApiClient
             RequestSettings settings ) =>
             _settings = settings;
         
-        public TopContext RunAndCheckIndex() => new RunAndCheckIndexRequest( _settings ).Execute();
+        public TopContext RunAndCheckIndex() => new IndexAllRequest( _settings ).Execute();
 
         public TotalShopsStatistics GetShopStatistics() => new GetShopStatisticsRequest( _settings ).Execute();
 
@@ -28,6 +28,8 @@ namespace ApiClient
             start != null
                 ? new GetTotalStatisticsRequest( start.Value, _settings ).Execute()
                 : new GetTotalStatisticsRequest( _settings ).Execute();
+
+        public TopContext RunAndCheckLinkAll() => new LinkAllRequest( _settings ).Execute();
 
     }
 }

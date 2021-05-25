@@ -107,5 +107,16 @@ namespace TheStore.Api.Core.Controllers
             return _works.AddToQueue( worker.LinkTags, context, QueuePriority.Low, clean );
         }
 
+        [ HttpGet ]
+        [ Route( "LinkAll" ) ]
+        public IActionResult LinkAll( bool clean = false )
+        {
+            var context = new LinkAllContext();
+            return _works.AddToQueue(
+                new IndexWorker( _settings, context, _works ).LinkAll,
+                context, QueuePriority.Parallel,
+                clean );
+        }
+
     }
 }

@@ -10,5 +10,10 @@ namespace AdmitadCommon.Helpers
             string directoryPath,
             XmlFileInfo fileInfo ) =>
             $"{directoryPath}{fileInfo.NameLatin}.xml".Replace( "//", "/" );
+
+        public static string CombinePath(
+            string firstPath,
+            string secondPath ) =>
+            $"{firstPath.TrimEnd( '/' )}/{secondPath.TrimEnd( '/' )}".Replace( "//", "/" );
     }
 }

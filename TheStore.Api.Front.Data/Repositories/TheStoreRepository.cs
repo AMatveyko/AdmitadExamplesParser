@@ -9,59 +9,33 @@ using TheStore.Api.Front.Data.Entities;
 
 namespace TheStore.Api.Front.Data.Repositories
 {
-    public sealed class TheStoreRepository
+    public sealed class TheStoreRepository : BaseRepository
     {
 
-        private readonly TheStoreDbContext _db;
-        
-        public TheStoreRepository( string connectionString, string version )
-        {
-            _db = new TheStoreDbContext( connectionString, version );
-        }
+        public TheStoreRepository( string connectionString, string version ) : base( connectionString, version ) { }
         
         public void UpdateCompareList( IEnumerable<CompareListingDb> compareList )
         {
 
-            _db.CompareListings.RemoveRange( _db.CompareListings );
-            _db.CompareListings.AddRange( compareList );
-            
-            // var listFromDb =
-            //     _db.CompareListings.ToDictionary( l => l.Url, l => l );
-            //
-            // foreach( var compare in compareList ) {
-            //
-            //     if( listFromDb.ContainsKey( compare.Url ) == false ) {
-            //         _db.CompareListings.Add( compare );
-            //         continue;
-            //     }
-            //
-            //     var compareDb = listFromDb[ compare.Url ];
-            //
-            //     if( compareDb.Visits != compare.Visits ) {
-            //         compareDb.Visits = compare.Visits;
-            //     }
-            //
-            //     if( compareDb.NewSiteProductCount != compare.NewSiteProductCount ) {
-            //         compareDb.NewSiteProductCount = compare.NewSiteProductCount;
-            //     }
-            //
-            //     if( compareDb.NewSiteShopCount != compare.NewSiteShopCount ) {
-            //         compareDb.NewSiteShopCount = compare.NewSiteShopCount;
-            //     }
-            //
-            //     if( compareDb.OldSiteProductCount != compare.OldSiteProductCount ) {
-            //         compareDb.OldSiteProductCount = compare.OldSiteProductCount;
-            //     }
-            //
-            //     if( compareDb.OldSiteShopCount != compare.OldSiteShopCount ) {
-            //         compareDb.OldSiteShopCount = compare.OldSiteShopCount;
-            //     }
-            //
-            //     compareDb.AddDate = compare.AddDate;
-            //
-            // }
+            var fromDb = DB.CompareListings.ToList();
+            foreach( var line in compareList ) {
+                var lineDb = fromDb.FirstOrDefault( f => f.Url == line.Url );
+                
+                if( lineDb == null ) {
+                    DB.CompareListings.Add( line );
+                    continue;
+                }
 
-            _db.SaveChanges();
+                lineDb.AddDate = line.AddDate;
+                lineDb.Visits = line.Visits;
+                lineDb.OldSiteProductCount = line.OldSiteProductCount;
+                lineDb.OldSiteShopCount = line.OldSiteShopCount;
+                lineDb.NewSiteProductCount = line.NewSiteProductCount;
+                lineDb.NewSiteShopCount = line.NewSiteShopCount;
+
+            }
+
+            DB.SaveChanges();
 
         }
     }

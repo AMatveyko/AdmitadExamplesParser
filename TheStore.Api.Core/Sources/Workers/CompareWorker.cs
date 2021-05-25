@@ -18,7 +18,7 @@ using TheStore.Api.Front.Data.Repositories;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
-    internal sealed class CompareWorker
+    public sealed class CompareWorker
     {
 
         private static readonly Logger LoggerError = LogManager.GetLogger( "DownloadPageError" );
@@ -31,18 +31,12 @@ namespace TheStore.Api.Core.Sources.Workers
         private static Regex _emptyPagePattern =
             new(@"К сожалению (.*), но обратите внимание на популярное сегодня", RegexOptions.Compiled);
 
-        public CompareWorker(
-            TheStoreRepository repository, BackgroundBaseContext context ) =>
+        public CompareWorker( TheStoreRepository repository, BackgroundBaseContext context ) =>
             ( _repository, _context ) = ( repository, context );
         
         public void CompareAndWrite( List<UrlInfo> infos )
         {
-            try {
-                DoCompareAndWrite( infos );
-            } catch( Exception e ) {
-                LoggerError.Error( e );
-                throw new Exception();
-            }
+            DoCompareAndWrite( infos );
         }
 
         private void DoCompareAndWrite( List<UrlInfo> infos )
@@ -55,7 +49,7 @@ namespace TheStore.Api.Core.Sources.Workers
             _context.AddMessage( "Записали в бд" );
         }
 
-        private CompareListingDb Convert( UrlInfo info )
+        public CompareListingDb Convert( UrlInfo info )
         {
             var oldSitePageTask = Task.Run( () => DownloadAndParseAsync( info.OldSiteUrl, true ) );
             var newSitePageTask = Task.Run( () => DownloadAndParseAsync( info.NewSiteUrl, false ) );

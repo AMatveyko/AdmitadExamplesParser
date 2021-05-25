@@ -9,6 +9,7 @@ namespace AdmitadCommon.Entities
     public sealed class Offer : IIndexedEntities, IExtendedOffer, IBaseOffer
     {
         public string Id { get; set; }
+        public string OriginalId { get; set; }
         public string RoutingId { get; }
 
         public const string IndexNameConst = "offers";
@@ -40,6 +41,7 @@ namespace AdmitadCommon.Entities
         public int BrandId { get; set; }
         public string VendorNameClearly { get; set; }
         public int CountryId { get; set; }
+        public string OriginalVendor { get; set; }
 
         public void AddParamIfNeed( RawParam raw ) {
             AddParamIfNeed( raw.Name.ToLower(), raw.Value.ToLower(), raw.Unit?.ToLower() );

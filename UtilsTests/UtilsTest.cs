@@ -2,11 +2,16 @@
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
 
 using Messenger;
 
 using NUnit.Framework;
+
+using TheStore.Api.Core.Sources.Entities;
+using TheStore.Api.Core.Sources.Workers;
+using TheStore.Api.Front.Data.Repositories;
 
 namespace UtilsTests
 {
@@ -58,6 +63,18 @@ namespace UtilsTests
             messenger.Send( "Test" );
         }
 
+
+        [ Test ]
+        public void UrlParserTest()
+        {
+            var repository = new TheStoreRepository( "server=185.221.152.127;user=thestore;password=moonlike-mitts-0Concord;database=theStore;", "10.3.27" );
+            var worker = new CompareWorker( repository, new BackgroundBaseContext("1","1"));
+            var result = worker.Convert( new UrlInfo(
+                1,
+                "https://thestore.ru/brand-jb4/",
+                "https://thestore.matveyko.su/brand-jb4/" ) );
+        }
+        
         private IMessenger CreateMessenger()
         {
             var messengerSettings = new MessengerSettings();

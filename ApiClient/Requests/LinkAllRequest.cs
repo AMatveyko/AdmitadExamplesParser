@@ -7,15 +7,17 @@ using Web.Common.Entities.Requests;
 
 namespace ApiClient.Requests
 {
-    internal sealed class RunAndCheckIndexRequest : BaseRequest<TopContext>
+    internal sealed class LinkAllRequest : BaseRequest<TopContext>
     {
+        
         private const string Controller = "Index";
-        private const string MethodName = "IndexAllShops";
+        private const string MethodName = "LinkAll";
 
-        public RunAndCheckIndexRequest( RequestSettings settings, bool clean = true )
+        public LinkAllRequest(
+            RequestSettings settings )
             : base( Controller, MethodName, settings )
         {
-            AddParam( nameof(clean), clean.ToString().ToLower() );
+            AddParam( "clean", "true" );
         }
     }
 }

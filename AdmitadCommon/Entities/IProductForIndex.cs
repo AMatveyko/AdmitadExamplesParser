@@ -25,6 +25,7 @@ namespace AdmitadCommon.Entities
         [ JsonProperty ( "age" ) ] public string Age { get; }
         [ JsonProperty ( "shopId" ) ] public string ShopId { get; }
         [ JsonProperty ( "brandId" ) ] public string BrandId { get; }
+        [ JsonProperty ( "vendor" ) ] public string Vendor { get; }
         [ JsonProperty ( "vendorNameClearly" ) ] public string VendorNameClearly { get; }
         [ JsonProperty ( "country" ) ] public string CountryId { get; }
         [ JsonProperty ( "price" ) ] public decimal Price { get; }
@@ -32,6 +33,8 @@ namespace AdmitadCommon.Entities
         [ JsonProperty ( "discount" ) ] public short Discount { get; }
         [ JsonProperty ( "currency" ) ] public string Currency { get; }
         [ JsonProperty ( "salesNotes" ) ] public string SalesNotes { get; }
+        [ JsonProperty( "offerIds" ) ] public string[] OfferIds { get; }
         [ JsonProperty( "soldout" ) ] public byte Soldout { get; set; }
+        
     }
 }

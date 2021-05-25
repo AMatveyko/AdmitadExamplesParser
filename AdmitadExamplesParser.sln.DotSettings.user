@@ -28,5 +28,7 @@
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.LinkCountries&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.LinkCountry&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("gullivermarket")&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.TagsLinkTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.UrlParserTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

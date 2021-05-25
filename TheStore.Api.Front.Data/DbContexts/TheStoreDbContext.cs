@@ -22,7 +22,7 @@ namespace TheStore.Api.Front.Data.DbContexts
         }
 
         public DbSet<CompareListingDb> CompareListings { get; set; }
-        
+
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {
             optionsBuilder.UseMySql( _connectionString,

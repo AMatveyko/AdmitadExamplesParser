@@ -103,18 +103,40 @@ namespace Admitad.Converters
 
         private DownloadInfo DownloadFile(
             XmlFileInfo fileInfo,
-            string directoryPath )
-        {
+            string directoryPath ) {
+            
+            FileWork( directoryPath, fileInfo );
+            
             var downloadInfo = new DownloadInfo( fileInfo.ShopId, fileInfo.NameLatin ) {
                 StartTime = DateTime.Now,
                 ShopName = fileInfo.Name,
                 Url = fileInfo.XmlFeed,
                 FilePath = FilePathHelper.GetFilePath( directoryPath, fileInfo )
             };
-            if( File.Exists( downloadInfo.FilePath ) ) {
-                File.Delete( downloadInfo.FilePath );
-            }
+
             return DoDownloadFile( downloadInfo );
+        }
+
+        private static void FileWork( string directoryPath, XmlFileInfo fileInfo )
+        {
+            var filePath = FilePathHelper.GetFilePath( directoryPath, fileInfo );
+            var oldDirectoryPath = FilePathHelper.CombinePath( directoryPath, "old" );
+            
+            if( File.Exists( filePath ) == false ) {
+                return;
+            }
+            
+            if( Directory.Exists( oldDirectoryPath ) == false ) {
+                Directory.CreateDirectory( oldDirectoryPath );
+            }
+            
+            var oldFilePath = FilePathHelper.GetFilePath( oldDirectoryPath, fileInfo );
+            
+            if( File.Exists( oldFilePath ) ) {
+                File.Delete( oldFilePath );
+            }
+            
+            File.Move( filePath, oldFilePath );
         }
         
         private DownloadInfo DoDownloadFile( DownloadInfo info ) {

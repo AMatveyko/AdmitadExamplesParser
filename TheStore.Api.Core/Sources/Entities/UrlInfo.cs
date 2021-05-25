@@ -2,7 +2,7 @@
 
 namespace TheStore.Api.Core.Sources.Entities
 {
-    internal sealed class UrlInfo
+    public sealed class UrlInfo
     {
         public UrlInfo( int visits, string oldSiteUrl, string newSiteUrl ) =>
             ( Visits, OldSiteUrl, NewSiteUrl ) = ( visits, oldSiteUrl, newSiteUrl );

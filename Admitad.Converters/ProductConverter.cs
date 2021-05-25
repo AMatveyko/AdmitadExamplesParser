@@ -103,7 +103,9 @@ namespace Admitad.Converters
                 Delivery = 0,
                 BrandId = DbHelper.GetBrandId( offer.VendorNameClearly ),
                 SalesNotes = offer.SalesNotes,
-                OriginalCategoryId = offer.CategoryId
+                OriginalCategoryId = offer.CategoryId,
+                OfferIds = offers.Select( o => o.OriginalId ).ToArray(),
+                Vendor = offer.OriginalVendor
             };
         }
     }

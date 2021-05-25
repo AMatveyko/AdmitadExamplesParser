@@ -11,7 +11,7 @@ namespace AdmitadSqlData.Repositories
 
         protected BaseRepository( string connectionString = null )
         {
-            ConnectionString = connectionString ?? "server=elastic.matveyko.su;user=thestore;password=moonlike-mitts-0Concord;database=theStore;convert zero datetime=True;";
+            ConnectionString = connectionString ?? "server=185.221.152.127;user=thestore;password=moonlike-mitts-0Concord;database=theStore;convert zero datetime=True;";
         }
         
         protected ShopDbContext GetDb() => new ShopDbContext( ConnectionString );

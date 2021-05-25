@@ -45,6 +45,7 @@ namespace Admitad.Converters.Workers
                 //.Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
                 .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
+            _client.Cluster.PutSettings( descriptor => descriptor.Transient( f => f.Add( "script.max_compilations_rate", "10000/1m" ) ) );
             _withStatistics = withStatics;
             _frameSize = settings.FrameSize;
             _settings = settings;
@@ -556,7 +557,31 @@ namespace Admitad.Converters.Workers
             _context.AddMessage( $"Update { count } products" );
         }
 
-        private void DoBulkAllOld(
+        public void DoBulkAllForImport(
+            IEnumerable<T> entities )
+        {
+            var list = entities.ToList();
+            var position = 0;
+            var frameSize = 100000;
+            var count = 0;
+            while( position < list.Count ) {
+                var portion = list.Skip( position ).Take( frameSize );
+                var result = _client.Bulk( b => b.UpdateMany<T,T>( portion, (
+                    descriptor,
+                    entity ) => descriptor.Upsert( entity ).DocAsUpsert().Doc( (T)entity ).Routing( entity.RoutingId ) ) );
+                ResponseCollector.Responses.Add( ( _settings.ShopName, "products", result ) );
+                position += frameSize;
+                count += portion.Count();
+                if( result.DebugInformation.Contains( "Invalid" ) ) {
+                    _context.AddMessage( "Update error!", true );
+                    Logger.Error( result.DebugInformation );
+                }
+                
+            }
+            _context.AddMessage( $"Update { count } products" );
+        }
+        
+        public void DoBulkAllOld(
             IEnumerable<T> entities )
         {
             

@@ -1,15 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
 using Admitad.Converters;
 
-using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Settings;
 
 using ApiClient.Responces;
 
-using Messenger;
+using MySqlConnector;
 
 using Newtonsoft.Json;
 
@@ -21,7 +22,7 @@ namespace ApiClient
 {
     static class Program
     {
-        
+
         private static readonly Logger IndexLogger = LogManager.GetLogger( "IndexLogger" );
         private static readonly Logger StatisticsLogger = LogManager.GetLogger( "StatisticsLogger" );
         private static readonly Logger ErrorLogger = LogManager.GetLogger( "ErrorLogger" );
@@ -30,14 +31,40 @@ namespace ApiClient
             new(@"Info: Всего (?<numberShops>\d+) c ошибками \d+ time \d+", RegexOptions.Compiled);
         private static readonly Regex ShopNamePattern =
             new(@"Error: (?<shopName>.+): ClosedStore time \d+", RegexOptions.Compiled);
-        
+
         private static bool _finish;
         private static TopContext _lastResult;
 
-        static void Main( string[] args )
+
+        private static void RunAndCheck(
+            Func<TopContext> func )
         {
+            var iterationCount = 0;
+            while( _finish == false ) {
+                iterationCount++;
+                Console.Write( $"{iterationCount} " );
+                var response = func();
+                _lastResult = response;
+                _finish = response.IsFinished || response.IsError;
+                Thread.Sleep( 30000 );
+            }
 
+        }
 
+        static void Main(
+            string[] args )
+        {
+            try {
+                DoWork( args );
+            }
+            catch( Exception e ) {
+                ErrorLogger.Error( e );
+            }
+        }
+
+        private static void DoWork( string[] args )
+        {
+            
             var apiClient = new ApiClient( new RequestSettings( "http://localhost:8080", ErrorLogger ) );
             
             var statBefore = apiClient.GetTotalStatistics();
@@ -45,17 +72,38 @@ namespace ApiClient
                 TotalBefore = statBefore.Products,
                 SoldOutBefore = statBefore.SoldOut
             };
-
-            var iterationCount = 0;
-            while( _finish == false ) {
-                iterationCount++;
-                Console.Write( $"{iterationCount } " );
-                var response = apiClient.RunAndCheckIndex();
-                _lastResult = response;
-                _finish = response.IsFinished || response.IsError;
-                Thread.Sleep( 30000 );
+            
+            Func<TopContext> func = args.Length == 0 || args[ 0 ] == "index"
+                ? apiClient.RunAndCheckIndex
+                : apiClient.RunAndCheckLinkAll;  
+            
+            RunAndCheck( func );
+            
+            if( args.Length == 0 || args[ 0 ] == "index" ) {
+                IndexWork( report, apiClient );
+            }
+            else {
+                SendMessage( "Завершили линковку" );
             }
             
+            FlushListingCash();
+        }
+        
+        private static void FlushListingCash()
+        {
+            const string settingsPath = @"o:\admitad\workData\settings.json";
+            var settings = JsonConvert.DeserializeObject<TotalSettings>( File.ReadAllText( settingsPath ) );
+            var connectionString =
+                $"Server={settings.MySQLHost};User ID={settings.MySQLUser};Password={settings.MySQLPassword};Database={settings.MySQLDatabase}";
+            using var connection = new MySqlConnection( connectionString );
+            connection.Open();
+            var commandString = $"TRUNCATE TABLE {settings.MySQLListingCashTable}"; 
+            using var command = new MySqlCommand( commandString, connection );
+            command.ExecuteScalar();
+        }
+        
+        private static void IndexWork( Report report, ApiClient apiClient )
+        {
             IndexLogger.Info( JsonConvert.SerializeObject( _lastResult ) );
             
             report.IsError = _lastResult.IsError || _lastResult.Contexts.Any( c => c.IsError );
@@ -96,9 +144,8 @@ namespace ApiClient
             report.Time = _lastResult.Time;
             
             SendMessage( report.ToString() );
-
         }
-
+        
         private static void SendMessage( string message )
         {
             var settings = SettingsBuilder.GetMessengerSettings();

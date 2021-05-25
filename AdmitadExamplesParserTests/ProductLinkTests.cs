@@ -23,9 +23,9 @@ namespace AdmitadExamplesParserTests
 
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            ElasticSearchUrl = "http://185.221.152.127:9200",
             //ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-25",
+            DefaultIndex = "products-old-1",
             FrameSize = 10000
         };
 
@@ -89,7 +89,7 @@ namespace AdmitadExamplesParserTests
             //",jeans"
             var categoryId = "10101080";
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == categoryId );
-            var client = CreateClient( "products-25" );
+            var client = CreateClient( "products-1" );
             var unlinkResult = client.UnlinkCategory( category );
             var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
@@ -107,7 +107,7 @@ namespace AdmitadExamplesParserTests
         public void CountryLinkTest()
         {
             var countries = DbHelper.GetCountries().FirstOrDefault();
-            var client = CreateClient( "products-25" );
+            var client = CreateClient( "products-1" );
             var result = client.UpdateProductsFroCountry( countries );
             Console.WriteLine( $"Linked: {result.Updated}/{result.Updated}");
         }
@@ -121,10 +121,20 @@ namespace AdmitadExamplesParserTests
         private void TagRelinkTest( string tagId )
         {
             var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
-            var client = CreateClient( "products-25" );
+            var client = CreateClient( "products-1" );
             var unlinkResult = client.UnlinkTag( tag );
             var linkResult = client.UpdateProductsForTag( tag );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
+        }
+
+        [ Test ]
+        public void TagLinkTest()
+        {
+            var tagId = "3313";
+            var client = CreateClient( "products-1" );
+            var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
+            var linkResult = client.UpdateProductsForTag( tag );
+            Console.WriteLine( $"Linked: {linkResult}" );
         }
         
         [ Test ]
@@ -138,7 +148,7 @@ namespace AdmitadExamplesParserTests
         }
         
         [ Test ]
-        public void TagLinkTest()
+        public void TagsLinkTest()
         {
             var linker = new ProductLinker( _settings, new BackgroundBaseContext("1", "name") );
             linker.LinkTags( DbHelper.GetTags() );

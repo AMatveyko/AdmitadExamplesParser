@@ -85,6 +85,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             var price = GetPrice( rawOffer.Price );
             var oldPrice = GetPrice( rawOffer.OldPriceClean );
             offer.Id = HashHelper.GetMd5Hash( rawOffer.ShopName, rawOffer.OfferId );
+            offer.OriginalId = rawOffer.OfferId;
             offer.ProductId = HashHelper.GetMd5Hash( rawOffer.Pictures.FirstOrDefault() ?? rawOffer.Url );
             offer.Url = rawOffer.Url;
             offer.Currency = CurrencyHelper.GetCurrency( rawOffer.CurrencyId );
@@ -103,6 +104,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             offer.UpdateDate = rawOffer.UpdateTime;
             offer.Delivery = rawOffer.IsDelivered ?? false;
             offer.SalesNotes = rawOffer.SalesNotes;
+            offer.OriginalVendor = rawOffer.Vendor;
         }
 
         
@@ -153,7 +155,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             var age = GetAgeFromParam( rawOffer.Params );
 
             if( gender is Gender.Undefined or Gender.Unisex ) {
-                var genderFromCategory = GetGenderFromCategory( rawOffer );
+                var genderFromCategory = GetGenderFromCategoryAndName( rawOffer );
                 gender = genderFromCategory == Gender.Undefined ? gender : genderFromCategory;
             }
 
@@ -194,8 +196,8 @@ namespace Admitad.Converters.Workers.ShopWorkers
             return AgeHelper.GetAge( value );
         }
 
-        private static Gender GetGenderFromCategory( RawOffer rawOffer ) =>
-            GenderHelper.GetGender( new[] {rawOffer.CategoryPath, rawOffer.MarketCategory} );
+        private static Gender GetGenderFromCategoryAndName( RawOffer rawOffer ) =>
+            GenderHelper.GetGender( new[] {rawOffer.CategoryPath, rawOffer.MarketCategory, rawOffer.Name} );
 
         private Gender GetGenderFromParam( IEnumerable<RawParam> @params ) {
             var value = GetParamValueByName( @params, GenderParamName );
