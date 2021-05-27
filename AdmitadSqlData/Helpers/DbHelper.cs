@@ -104,7 +104,7 @@ namespace AdmitadSqlData.Helpers
             _theStoreRepository.UpdateProductsByCategory( category, before, after );
         }
         
-        public static void RememberVendorIfUnknown( string cleanName )
+        public static void RememberVendorIfUnknown( string cleanName, string originalName )
         {
             if( UnknownBrandsNeedClean ) {
                 _theStoreRepository.ClearUnknownBrands();
@@ -121,7 +121,11 @@ namespace AdmitadSqlData.Helpers
             }
 
             if( UnknownBrands.ContainsKey( cleanName ) == false ) {
-                UnknownBrands[ cleanName ] =  new UnknownBrands { Name = cleanName, NumberOfProducts = 0 };
+                UnknownBrands[ cleanName ] =  new UnknownBrands {
+                    Name = cleanName,
+                    OriginalName = originalName,
+                    NumberOfProducts = 0
+                };
             }
 
             UnknownBrands[ cleanName ].NumberOfProducts++;
@@ -304,6 +308,8 @@ namespace AdmitadSqlData.Helpers
         {
             var color = new ColorProperty {
                 Id = colorDb.Id.ToString(),
+                Name = colorDb.Name,
+                LatinName = colorDb.LatinName,
                 ParentId = colorDb.ParentId.ToString(),
                 Names = NotEmptyStringsToList(
                     CombineSearchWords(
@@ -376,7 +382,8 @@ namespace AdmitadSqlData.Helpers
                     : SplitComa( fromDb.Fields ),
                 Name = fromDb.Name,
                 NameH1 = fromDb.NameH1,
-                SearchSpecify = CreateTerms( fromDb.SearchSpecify )
+                SearchSpecify = CreateTerms( fromDb.SearchSpecify ),
+                TakeUnisex = fromDb.TakeUnisex
             };
 
         private static SettingsOption Convert( OptionDb optionDb ) =>

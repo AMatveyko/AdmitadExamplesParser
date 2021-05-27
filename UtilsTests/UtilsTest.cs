@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 using AdmitadCommon.Entities;
@@ -73,6 +74,22 @@ namespace UtilsTests
                 1,
                 "https://thestore.ru/brand-jb4/",
                 "https://thestore.matveyko.su/brand-jb4/" ) );
+        }
+
+        [ Test ]
+        public void FindDuplicates()
+        {
+            var indexIdPath = @"o:\admitad\workData\scrollApi\products-1.txt";
+            var indexOldIdPath = @"o:\admitad\workData\scrollApi\products-old-1.txt";
+            var duplicate = @"o:\admitad\workData\scrollApi\duplicate.txt";
+
+            var newIds = File.ReadAllLines( indexIdPath ).ToList();
+            var oldIds = File.ReadAllLines( indexOldIdPath ).ToList();
+            var newIdsSet = newIds.ToHashSet();
+            var oldIdsSet = oldIds.ToHashSet();
+            var duplicates = oldIdsSet.Where( id => newIdsSet.Contains( id ) ).ToHashSet();
+            File.WriteAllLines( duplicate, duplicates );
+
         }
         
         private IMessenger CreateMessenger()

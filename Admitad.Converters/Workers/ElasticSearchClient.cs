@@ -45,15 +45,42 @@ namespace Admitad.Converters.Workers
                 //.Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
                 .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
-            _client.Cluster.PutSettings( descriptor => descriptor.Transient( f => f.Add( "script.max_compilations_rate", "10000/1m" ) ) );
             _withStatistics = withStatics;
             _frameSize = settings.FrameSize;
             _settings = settings;
+            
+            Setup();
         }
 
+        private void Setup()
+        {
+            _client.Cluster.PutSettings( descriptor => descriptor.Transient( f => f.Add( "script.max_compilations_rate", "10000/1m" ) ) );
+        }
 
+        #region Scroll api
 
+        public List<string> GetIds()
+        {
+            var searchResponse = _client.Search<Product>(s => s
+                .Source( false ).Query(q => q.MatchAll() )
+                .Scroll("1m") 
+            );
 
+            var ids = new List<string>();
+
+            while ( searchResponse.Documents.Any() ) {
+                ids.AddRange( searchResponse.Hits.Select( p => p.Id ) );
+                Console.WriteLine( ids.Count );
+                searchResponse = _client.Scroll<Product>("1m", searchResponse.ScrollId );
+            }
+            
+            
+            
+            return ids;
+        }
+        
+        #endregion
+        
         #region Product
 
         public ProductResponse GetProduct( string id )
@@ -227,9 +254,6 @@ namespace Admitad.Converters.Workers
         }
         
         #endregion
-
-
-
 
         #region Countries
 
@@ -422,11 +446,18 @@ namespace Admitad.Converters.Workers
                 var queryWithSpecify = string.Join( " OR ", category.SearchSpecify );
                 query = $"( {query} ) AND ( {queryWithSpecify} )";
             }
+
+            var criteria = new List<Func<QueryContainerDescriptor<Product>,QueryContainer>> {
+                gbs => gbs.Term( t => t.Field( p => p.Gender ).Value( category.Gender ) )
+            };
+
+            if( category.TakeUnisex ) {
+                criteria.Add( gbs => gbs.Term( t => t.Field( p => p.Gender ).Value( GenderHelper.Convert( Gender.Unisex ) ) ) );
+            }
+            
             var terms = new List<Func<QueryContainerDescriptor<Product>,QueryContainer>> {
                 queryString => queryString.QueryString( qs => qs.Fields( fields => GetFields( fields, category.Fields )).Query( query ) ),
-                gender => gender.Bool( gb => gb.Should(
-                    gbs => gbs.Term( t => t.Field( p => p.Gender ).Value( category.Gender ) ),
-                    gbs => gbs.Term( t => t.Field( p => p.Gender ).Value( GenderHelper.Convert( Gender.Unisex ) ) ) )),
+                gender => gender.Bool( gb => gb.Should( criteria ) ),
                 age => age.Term( t => t.Field( p => p.Age ).Value( category.Age ) )
             };
             
@@ -689,6 +720,7 @@ namespace Admitad.Converters.Workers
         }
         
         #endregion
+        
         
         public long CountProductsForShop( string shopId )
         {

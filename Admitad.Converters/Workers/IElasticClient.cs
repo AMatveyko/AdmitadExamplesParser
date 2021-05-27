@@ -60,5 +60,6 @@ namespace Admitad.Converters.Workers
 
         UpdateResult UpdateProductsFroCountry(
             Country country );
+        
     }
 }

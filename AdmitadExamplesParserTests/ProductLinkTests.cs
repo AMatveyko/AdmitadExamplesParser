@@ -23,9 +23,9 @@ namespace AdmitadExamplesParserTests
 
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            ElasticSearchUrl = "http://185.221.152.127:9200",
-            //ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-old-1",
+            // ElasticSearchUrl = "http://185.221.152.127:9200",
+            ElasticSearchUrl = "http://127.0.0.1:8888",
+            DefaultIndex = "products-1",
             FrameSize = 10000
         };
 
@@ -33,7 +33,7 @@ namespace AdmitadExamplesParserTests
         public void DisableOldProducts()
         {
             var client = CreateClient();
-            client.DisableOldProducts( DateTime.Now, "143" );
+            client.DisableOldProducts( DateTime.Now, "163" );
         }
 
         [ Test ]
@@ -86,8 +86,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoryRelinkTest()
         {
-            //",jeans"
-            var categoryId = "10101080";
+            var categoryId = "20908000";
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == categoryId );
             var client = CreateClient( "products-1" );
             var unlinkResult = client.UnlinkCategory( category );

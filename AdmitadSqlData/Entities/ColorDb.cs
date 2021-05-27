@@ -15,5 +15,6 @@ namespace AdmitadSqlData.Entities
         [ Column( "name4" ) ] public string Name4 { get; set; }
         [ Column( "name_sin1" ) ] public string SynonymName { get; set; }
         [ Column( "name_search" ) ] public string SearchNames { get; set; }
+        [ Column( "name_lat" ) ] public string LatinName { get; set; }
     }
 }

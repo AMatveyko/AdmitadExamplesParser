@@ -1,5 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
+using System.IO;
+
 using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
@@ -16,10 +18,18 @@ namespace AdmitadExamplesParserTests
             //ElasticSearchUrl = "http://127.0.0.1:9200",
             ElasticSearchUrl = "http://185.221.152.127:9200",
             //ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-1",
+            DefaultIndex = "products-old-1",
             FrameSize = 10000
         };
 
+        [ Test ]
+        public void ScrollApi()
+        {
+            var client = CreateClient();
+            var ids = client.GetIds();
+            File.WriteAllLines( @"o:\admitad\workData\scrollApi\products-old-1.txt", ids );
+        }
+        
         [ Test ]
         public void GetCountAllDocuments()
         {

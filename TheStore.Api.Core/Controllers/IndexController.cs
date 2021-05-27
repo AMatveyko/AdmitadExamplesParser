@@ -55,9 +55,14 @@ namespace TheStore.Api.Core.Controllers
         
         [ HttpGet ]
         [ Route( "IndexShop" ) ]
-        public IActionResult IndexShop( int id, bool downloadFresh = false, bool clean = true )
+        public IActionResult IndexShop(
+            int id,
+            bool downloadFresh = false,
+            bool needLink = true,
+            bool needSoldOut = true,
+            bool clean = true )
         {
-            var context = new IndexShopContext( id, downloadFresh );
+            var context = new IndexShopContext( id, downloadFresh, needLink, needSoldOut );
             var worker = new IndexWorker( _settings, context, _works );
             return _works.AddToQueue( worker.Index, context, QueuePriority.Parallel, clean );
         }

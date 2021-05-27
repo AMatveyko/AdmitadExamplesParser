@@ -42,8 +42,7 @@ namespace TheStore.Api.Core.Sources.Workers
             var cleanOffers = CleanOffers( shopData );
             var products = ConvertOffers( cleanOffers );
             UpdateProducts( products );
-            DisableProducts();
-            _context.Content = $"{products.Count} products";
+            DisableProductsIfNeed();
             Finish();
             // Finish( products );
         }
@@ -56,8 +55,11 @@ namespace TheStore.Api.Core.Sources.Workers
             DbHelper.WriteShopStatistics( _statistics );
         }
         
-        private void DisableProducts()
+        private void DisableProductsIfNeed()
         {
+            if( _context.NeedSoldOut == false ) {
+                return;
+            }
             var client = CreateElasticClient( _context );
             var result = client.DisableOldProducts( _startDate, _context.ShopId.ToString() );
             AddMessage( $"Disable { result.Pretty } products", result.IsError );
@@ -100,6 +102,7 @@ namespace TheStore.Api.Core.Sources.Workers
             SetProgress( 100 );
             Thread.Sleep( 5000 );
             AddMessage( "Update products complete" );
+            _context.Content = $"{ iProducts.Count } products";
         }
 
         private void SetProductsStatistics( string condition )

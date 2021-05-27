@@ -68,10 +68,12 @@ namespace TheStore.Api.Core.Sources.Workers
                 return;
             }
             
-            DoIndexShop( xmlInfo.ShopId, file, true );
+            DoIndexShop( xmlInfo.ShopId, file, true, context.NeedSoldOut );
             context.SetProgress( 60, 100 );
-            DoLink();
-            context.SetProgress( 90, 100 );
+            if( context.NeedLink ) {
+                DoLink();
+                context.SetProgress( 90, 100 );
+            }
             Wait();
             LogResult();
         }
@@ -93,13 +95,8 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private static void DbWork( IndexAllShopsContext context )
         {
-            try {
-                DbHelper.WriteUnknownBrands();
-                DbHelper.SaveUnknownCountries();
-            }
-            catch( Exception ) {
-                context.AddMessage( $"Db work error", true );
-            }
+            DbHelper.WriteUnknownBrands();
+            DbHelper.SaveUnknownCountries();
         }
         
         private void DownloadAll( List<XmlFileInfo> infos )
@@ -123,7 +120,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private void HandleDownloadEvent( object sender, DownloadEventArgs e )
         {
-            DoIndexShop( e.Info.ShopId, e.Info, false );
+            DoIndexShop( e.Info.ShopId, e.Info, false, true );
         }
 
         private void Wait()
@@ -133,12 +130,13 @@ namespace TheStore.Api.Core.Sources.Workers
             }
         }
         
-        private void DoIndexShop( int shopId, DownloadInfo fileInfo, bool single )
+        private void DoIndexShop( int shopId, DownloadInfo fileInfo, bool single, bool needSoldOut )
         {
             var processShopContext = new ProcessShopContext(
                 $"{shopId}:{(single ? "single" : "all")}",
                 shopId,
-                fileInfo );
+                fileInfo,
+                needSoldOut );
             _context.AddContext( processShopContext );
             Works.AddToQueue( UpdateShop, processShopContext, QueuePriority.Medium, false );
         }

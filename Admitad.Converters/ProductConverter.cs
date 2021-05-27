@@ -76,7 +76,7 @@ namespace Admitad.Converters
         {
             var offer = offers.First();
             
-            DbHelper.RememberVendorIfUnknown( offer.VendorNameClearly );
+            DbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
             
             return new Product {
                 Id = offer.ProductId,
