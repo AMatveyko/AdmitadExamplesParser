@@ -86,7 +86,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoryRelinkTest()
         {
-            var categoryId = "20908000";
+            var categoryId = "10107000";
             var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == categoryId );
             var client = CreateClient( "products-1" );
             var unlinkResult = client.UnlinkCategory( category );
@@ -129,7 +129,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagLinkTest()
         {
-            var tagId = "3313";
+            var tagId = "3";
             var client = CreateClient( "products-1" );
             var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
             var linkResult = client.UpdateProductsForTag( tag );

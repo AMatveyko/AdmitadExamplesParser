@@ -153,15 +153,23 @@ namespace AdmitadSqlData.Repositories
 
         #region Countries
 
-        public void SaveUnknownCountries(
-            List<UnknownCountry> countries )
+        public void SaveUnknownCountries( List<UnknownCountry> countries )
         {
-            var db = GetDb();
-            
-            db.UnknownCountries.RemoveRange( db.UnknownCountries );
-            db.SaveChanges();
-            
+            FlushCountries();
+            AddCountries( countries );
+        }
+
+        private void AddCountries( List<UnknownCountry> countries )
+        {
+            using var db = GetDb();
             db.UnknownCountries.AddRange( countries );
+            db.SaveChanges();
+        }
+        
+        private void FlushCountries()
+        {
+            using var db = GetDb();
+            db.UnknownCountries.RemoveRange( db.UnknownCountries );
             db.SaveChanges();
         }
         
