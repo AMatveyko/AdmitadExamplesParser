@@ -662,7 +662,28 @@ namespace Admitad.Converters.Workers
         }
         
         #endregion
-        
+
+
+
+
+        public UpdateResult UpdateAddDate( DateTime? date = null )
+        {
+            var newDate = date ?? DateTime.Now;
+            var response = _client.UpdateByQuery<Product>(
+                upq => upq.Query( q =>
+                        q.Bool( b =>
+                            b.MustNot( t =>
+                                t.Exists( p =>
+                                    p.Field( "addDate" ) 
+                                )
+                            )
+                        )
+                    )
+                    .Script( script => script.Source( $"ctx._source.addDate = '{ newDate :O}'" ) )
+                );
+            return new UpdateResult( response );
+        }
+            
         #region Disable/Enable documetns
         
         public UpdateResult DisableOldProducts( DateTime indexTime, string shopId ) {
@@ -720,6 +741,7 @@ namespace Admitad.Converters.Workers
         }
         
         #endregion
+        
         
         
         public long CountProductsForShop( string shopId )

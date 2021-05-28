@@ -60,6 +60,9 @@ namespace Admitad.Converters.Workers
 
         UpdateResult UpdateProductsFroCountry(
             Country country );
-        
+
+        UpdateResult UpdateAddDate(
+            DateTime? date = null );
+
     }
 }

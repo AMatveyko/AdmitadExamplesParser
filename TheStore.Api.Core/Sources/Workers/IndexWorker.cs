@@ -40,6 +40,7 @@ namespace TheStore.Api.Core.Sources.Workers
             CheckContextType( context );
             DoLink();
             Wait();
+            FillAddDate();
             LogResult();
         }
 
@@ -93,6 +94,8 @@ namespace TheStore.Api.Core.Sources.Workers
             LogResult();
         }
 
+        
+        
         private static void DbWork( IndexAllShopsContext context )
         {
             DbHelper.WriteUnknownBrands();
@@ -156,6 +159,13 @@ namespace TheStore.Api.Core.Sources.Workers
             LinkTags();
         }
 
+        private void FillAddDate()
+        {
+            var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _context );
+            var result = linker.FillAddDate();
+            _context.AddMessage( $"addDate: updated {result.Pretty}" );
+        }
+        
         private void LinkCountries()
         {
             var linkContext = new CountriesLinkContext( _context.Id );

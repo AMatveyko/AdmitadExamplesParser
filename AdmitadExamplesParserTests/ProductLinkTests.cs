@@ -135,6 +135,13 @@ namespace AdmitadExamplesParserTests
             var linkResult = client.UpdateProductsForTag( tag );
             Console.WriteLine( $"Linked: {linkResult}" );
         }
+
+        [ Test ]
+        public void UpdateAddDate()
+        {
+            var client = CreateClient();
+            var result = client.UpdateAddDate( DateTime.Parse( "2021-05-01" ) );
+        }
         
         [ Test ]
         public void RelinkTagsForCategory()

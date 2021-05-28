@@ -25,10 +25,12 @@ namespace Admitad.Converters
             : base( ComponentType.ProductLinker, context ) {
             _elasticClient = new ElasticSearchClient<Product>( settings, context );
         }
-
-
-
-
+        
+        public UpdateResult FillAddDate()
+        {
+            return _elasticClient.UpdateAddDate( DateTime.Now );
+        }
+        
         #region Category
         public void LinkCategories( IEnumerable<Category> categories )
         {
@@ -87,10 +89,7 @@ namespace Admitad.Converters
             return ( category.Id, result, time );
         }
         #endregion
-
-
-
-
+        
         #region Countries
 
         public void LinkCountries(
@@ -300,7 +299,7 @@ namespace Admitad.Converters
         }
         
         #endregion
-        
+
         private static void Log( string entity, string id, string count, string time ) =>
             LogWriter.Log( $"{entity}: {id}, count: { count }, time: {time}:" );
 
