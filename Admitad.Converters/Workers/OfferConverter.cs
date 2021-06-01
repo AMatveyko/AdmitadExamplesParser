@@ -8,6 +8,8 @@ using Admitad.Converters.Workers.ShopWorkers;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers
 {
     public sealed class OfferConverter : BaseComponent
@@ -15,10 +17,10 @@ namespace Admitad.Converters.Workers
         private readonly IShopWorker _worker;
         private readonly List<RawOffer> _offers;
 
-        public OfferConverter( ShopData shopData, BackgroundBaseContext context  )
+        public OfferConverter( ShopData shopData, DbHelper dbHelper, BackgroundBaseContext context  )
             : base( ComponentType.Converter, context )
         {
-            _worker = ConverterBuilder.GetConverterByShop( shopData.Name );
+            _worker = ConverterBuilder.GetConverterByShop( shopData.Name, dbHelper );
             _offers = shopData.Offers;
         }
 

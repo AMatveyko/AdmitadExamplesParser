@@ -11,8 +11,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\dbSettings.json">
+        <Link>dbSettings.json</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

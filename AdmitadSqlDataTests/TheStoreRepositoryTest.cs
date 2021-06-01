@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
+using Admitad.Converters;
+
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 
@@ -18,15 +20,24 @@ namespace AdmitadSqlDataTests
     public sealed class TheStoreRepositoryTest
     {
 
+        private static DbHelper GetDbHelper()
+        {
+            var settings = SettingsBuilder.GetDbSettings();
+            return new DbHelper( settings );
+        }
+        
         [ Test ]
         public void GetChildren()
         {
+
+            var dbHelper = GetDbHelper();
+            
             List<Category> GetChildren(
                 int categoryId ) {
-                return DbHelper.GetCategoryChildren( categoryId );
+                return dbHelper.GetCategoryChildren( categoryId );
             }
 
-            var allCategory = DbHelper.GetAllCategories();
+            var allCategory = dbHelper.GetAllCategories();
             
             var rootCategory = new List<int> {
                 10000000,
@@ -46,36 +57,48 @@ namespace AdmitadSqlDataTests
         [ Test, Explicit ]
         public void GetShopsTest()
         {
-            var rep = new ShopRepository();
+            var settings = SettingsBuilder.GetDbSettings();
+            var rep = new ShopRepository( settings.GetConnectionString(), settings.Version );
             var shops = rep.GetEnableShops();
         }
 
         [ Test ]
         public void UpdateTag()
         {
-            DbHelper.UpdateTags();
+            var helper = GetDbHelper();
+            helper.UpdateTags();
         }
 
         [ Test ]
+        public void SaveCountries()
+        {
+            var helper = GetDbHelper();
+            helper.SaveUnknownCountries();
+        }
+        
+        [ Test ]
         public void DeleteWordFromTag()
         {
-            DbHelper.DeleteWordFromTag( "блузки", 10103000 );
+            var helper = GetDbHelper();
+            helper.DeleteWordFromTag( "блузки", 10103000 );
         }
 
         [ Test ]
         public void ExcludeSearchField()
         {
-            DbHelper.ExcludeSearchField( "categoryName" );
+            var helper = GetDbHelper();
+            helper.ExcludeSearchField( "categoryName" );
         }
         
         [ Test ]
         public void WarmCategories()
         {
+            var helper = GetDbHelper();
             var cats = File.ReadLines( @"o:\admitad\теплыеКатегории.txt" )
                 .Select( s => s.Split(":", StringSplitOptions.TrimEntries ) )
                 .Select( s => ( s[0], s[1] ))
                 .ToList();
-            var categories = DbHelper.GetCategories();
+            var categories = helper.GetCategories();
             foreach( var cat in cats ) {
                 var categoryName = categories.FirstOrDefault( c => c.Id == cat.Item1 ).Name ?? "noname"; 
                 Console.WriteLine( $"{categoryName} : {cat.Item2}" );
@@ -85,32 +108,35 @@ namespace AdmitadSqlDataTests
         [ Test ]
         public void UnknownBrands()
         {
+            var helper = GetDbHelper();
             var brands = new[] {"noname", "sdfadf", "", " ", null, "USHATAVA", "Грандсток", "Adidas", "Грандсток", "Eger", "Eger" };
             foreach( var brand in brands ) {
                 var cleanName = BrandHelper.GetClearlyVendor( brand );
-                DbHelper.RememberVendorIfUnknown( cleanName, brand );
+                helper.RememberVendorIfUnknown( cleanName, brand );
             }
-            DbHelper.WriteUnknownBrands();
+            helper.WriteUnknownBrands();
         }
 
         [ Test ]
         public void UnknownCountries()
         {
+            var helper = GetDbHelper();
             var countries = new[] {"Китай", "Шмитай"};
             foreach( var country in countries ) {
-                Console.WriteLine( DbHelper.GetCountryId( country ) );
+                Console.WriteLine( helper.GetCountryId( country ) );
             }
-            DbHelper.SaveUnknownCountries();
+            helper.SaveUnknownCountries();
         }
         
         [ Test ]
         public void GetCountryTest()
         {
-            var id1 = DbHelper.GetCountryId( "Мексика" );
-            var id2 = DbHelper.GetCountryId( "из Мексики" );
-            var id3 = DbHelper.GetCountryId( "mexico" );
-            var id4 = DbHelper.GetCountryId( "PRC" );
-            var id5 = DbHelper.GetCountryId( "ШвЕцИя" );
+            var helper = GetDbHelper();
+            var id1 = helper.GetCountryId( "Мексика" );
+            var id2 = helper.GetCountryId( "из Мексики" );
+            var id3 = helper.GetCountryId( "mexico" );
+            var id4 = helper.GetCountryId( "PRC" );
+            var id5 = helper.GetCountryId( "ШвЕцИя" );
             Assert.AreEqual( id1, 11 );
             Assert.AreEqual( id2, 11 );
             Assert.AreEqual( id3, 11 );
@@ -121,16 +147,18 @@ namespace AdmitadSqlDataTests
         [ Test, Explicit ]
         public void GetCategories()
         {
-            var rep = new CategoryRepository();
+            var settings = SettingsBuilder.GetDbSettings();
+            var rep = new CategoryRepository( settings.GetConnectionString(), settings.Version );
             var categories = rep.GetCategoriesWithTerms();
         }
 
         [ Test ]
         public void GetProperty()
         {
-            var colors = DbHelper.GetColors();
-            var materials = DbHelper.GetMaterials();
-            var sizes = DbHelper.GetSizes();
+            var helper = GetDbHelper();
+            var colors = helper.GetColors();
+            var materials = helper.GetMaterials();
+            var sizes = helper.GetSizes();
             
             Assert.IsNotEmpty( colors );
             Assert.IsNotEmpty( materials );

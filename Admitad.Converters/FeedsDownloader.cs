@@ -22,14 +22,17 @@ namespace Admitad.Converters
     {
 
         private readonly int _numberAttempts;
+        private readonly DbHelper _db;
 
         public event EventHandler<DownloadEventArgs> FileDownloaded;
         
         public FeedsDownloader(
-            int numberAttempts, BackgroundBaseContext context  )
-            : base( ComponentType.Downloader, context )
-        {
+            int numberAttempts,
+            DbHelper dbHelper,
+            BackgroundBaseContext context  )
+            : base( ComponentType.Downloader, context ) {
             _numberAttempts = Math.Max( numberAttempts, 1 );
+            _db = dbHelper;
         }
 
         public List<DownloadInfo> DownloadsAll(
@@ -120,7 +123,7 @@ namespace Admitad.Converters
         private static void FileWork( string directoryPath, XmlFileInfo fileInfo )
         {
             var filePath = FilePathHelper.GetFilePath( directoryPath, fileInfo );
-            var oldDirectoryPath = FilePathHelper.CombinePath( directoryPath, "old" );
+            var oldDirectoryPath = FilePathHelper.CombinePath( directoryPath, "old/" );
             
             if( File.Exists( filePath ) == false ) {
                 return;
@@ -180,6 +183,6 @@ namespace Admitad.Converters
                 _ => DownloadError.UnknownError
             };
 
-        private static List<XmlFileInfo> GetFilesInfo() => DbHelper.GetEnableShops();
+        private List<XmlFileInfo> GetFilesInfo() => _db.GetEnableShops();
     }
 }

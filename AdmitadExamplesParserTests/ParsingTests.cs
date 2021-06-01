@@ -10,7 +10,10 @@ using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
+using AdmitadCommon.Entities.Settings;
 using AdmitadCommon.Helpers;
+
+using AdmitadSqlData.Helpers;
 
 using NUnit.Framework;
 
@@ -51,6 +54,9 @@ namespace AdmitadExamplesParserTests
         private static void DoParsing(
             string shopName )
         {
+
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            var dbHelper = new DbHelper( dbSettings );
             
             var downloadInfo = new DownloadInfo( 0, shopName ) {
                 FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
@@ -74,7 +80,7 @@ namespace AdmitadExamplesParserTests
             var allOffers = offers.Count;
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
-            var products = ProductConverter.GetProductsContainer( offers );
+            var products = new ProductConverter( dbHelper ).GetProductsContainer( offers );
             var clothesCount = products.Count( p => p.CategoryName.ToLower().Contains( "рюкзаки" ) );
             var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
@@ -149,7 +155,9 @@ namespace AdmitadExamplesParserTests
         
         private static List<Offer> ConvertOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData, new BackgroundBaseContext("1", "name" ) );
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            var dbHelper = new DbHelper( dbSettings );
+            var converter = new OfferConverter( shopData,  dbHelper, new BackgroundBaseContext("1", "name" ) );
             return converter.GetCleanOffers();
         }
         

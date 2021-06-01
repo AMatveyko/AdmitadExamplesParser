@@ -13,6 +13,8 @@ namespace Admitad.Converters.Workers.ShopWorkers
         
         private static readonly Regex DefineCountry = new ( @"Сделано в (?<country>[a-zA-Zа-яА-Я0-9_]+)\.", RegexOptions.Compiled );
         
+        public TwelveStoreezWorker( DbHelper dbHelper ) : base( dbHelper ) { }
+        
         protected override void FillParams(
             IExtendedOffer extendedOffer,
             RawOffer rawOffer )

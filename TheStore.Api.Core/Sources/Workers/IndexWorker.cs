@@ -28,8 +28,12 @@ namespace TheStore.Api.Core.Sources.Workers
         private readonly ProcessorSettings _settings;
         private readonly ParallelBackgroundContext _context;
 
-        public IndexWorker( ProcessorSettings settings, ParallelBackgroundContext context, BackgroundWorks works )
-            : base( settings.ElasticSearchClientSettings, works )
+        public IndexWorker(
+            ProcessorSettings settings,
+            ParallelBackgroundContext context,
+            BackgroundWorks works,
+            DbHelper dbHelper )
+            : base( settings.ElasticSearchClientSettings, works, dbHelper )
         {
             _settings = settings;
             _context = context;
@@ -40,7 +44,6 @@ namespace TheStore.Api.Core.Sources.Workers
             CheckContextType( context );
             DoLink();
             Wait();
-            FillAddDate();
             LogResult();
         }
 
@@ -56,7 +59,7 @@ namespace TheStore.Api.Core.Sources.Workers
             
             CheckContextType( context );
             
-            var xmlInfo = DbHelper.GetShop( context.ShopId );
+            var xmlInfo = Db.GetShop( context.ShopId );
             context.ShopName = xmlInfo.Name;
 
             var file = DoDownloadIfNeed( context, xmlInfo );
@@ -84,22 +87,21 @@ namespace TheStore.Api.Core.Sources.Workers
             
             CheckContextType( context );
             
-            var xmlInfos = DbHelper.GetEnableShops();
+            var xmlInfos = Db.GetEnableShops();
             DownloadAll( xmlInfos );
             context.SetProgress( 60, 100 );
             DoLink();
             context.SetProgress( 100, 100 );
             Wait();
+            FillAddDate();
             DbWork( context );
             LogResult();
         }
-
         
-        
-        private static void DbWork( IndexAllShopsContext context )
+        private void DbWork( IndexAllShopsContext context )
         {
-            DbHelper.WriteUnknownBrands();
-            DbHelper.SaveUnknownCountries();
+            Db.WriteUnknownBrands();
+            Db.SaveUnknownCountries();
         }
         
         private void DownloadAll( List<XmlFileInfo> infos )
@@ -108,7 +110,7 @@ namespace TheStore.Api.Core.Sources.Workers
             downloadContext.Prepare();
             _context.AddContext( downloadContext );
             
-            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, downloadContext );
+            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, Db, downloadContext );
 
             downloader.FileDownloaded += HandleDownloadEvent;
             
@@ -146,7 +148,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private void UpdateShop( ProcessShopContext context )
         {
-            var shopHandler = new ShopHandler( context, _settings );
+            var shopHandler = new ShopHandler( context, _settings, Db );
             shopHandler.Process();
         }
         
@@ -161,7 +163,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private void FillAddDate()
         {
-            var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _context );
+            var linker = new ProductLinker( _settings.ElasticSearchClientSettings, Db, _context );
             var result = linker.FillAddDate();
             _context.AddMessage( $"addDate: updated {result.Pretty}" );
         }
@@ -170,7 +172,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new CountriesLinkContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new CountryWorker( _settings.ElasticSearchClientSettings, Works );
+            var worker = new CountryWorker( _settings.ElasticSearchClientSettings, Works, Db );
             Works.AddToQueue( worker.LinkAll, linkContext, QueuePriority.Medium, false );
         }
         
@@ -178,7 +180,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkTagsContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, Works );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, Works, Db );
             
             Works.AddToQueue( worker.LinkTags, linkContext, QueuePriority.Medium, false );
         }
@@ -187,7 +189,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkCategoriesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, Works );
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, Works, Db );
             
             Works.AddToQueue( worker.LinkCategories, linkContext, QueuePriority.Medium, false );
         }
@@ -196,7 +198,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new UnlinkPropertiesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works );
+            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works, Db );
             
             Works.AddToQueue( worker.UnlinkProperties, linkContext, QueuePriority.Medium, false );
         }
@@ -205,7 +207,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkPropertiesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works );
+            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works, Db );
             
             Works.AddToQueue( worker.LinkProperties, linkContext, QueuePriority.Medium, false );
         }
@@ -221,7 +223,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 
                 context.Contexts.Add( downloadContext );
                 
-                var downloader = new FeedsDownloader( _settings.AttemptsToDownload, downloadContext );
+                var downloader = new FeedsDownloader( _settings.AttemptsToDownload, Db, downloadContext );
                 var file = downloader.Download( xmlInfo, _settings.DirectoryPath );
 
                 downloadContext.Content = "Все скачали";

@@ -5,10 +5,15 @@ using System.Linq;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal sealed class AnabelWorker : BaseShopWorker, IShopWorker
     {
+        
+        public AnabelWorker( DbHelper dbHelper ) : base( dbHelper ) { }
+        
         protected override void FillParams(
             IExtendedOffer extendedOffer,
             RawOffer rawOffer ) {
@@ -35,5 +40,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
             return offer;
         }
+        
     }
 }

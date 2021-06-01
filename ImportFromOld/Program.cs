@@ -98,7 +98,6 @@ namespace ImportFromOld
                     new BackgroundBaseContext( "id", "name" ) );
                 
                 elasticClient.DoBulkAllForImport( products );
-                z`
                 skip += step;
                 
                 swIteration.Stop();

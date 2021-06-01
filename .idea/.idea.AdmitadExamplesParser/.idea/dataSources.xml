@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="MariaDB - theStore@elastic.matveyko.su" uuid="e1882b60-32ec-4020-8a8b-b50205e731a9">
-      <driver-ref>mariadb</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://elastic.matveyko.su:3306/theStore</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
     <data-source source="LOCAL" name="RuWeb  theStore@185.221.152.127" uuid="22fc3bba-d1cd-4029-908c-766c2116899c">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>

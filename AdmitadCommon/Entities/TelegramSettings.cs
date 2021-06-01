@@ -2,7 +2,7 @@
 
 namespace AdmitadCommon.Entities
 {
-    public class TelegramSettings : IClientSettings
+    public sealed class TelegramSettings : IClientSettings
     {
         public MessengerType Type => MessengerType.Telegram;
         public bool Enabled { get; set; }

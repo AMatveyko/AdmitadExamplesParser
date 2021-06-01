@@ -27,32 +27,30 @@ namespace TheStore.Api.Core.Sources.Workers
         private readonly ProcessorSettings _settings;
         private readonly ShopProcessingStatistics _statistics;
         private readonly DateTime _startDate;
+        private readonly DbHelper _dbHelper;
         
-        public ShopHandler( ProcessShopContext context, ProcessorSettings settings ) {
+        public ShopHandler( ProcessShopContext context, ProcessorSettings settings, DbHelper dbHelper ) {
             _context = context;
             _settings = settings;
             _statistics = new ShopProcessingStatistics( context.DownloadInfo, AddMessage, Logger );
             _startDate = DateTime.Now;
+            _dbHelper = dbHelper;
         }
 
         public void Process()
         {
-            SetProductsStatistics( "Before" );
             var shopData = _statistics.GetShopData( ParseShop );
             var cleanOffers = CleanOffers( shopData );
             var products = ConvertOffers( cleanOffers );
             UpdateProducts( products );
             DisableProductsIfNeed();
             Finish();
-            // Finish( products );
         }
 
         private void Finish()
-        // private void Finish( List<Product> products )
         {
-            // _statistics.FillCategories( products );
-            SetProductsStatistics( "After" );
-            DbHelper.WriteShopStatistics( _statistics );
+            SetProductsStatistics();
+            _dbHelper.WriteShopStatistics( _statistics );
         }
         
         private void DisableProductsIfNeed()
@@ -61,7 +59,9 @@ namespace TheStore.Api.Core.Sources.Workers
                 return;
             }
             var client = CreateElasticClient( _context );
-            var result = client.DisableOldProducts( _startDate, _context.ShopId.ToString() );
+            // > TODO
+            //var result = client.DisableOldProducts( _startDate, _context.ShopId.ToString() );
+            var result = client.DisableOldProducts( DateTime.Now.AddDays( -1 ).Date, _context.ShopId.ToString() );
             AddMessage( $"Disable { result.Pretty } products", result.IsError );
         }
         
@@ -79,7 +79,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private IEnumerable<Offer> CleanOffers( ShopData shopData )
         {
-            var cleaner = new OfferConverter( shopData, _context ); 
+            var cleaner = new OfferConverter( shopData, _dbHelper, _context ); 
             var cleanOffers = cleaner.GetCleanOffers();
             SetProgress( 40 );
             AddMessage( "Clearing offers complete" );
@@ -88,7 +88,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private List<Product> ConvertOffers( IEnumerable<Offer> offers )
         {
-            var products = ProductConverter.GetProductsContainer( offers ); 
+            var products = new ProductConverter( _dbHelper ).GetProductsContainer( offers ); 
             SetProgress( 80 );
             AddMessage( "Convert to products complete" );
             return products;
@@ -105,19 +105,12 @@ namespace TheStore.Api.Core.Sources.Workers
             _context.Content = $"{ iProducts.Count } products";
         }
 
-        private void SetProductsStatistics( string condition )
+        private void SetProductsStatistics()
         {
             var client = CreateElasticClient( _context );
             var count = client.CountProductsForShop( _context.ShopId.ToString() );
             var soldout = client.CountDisabledProductsByShop( _context.ShopId.ToString() );
-            switch( condition ) {
-                case "Before" :
-                    _statistics.SetProductStatisticsBefore( (int)count, (int)soldout );
-                    break;
-                case "After" :
-                    _statistics.SetProductsStatisticsAfter( (int)count, (int)soldout );
-                    break;
-            }
+            _statistics.SetProductsStatistics( (int)count, (int)soldout );
         }
         
         private void SetProgress( int percents ) => _context.SetProgress( percents, 100 );

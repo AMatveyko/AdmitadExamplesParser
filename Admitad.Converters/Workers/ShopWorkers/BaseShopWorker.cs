@@ -22,11 +22,16 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private const string CountryParam = "Страна-изготовитель";
         
         protected const string AgeParamName = "возраст";
-        protected string[] GenderParamName = { "пол", "gender" };
-        protected List<IOfferHandler> _handlers = new ();
+        protected readonly string[] GenderParamName = { "пол", "gender" };
+        protected readonly List<IOfferHandler> Handlers = new ();
+        protected readonly DbHelper DbHelper;
 
-        private static Regex _pricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
+        private static readonly Regex PricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
+        protected BaseShopWorker(
+            DbHelper dbHelper ) =>
+            DbHelper = dbHelper; 
+        
         public Offer Convert( RawOffer rawOfer )
         {
 
@@ -52,7 +57,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
         private Offer RunOfferHandlers( Offer offer, RawOffer rawOffer )
         {
-            foreach( var offerHandler in _handlers ) {
+            foreach( var offerHandler in Handlers ) {
                 offer = offerHandler.Process( offer, rawOffer );
             }
 
@@ -69,7 +74,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             if( rawPrice.IsNullOrWhiteSpace() ) {
                 return nullPrice;
             }
-            var m = _pricePattern.Match( rawPrice );
+            var m = PricePattern.Match( rawPrice );
             
             if( m.Success == false ) {
                 return nullPrice;

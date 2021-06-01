@@ -9,6 +9,8 @@ using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 using AdmitadCommon.Types;
 
+using AdmitadSqlData.Helpers;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,6 +39,7 @@ namespace TheStore.Api.Core
         public void ConfigureServices(
             IServiceCollection services )
         {
+            var dbSettings = SettingsBuilder.GetDbSettings();
             services.AddControllers();
             services.AddSwaggerGen(
                 c => {
@@ -51,7 +54,8 @@ namespace TheStore.Api.Core
             services.AddSingleton<PriorityQueue>();
             services.AddSingleton<BackgroundWorks>();
             services.AddTransient( r => 
-                new TheStoreRepository( "server=185.221.152.127;user=thestore;password=moonlike-mitts-0Concord;database=theStore;", "10.3.27" ) );
+                new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
+            services.AddScoped( r => new DbHelper( dbSettings ) );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

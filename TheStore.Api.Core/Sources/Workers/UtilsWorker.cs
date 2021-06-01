@@ -15,8 +15,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private readonly TheStoreRepository _repository;
 
-        public UtilsWorker(
-            TheStoreRepository repository ) =>
+        public UtilsWorker( TheStoreRepository repository ) =>
             _repository = repository;
         
         public void ComparePages( CompareProjectsContext context )

@@ -18,12 +18,17 @@ namespace Admitad.Converters
     public sealed class ProductLinker : BaseComponent
     {
 
-        private static readonly Dictionary<string, List<int>> CategoryByProducts = new();
+        //private static readonly Dictionary<string, List<int>> CategoryByProducts = new();
         private readonly IElasticClient<Product> _elasticClient;
-
-        public ProductLinker( ElasticSearchClientSettings settings, BackgroundBaseContext context )
+        private readonly DbHelper _dbHelper;
+        
+        public ProductLinker(
+            ElasticSearchClientSettings settings,
+            DbHelper dbHelper,
+            BackgroundBaseContext context )
             : base( ComponentType.ProductLinker, context ) {
             _elasticClient = new ElasticSearchClient<Product>( settings, context );
+            _dbHelper = dbHelper;
         }
         
         public UpdateResult FillAddDate()
@@ -50,21 +55,22 @@ namespace Admitad.Converters
         {
             var before = ( int ) _elasticClient.CountProductsWithCategory( category.Id );
             var unlinkResult = _elasticClient.UnlinkCategory( category );
-            _context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров" );
+            
+            _context.AddMessage( $"Отвязали { unlinkResult.Pretty } товаров" );
             _context.TotalActions = 2;
             _context.CalculatePercent();
 
             if( category.IsTermsEmpty() ) {
                 _context.CalculatePercent();
                 _context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}";
-                DbHelper.UpdateProductsByCategory( category, before, 0 );
+                _dbHelper.UpdateProductsByCategory( category, before, 0 );
                 return;
             }
             
             var linkResult = LinkCategory( category );
-            _context.Messages.Add( $"Привязвали { linkResult.Item2.Pretty } товаров" );
+            _context.AddMessage( $"Привязвали { linkResult.Item2.Pretty } товаров" );
             _context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Item2.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult.Item2 ) }%";
-            DbHelper.UpdateProductsByCategory( category, before, (int)linkResult.Item2.Updated );
+            _dbHelper.UpdateProductsByCategory( category, before, (int)linkResult.Item2.Updated );
         }
         
         public ( string, UpdateResult, long ) LinkCategory( Category category )
@@ -77,13 +83,16 @@ namespace Admitad.Converters
             var result = Measure( () => _elasticClient.UpdateProductsForCategoryFieldNameModel( category ), out var time );
             var after = (int)_elasticClient.CountProductsWithCategory( category.Id );
             
-            DbHelper.UpdateProductsByCategory( category, before, after );
+            _dbHelper.UpdateProductsByCategory( category, before, after );
             // var copeunt = Measure( () => _elasticClient.UpdateProductsForCategory( category ), out var time );
             
             _context.CalculatePercent();
 
             if( result.IsError ) {
                 _context.AddMessage( $"id {category.Id} updated { result.Pretty }", result.IsError );
+            }
+            else {
+                _context.AddMessage( $"Привязвали { result.Pretty } товаров" );
             }
             
             return ( category.Id, result, time );
@@ -166,7 +175,7 @@ namespace Admitad.Converters
             _context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
         }
         
-        private ( string, UpdateResult, long ) LinkTag( Tag tag )
+        public ( string, UpdateResult, long ) LinkTag( Tag tag )
         {
             if( tag.IsSearchTermsEmpty() ) {
                 _context.CalculatePercent();
@@ -177,6 +186,9 @@ namespace Admitad.Converters
             
             if( result.IsError ) {
                 _context.AddMessage( $"id {tag.Id} updated { result.Pretty }", result.IsError );
+            }
+            else {
+                _context.AddMessage( $"Привязвали { result.Pretty } товаров" );
             }
             
             return ( tag.Id, result, time );

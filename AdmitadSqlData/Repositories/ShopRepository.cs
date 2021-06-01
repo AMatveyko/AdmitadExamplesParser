@@ -12,6 +12,10 @@ namespace AdmitadSqlData.Repositories
 {
     internal sealed class ShopRepository : BaseRepository
     {
+        
+        public ShopRepository( string connectionString, string version )
+            : base( connectionString, version ) { }
+        
         public List<XmlFileInfo> GetEnableShops()
         {
             using var db = GetDb();
@@ -43,8 +47,5 @@ namespace AdmitadSqlData.Repositories
             db.SaveChanges();
         }
         
-        public ShopRepository(
-            string connectionString = null )
-            : base( connectionString ) { }
     }
 }

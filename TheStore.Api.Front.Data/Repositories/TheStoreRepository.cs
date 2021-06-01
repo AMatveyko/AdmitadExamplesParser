@@ -1,10 +1,8 @@
 ﻿// a.snegovoy@gmail.com
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using TheStore.Api.Front.Data.DbContexts;
 using TheStore.Api.Front.Data.Entities;
 
 namespace TheStore.Api.Front.Data.Repositories
@@ -12,7 +10,8 @@ namespace TheStore.Api.Front.Data.Repositories
     public sealed class TheStoreRepository : BaseRepository
     {
 
-        public TheStoreRepository( string connectionString, string version ) : base( connectionString, version ) { }
+        public TheStoreRepository( string connectionString, string version )
+            : base( connectionString, version ) { }
         
         public void UpdateCompareList( IEnumerable<CompareListingDb> compareList )
         {

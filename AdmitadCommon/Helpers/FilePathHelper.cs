@@ -14,6 +14,6 @@ namespace AdmitadCommon.Helpers
         public static string CombinePath(
             string firstPath,
             string secondPath ) =>
-            $"{firstPath.TrimEnd( '/' )}/{secondPath.TrimEnd( '/' )}".Replace( "//", "/" );
+            $"{firstPath}/{secondPath}".Replace( "//", "/");
     }
 }

@@ -12,6 +12,9 @@ namespace AdmitadSqlData.Repositories
 {
     internal sealed class CategoryRepository : BaseRepository
     {
+        
+        public CategoryRepository( string connectionString, string version ) : base( connectionString, version ) { }
+        
         public List<CategoryDb> GetCategoriesWithTerms() {
             using var db = GetDb();
             return db.Categories
@@ -51,8 +54,6 @@ namespace AdmitadSqlData.Repositories
             db.SaveChanges();
         }
         
-        public CategoryRepository(
-            string connectionString = null )
-            : base( connectionString ) { }
+
     }
 }

@@ -5,9 +5,16 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    internal class YooxWorker : BaseShopWorker, IShopWorker {
+    internal sealed class YooxWorker : BaseShopWorker, IShopWorker {
+        
+        public YooxWorker(
+            DbHelper dbHelper )
+            : base( dbHelper ) { }
+        
         protected override Offer GetTunedOffer(
             Offer offer,
             RawOffer rawOffer )

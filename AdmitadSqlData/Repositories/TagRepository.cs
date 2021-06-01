@@ -1,6 +1,5 @@
 ﻿// a.snegovoy@gmail.com
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,8 +7,10 @@ using AdmitadSqlData.Entities;
 
 namespace AdmitadSqlData.Repositories
 {
-    internal class TagRepository : BaseRepository {
+    internal sealed class TagRepository : BaseRepository {
 
+        public TagRepository( string connectionString, string version ) : base( connectionString, version ) { }
+        
         public List<TagDb> GetTags()
         {
             using var db = GetDb();
@@ -49,6 +50,5 @@ namespace AdmitadSqlData.Repositories
 
             db.SaveChanges();
         }
-        
     }
 }

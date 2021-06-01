@@ -2,10 +2,15 @@
 
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    internal class IntimShopWorker : BaseShopWorker, IShopWorker
+    internal sealed class IntimShopWorker : BaseShopWorker, IShopWorker
     {
+        
+        public IntimShopWorker( DbHelper dbHelper ) : base( dbHelper ) { }
+        
         protected override void FillParams(
             IExtendedOffer extendedOffer,
             RawOffer rawOffer )

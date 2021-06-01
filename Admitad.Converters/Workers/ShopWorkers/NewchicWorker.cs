@@ -17,7 +17,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
         private Dictionary<string, string> _colors;
         
-        public NewchicWorker()
+        public NewchicWorker( DbHelper dbHelper ) : base( dbHelper )
         {
             //_handlers.Add( new CurrencyUSD() );
             var colors = DbHelper.GetColors();

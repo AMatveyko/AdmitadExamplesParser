@@ -9,12 +9,12 @@ namespace TheStore.Api.Core.Sources.Workers
 {
     internal sealed class CountryWorker : BaseLinkWorker
     {
-        public CountryWorker( ElasticSearchClientSettings settings, BackgroundWorks works )
-            : base( settings, works ) { }
+        public CountryWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper )
+            : base( settings, works, dbHelper ) { }
 
         public void LinkAll( CountriesLinkContext context )
         {
-            var countries = DbHelper.GetCountries();
+            var countries = Db.GetCountries();
             var linker = CreateLinker( context );
             linker.LinkCountries( countries );
         }

@@ -15,6 +15,10 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private static Regex _countryPattern =
             new( "производства (- )?(?<countryName>([а-яА-Я]+))", RegexOptions.Compiled );
         
+        public GrettaWorker(
+            DbHelper dbHelper )
+            : base( dbHelper ) { }
+        
         protected override Offer GetTunedOffer(
             Offer offer,
             RawOffer rawOffer )
@@ -33,5 +37,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
             
             return offer;
         }
+        
     }
 }

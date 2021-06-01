@@ -64,7 +64,12 @@ namespace UtilsTests
             messenger.Send( "Test" );
         }
 
-
+        [ Test ]
+        public void TestPathGenerator() {
+            var path = FilePathHelper.CombinePath( "o:/test/", "old/" );
+            ;
+        }
+        
         [ Test ]
         public void UrlParserTest()
         {

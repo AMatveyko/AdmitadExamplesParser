@@ -35,22 +35,6 @@ namespace ApiClient
         private static bool _finish;
         private static TopContext _lastResult;
 
-
-        private static void RunAndCheck(
-            Func<TopContext> func )
-        {
-            var iterationCount = 0;
-            while( _finish == false ) {
-                iterationCount++;
-                Console.Write( $"{iterationCount} " );
-                var response = func();
-                _lastResult = response;
-                _finish = response.IsFinished || response.IsError;
-                Thread.Sleep( 30000 );
-            }
-
-        }
-
         static void Main(
             string[] args )
         {
@@ -89,15 +73,29 @@ namespace ApiClient
             FlushListingCash();
         }
         
+        private static void RunAndCheck(
+            Func<TopContext> func )
+        {
+            var iterationCount = 0;
+            while( _finish == false ) {
+                iterationCount++;
+                Console.Write( $"{iterationCount} " );
+                var response = func();
+                _lastResult = response;
+                _finish = response.IsFinished || response.IsError;
+                Thread.Sleep( 30000 );
+            }
+
+        }
+        
         private static void FlushListingCash()
         {
-            const string settingsPath = @"o:\admitad\workData\settings.json";
-            var settings = JsonConvert.DeserializeObject<TotalSettings>( File.ReadAllText( settingsPath ) );
+            var settings = SettingsBuilder.GetApiClientSettings();
             var connectionString =
-                $"Server={settings.MySQLHost};User ID={settings.MySQLUser};Password={settings.MySQLPassword};Database={settings.MySQLDatabase}";
+                $"Server={settings.Host};User ID={settings.UserName};Password={settings.Password};Database={settings.DatabaseName}";
             using var connection = new MySqlConnection( connectionString );
             connection.Open();
-            var commandString = $"TRUNCATE TABLE {settings.MySQLListingCashTable}"; 
+            var commandString = $"TRUNCATE TABLE {settings.ListingCashTable}"; 
             using var command = new MySqlCommand( commandString, connection );
             command.ExecuteScalar();
         }

@@ -6,15 +6,15 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 
-using AdmitadSqlData.DbContexts;
 using AdmitadSqlData.Entities;
-
-using Microsoft.EntityFrameworkCore;
 
 namespace AdmitadSqlData.Repositories
 {
-    internal class TheStoreRepository : BaseRepository
+    internal sealed class TheStoreRepository : BaseRepository
     {
+        
+        public TheStoreRepository( string connectionString, string version ) : base( connectionString, version ) { }
+        
         #region Properties
         public List<ColorDb> GetColors()
         {
@@ -99,11 +99,12 @@ namespace AdmitadSqlData.Repositories
         public List<ShopStatisticsDb> GetShopStatistics()
         {
             var db = GetDb();
-            return db.ShopStatistics.ToList();
+            return db.ShopStatistics
+                .Where( s => s.UpdateDate >= DateTime.Now.AddDays( -10 ) && s.UpdateDate <= DateTime.Now )
+                .ToList();
         }
 
-        public ShopStatisticsDb GetShopStatistics(
-            int shopId )
+        public ShopStatisticsDb GetShopStatistics( int shopId )
         {
             var db = GetDb();
             return db.ShopStatistics.FirstOrDefault( s => s.ShopId == shopId ) ?? new ShopStatisticsDb {
@@ -111,41 +112,10 @@ namespace AdmitadSqlData.Repositories
             };
         }
 
-        public void UpdateShopStatistics(
-            ShopProductStatistics productStatistics,
-            DateTime updateDate )
+        public void InsertShopStatistics( ShopStatisticsDb productStatistics )
         {
-            var db = GetDb();
-            var statisticsDb = db.ShopStatistics.FirstOrDefault( s => s.ShopId == productStatistics.ShopId );
-            if( statisticsDb == null ) {
-                statisticsDb = new ShopStatisticsDb {
-                    ShopId = productStatistics.ShopId
-                };
-                db.ShopStatistics.Add( statisticsDb );
-            }
-
-            if( productStatistics.Error != null &&
-                productStatistics.Error != statisticsDb.Error )
-                statisticsDb.Error = productStatistics.Error;
-
-            if( productStatistics.SoldoutAfter != null &&
-                productStatistics.SoldoutAfter != statisticsDb.SoldoutAfter )
-                statisticsDb.SoldoutAfter = productStatistics.SoldoutAfter.Value;
-
-            if( productStatistics.SoldoutBefore != null &&
-                productStatistics.SoldoutBefore != statisticsDb.SoldoutBefore )
-                statisticsDb.SoldoutBefore = productStatistics.SoldoutBefore.Value;
-
-            if( productStatistics.TotalAfter != null &&
-                productStatistics.TotalAfter != statisticsDb.TotalAfter )
-                statisticsDb.TotalAfter = productStatistics.TotalAfter.Value;
-
-            if( productStatistics.TotalBefore != null &&
-                productStatistics.TotalBefore != statisticsDb.TotalBefore )
-                statisticsDb.TotalBefore = productStatistics.TotalBefore.Value;
-
-            statisticsDb.UpdateDate = updateDate;
-
+            using var db = GetDb();
+            db.ShopStatistics.Add( productStatistics );
             db.SaveChanges();
         }
 
@@ -169,7 +139,7 @@ namespace AdmitadSqlData.Repositories
         private void FlushCountries()
         {
             using var db = GetDb();
-            db.UnknownCountries.RemoveRange( db.UnknownCountries );
+            db.UnknownCountries.RemoveRange( db.UnknownCountries.ToList() );
             db.SaveChanges();
         }
         
@@ -205,6 +175,5 @@ namespace AdmitadSqlData.Repositories
         }
 
         #endregion
-        
     }
 }

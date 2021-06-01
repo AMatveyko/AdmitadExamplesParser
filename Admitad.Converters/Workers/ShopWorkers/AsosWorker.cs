@@ -2,9 +2,14 @@
 
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    internal class AsosWorker : BaseShopWorker, IShopWorker {
+    internal sealed class AsosWorker : BaseShopWorker, IShopWorker {
+        
+        public AsosWorker( DbHelper dbHelper ) : base( dbHelper ) { }
+        
         protected override Offer GetTunedOffer( Offer offer, RawOffer rawOffer )
         {
 

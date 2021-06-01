@@ -13,8 +13,8 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private readonly ProcessorSettings _settings;
 
-        public BrandWorker( ProcessorSettings settings, BackgroundWorks works )
-            :base( settings.ElasticSearchClientSettings, works )
+        public BrandWorker( ProcessorSettings settings, BackgroundWorks works, DbHelper dbHelper )
+            :base( settings.ElasticSearchClientSettings, works, dbHelper )
         {
             _settings = settings;
         }
@@ -22,7 +22,7 @@ namespace TheStore.Api.Core.Sources.Workers
         public void FillBrandId(
             FillBrandIdContext context )
         {
-            var brandId = DbHelper.GetBrandId( context.ClearlyName );
+            var brandId = Db.GetBrandId( context.ClearlyName );
             if( brandId == Constants.UndefinedBrandId ) {
                 context.Finish();
                 context.Content = "Brand notFound";

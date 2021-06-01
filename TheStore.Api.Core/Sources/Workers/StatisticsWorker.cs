@@ -15,14 +15,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
-    internal static class StatisticsWorker
+    internal sealed class StatisticsWorker
     {
-        public static IActionResult GetShopStatistics()
+
+        private readonly DbHelper _dbHelper;
+        
+        public StatisticsWorker( DbHelper dbHelper ) {
+            _dbHelper = dbHelper;
+        }
+        
+        public IActionResult GetShopStatistics()
         {
-            var statistics = new TotalShopsStatistics();
-            var shops = DbHelper.GetShopStatisticsList();
-            statistics.ByShop = shops;
-            statistics.TotalEnabledShops = DbHelper.GetEnableShops().Count;
+            var statistics = new TotalShopsStatistics {
+                ByShop = _dbHelper.GetShopStatisticsList(),
+                TotalEnabledShops = _dbHelper.GetEnableShops().Count
+            };
             return new JsonResult( statistics );
         }
 

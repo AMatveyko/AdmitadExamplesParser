@@ -13,10 +13,17 @@ using Newtonsoft.Json;
 
 namespace Admitad.Converters
 {
-    public static class ProductConverter
+    public sealed class ProductConverter
     {
 
-        public static List<Product> GetProductsContainer( IEnumerable<Offer> offers )
+        private readonly DbHelper _dbHelper;
+        
+        public ProductConverter( DbHelper dbHelper )
+        {
+            _dbHelper = dbHelper;
+        }
+        
+        public List<Product> GetProductsContainer( IEnumerable<Offer> offers )
         {
             var groupedOffers = offers.GroupBy( o => o.ProductId ).ToList();
             var products =
@@ -26,7 +33,7 @@ namespace Admitad.Converters
             return filteredProducts;
         }
 
-        public static Product CollectProduct( List<Offer> offers ) {
+        private Product CollectProduct( List<Offer> offers ) {
             if( offers.Any() == false ) {
                 throw new Exception( "Offer list is empty" );
             }
@@ -70,13 +77,13 @@ namespace Admitad.Converters
             product.Params.AddRange( offer.Params.SelectMany( p => p.Values ) );
         }
 
-        private static Product CreateNewProduct(
+        private Product CreateNewProduct(
             List<Offer> offers,
             DateTime updateDate )
         {
             var offer = offers.First();
             
-            DbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
+            _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
             
             return new Product {
                 Id = offer.ProductId,
@@ -101,7 +108,7 @@ namespace Admitad.Converters
                 Enable = 1,
                 Soldout = 0,
                 Delivery = 0,
-                BrandId = DbHelper.GetBrandId( offer.VendorNameClearly ),
+                BrandId = _dbHelper.GetBrandId( offer.VendorNameClearly ),
                 SalesNotes = offer.SalesNotes,
                 OriginalCategoryId = offer.CategoryId,
                 OfferIds = offers.Select( o => o.OriginalId ).ToArray(),

@@ -2,10 +2,17 @@
 
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal class VmehaWorker : BaseShopWorker, IShopWorker
     {
+        
+        public VmehaWorker(
+            DbHelper dbHelper )
+            : base( dbHelper ) { }
+        
         protected override void FillParams(
             IExtendedOffer extendedOffer,
             RawOffer rawOffer )

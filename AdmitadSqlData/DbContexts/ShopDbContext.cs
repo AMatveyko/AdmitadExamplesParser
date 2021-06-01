@@ -14,10 +14,12 @@ namespace AdmitadSqlData.DbContexts
     {
 
         private readonly string _connectionString;
+        private readonly string _version;
         
-        public ShopDbContext( string connectionString )
+        public ShopDbContext( string connectionString, string version )
         {
             _connectionString = connectionString;
+            _version = version;
         }
         
         public DbSet<Shop> Shops { get; set; }
@@ -39,7 +41,7 @@ namespace AdmitadSqlData.DbContexts
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {
             optionsBuilder.UseMySql( _connectionString,
-                new MySqlServerVersion( new Version( "10.3.27" ) ) );
+                new MySqlServerVersion( new Version( _version ) ) );
         }
     }
 }

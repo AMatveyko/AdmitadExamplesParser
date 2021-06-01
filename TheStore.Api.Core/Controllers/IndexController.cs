@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 
+using AdmitadSqlData.Helpers;
+
 using Microsoft.AspNetCore.Mvc;
 
 using TheStore.Api.Core.Sources.Workers;
@@ -19,11 +21,13 @@ namespace TheStore.Api.Core.Controllers
 
         private readonly ProcessorSettings _settings;
         private readonly BackgroundWorks _works;
+        private readonly DbHelper _dbHelper;
         
-        public IndexController( ProcessorSettings settings, BackgroundWorks works )
+        public IndexController( ProcessorSettings settings, BackgroundWorks works, DbHelper dbHelper )
         {
             _works = works;
             _settings = settings;
+            _dbHelper = dbHelper;
         }
 
         [ HttpGet ]
@@ -31,7 +35,7 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult FillBrandId( string clearlyName, bool clean = true )
         {
             var context = new FillBrandIdContext( clearlyName );
-            var worker = new BrandWorker( _settings, _works );
+            var worker = new BrandWorker( _settings, _works, _dbHelper );
             return _works.AddToQueue( worker.FillBrandId, context, QueuePriority.Low, clean );
         }
         
@@ -48,10 +52,8 @@ namespace TheStore.Api.Core.Controllers
         
         [ HttpGet ]
         [ Route( "GetShopStatistics" ) ]
-        public IActionResult GetShopStatistics()
-        {
-            return StatisticsWorker.GetShopStatistics();
-        }
+        public IActionResult GetShopStatistics() =>
+            new StatisticsWorker( _dbHelper ).GetShopStatistics();
         
         [ HttpGet ]
         [ Route( "IndexShop" ) ]
@@ -63,7 +65,7 @@ namespace TheStore.Api.Core.Controllers
             bool clean = true )
         {
             var context = new IndexShopContext( id, downloadFresh, needLink, needSoldOut );
-            var worker = new IndexWorker( _settings, context, _works );
+            var worker = new IndexWorker( _settings, context, _works, _dbHelper );
             return _works.AddToQueue( worker.Index, context, QueuePriority.Parallel, clean );
         }
 
@@ -72,43 +74,43 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult IndexAllShops( bool clean = true )
         {
             var context = new IndexAllShopsContext();
-            var worker = new IndexWorker( _settings, context, _works );
+            var worker = new IndexWorker( _settings, context, _works, _dbHelper );
             return _works.AddToQueue( worker.IndexAll, context, QueuePriority.Parallel, clean );
         }
         
         [ HttpGet ]
         [ Route("RelinkTag") ]
-        public IActionResult RelinkTag( int id, bool clean = true )
+        public IActionResult RelinkTag( int id, bool relink = false, bool clean = true )
         {
-            var context = new RelinkTagContext( id.ToString() );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, _works );
+            var context = new RelinkTagContext( id.ToString(), relink );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, _works, _dbHelper );
             return _works.AddToQueue( worker.RelinkTag, context, QueuePriority.Low, clean );
         }
         
         [ HttpGet ]
         [ Route("RelinkCategory") ]
-        public IActionResult RelinkCategory( string id, bool clean = true )
+        public IActionResult RelinkCategory( string id, bool relink = false, bool clean = true )
         {
-            var context = new RelinkCategoryContext( id );
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, _works );
+            var context = new RelinkCategoryContext( id, relink );
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, _works, _dbHelper );
             return _works.AddToQueue( worker.RelinkCategory, context, QueuePriority.Low, clean );
         }
 
-        [ HttpGet ]
-        [ Route( "RelinkAllCategories" ) ]
-        public IActionResult RelinkAllCategories( bool clean = true )
-        {
-            var context = new RelinkAllCategories();
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, _works );
-            return _works.AddToQueue( worker.RelinkAllCategories, context, QueuePriority.Parallel, clean );
-        }
+        // [ HttpGet ]
+        // [ Route( "RelinkAllCategories" ) ]
+        // public IActionResult RelinkAllCategories( bool clean = true )
+        // {
+        //     var context = new RelinkAllCategories();
+        //     var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, _works );
+        //     return _works.AddToQueue( worker.RelinkAllCategories, context, QueuePriority.Parallel, clean );
+        // }
 
         [ HttpGet ]
         [ Route( "LinkTags" ) ]
         public IActionResult LinkTags( bool clean = false )
         {
             var context = new LinkTagsContext( "" );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, _works );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, _works, _dbHelper );
             return _works.AddToQueue( worker.LinkTags, context, QueuePriority.Low, clean );
         }
 
@@ -118,7 +120,7 @@ namespace TheStore.Api.Core.Controllers
         {
             var context = new LinkAllContext();
             return _works.AddToQueue(
-                new IndexWorker( _settings, context, _works ).LinkAll,
+                new IndexWorker( _settings, context, _works, _dbHelper ).LinkAll,
                 context, QueuePriority.Parallel,
                 clean );
         }

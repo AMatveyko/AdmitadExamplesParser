@@ -5,10 +5,17 @@ using System.Collections.Generic;
 using AdmitadCommon;
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal sealed class AdidasWorker : BaseShopWorker, IShopWorker
     {
+        
+        public AdidasWorker(
+            DbHelper dbHelper )
+            : base( dbHelper ) { }
+        
         // protected override string GetClearlyVendor(
         //     string vendor ) =>
         //     "adidas";

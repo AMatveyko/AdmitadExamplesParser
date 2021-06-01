@@ -7,6 +7,8 @@ using System.Linq;
 using AdmitadCommon;
 using AdmitadCommon.Entities;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal sealed class LamodaWorker : BaseShopWorker, IShopWorker
@@ -14,6 +16,10 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
         private const char ParamSplitter = ',';
 
+        public LamodaWorker(
+            DbHelper dbHelper )
+            : base( dbHelper ) { }
+        
         protected override void FillParams(
             IExtendedOffer extendedOffer,
             RawOffer rawOffer )
@@ -45,5 +51,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 _ => Age.Undefined
             };
         }
+        
     }
 }

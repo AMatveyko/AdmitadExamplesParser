@@ -1,14 +1,16 @@
 ﻿// a.snegovoy@gmail.com
 
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace AdmitadSqlData.Entities
 {
     [ Table( "unknown_countries" ) ]
     public sealed class UnknownCountry
     {
-        [ Key ]
+        [ Column( "id" ) ]
+        public int Id { get; set; }
         [ Column( "name" ) ]
         public string Name { get; set; }
         [ Column( "offer_count" ) ]

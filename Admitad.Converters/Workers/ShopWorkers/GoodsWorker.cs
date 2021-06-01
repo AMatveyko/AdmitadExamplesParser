@@ -14,6 +14,8 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
         private const string CountryParam = "Страна производства";
         
+        public GoodsWorker( DbHelper dbHelper ) : base( dbHelper ) { }
+        
         protected override Offer GetTunedOffer( Offer offer, RawOffer rawOffer )
         {
 
@@ -28,5 +30,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
             }
             return offer;
         }
+        
     }
 }

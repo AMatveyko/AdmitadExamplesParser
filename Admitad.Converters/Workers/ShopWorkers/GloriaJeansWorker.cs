@@ -5,6 +5,8 @@ using System.Linq;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Extensions;
 
+using AdmitadSqlData.Helpers;
+
 using static System.Int32;
 
 namespace Admitad.Converters.Workers.ShopWorkers
@@ -18,6 +20,10 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private const string Years = "years";
         private const string Mounth = "mounth";
         private const string Month = "month";
+        
+        public GloriaJeansWorker(
+            DbHelper dbHelper )
+            : base( dbHelper ) { }
         
         protected override Offer GetTunedOffer( Offer offer, RawOffer rawOffer )
         {
@@ -65,5 +71,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
             return 0;
         }
+        
     }
 }

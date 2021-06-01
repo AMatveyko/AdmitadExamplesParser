@@ -14,9 +14,30 @@ namespace ServerTool
             ( "docker", false ),
             ( "elasticsearch", false )
         };
+
+        private const string ServiceCheckArg = "serviceCheck";
+        private const string NginxLogAnalyze = "nginxLogAnalyze";
+
+        private const string NginxLogPath = "";
         
         static void Main(
             string[] args )
+        {
+            if( args.Length == 0 ) {
+                return;
+            }
+
+            switch( args[0] ) {
+                case ServiceCheckArg:
+                    ServiceCheck();
+                    break;
+                case NginxLogAnalyze:
+                    break;
+            }
+            
+        }
+
+        private static void ServiceCheck()
         {
             var settings = SettingsBuilder.GetMessengerSettings();
             var loggers = new Loggers( settings );

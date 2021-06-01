@@ -1,32 +1,33 @@
 ﻿// a.snegovoy@gmail.com
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal static class ConverterBuilder
     {
         //private const string Lamoda = "lamoda.ru";
         
-        public static IShopWorker GetConverterByShop(
-            string shopName )
+        public static IShopWorker GetConverterByShop( string shopName, DbHelper dbHelper )
         {
             return shopName switch {
-                "yoox" => new YooxWorker(),
-                "lamoda" => new LamodaWorker(),
-                "adidas" => new AdidasWorker(),
-                "asos" => new AsosWorker(),
-                "12storeez" => new TwelveStoreezWorker(),
-                "anabel" => new AnabelWorker(),
-                "vmeha" => new VmehaWorker(),
-                "brandshop" => new BrandshopWorker(),
-                "gretta" => new GrettaWorker(),
-                "goods" => new GoodsWorker(),
-                "gloriajeans" => new GloriaJeansWorker(),
-                "tamaris" => new TamarisWorker(),
-                "Incanto" => new IncantoShopWorker(),
-                "gullivermarket" => new GulliverMarketWorker(),
-                "newchic" => new NewchicWorker(),
-                "belleyou" => new BelleyouWorker(),
-                _ => new DefaultShopWorker()
+                "yoox" => new YooxWorker( dbHelper ),
+                "lamoda" => new LamodaWorker( dbHelper ),
+                "adidas" => new AdidasWorker( dbHelper ),
+                "asos" => new AsosWorker( dbHelper ),
+                "12storeez" => new TwelveStoreezWorker( dbHelper ),
+                "anabel" => new AnabelWorker( dbHelper ),
+                "vmeha" => new VmehaWorker( dbHelper ),
+                "brandshop" => new BrandshopWorker( dbHelper ),
+                "gretta" => new GrettaWorker( dbHelper ),
+                "goods" => new GoodsWorker( dbHelper ),
+                "gloriajeans" => new GloriaJeansWorker( dbHelper ),
+                "tamaris" => new TamarisWorker( dbHelper ),
+                "Incanto" => new IncantoShopWorker( dbHelper ),
+                "gullivermarket" => new GulliverMarketWorker( dbHelper ),
+                "newchic" => new NewchicWorker( dbHelper ),
+                "belleyou" => new BelleyouWorker( dbHelper ),
+                _ => new DefaultShopWorker( dbHelper )
             };
         }
     }

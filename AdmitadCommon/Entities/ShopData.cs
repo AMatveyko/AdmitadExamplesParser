@@ -39,7 +39,7 @@ namespace AdmitadCommon.Entities
                     break;
                 }
             }
-            return string.Join( "\\", path );
+            return string.Join( " \\ ", path );
         }
     }
 }

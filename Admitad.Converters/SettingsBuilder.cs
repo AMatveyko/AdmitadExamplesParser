@@ -2,13 +2,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Settings;
 
 using AdmitadSqlData.Helpers;
 
 using Messenger;
+
+using Newtonsoft.Json;
 
 namespace Admitad.Converters
 {
@@ -22,6 +26,18 @@ namespace Admitad.Converters
             FillSettings();
         }
 
+        public static ApiClientSettings GetApiClientSettings()
+        {
+            const string settingsPath = @"o:\admitad\workData\settings.json";
+            return JsonConvert.DeserializeObject<ApiClientSettings>( File.ReadAllText( settingsPath ) );
+        }
+
+        public static DbSettings GetDbSettings()
+        {
+            const string settingsPath = "dbSettings.json";
+            return JsonConvert.DeserializeObject<DbSettings>( File.ReadAllText( settingsPath ) );
+        }
+        
         public static MessengerSettings GetMessengerSettings()
         {
             var settings = GetSettings();
@@ -87,7 +103,7 @@ namespace Admitad.Converters
         {
             if( _options == null ||
                 _options.Any() == false ) {
-                _options = DbHelper.GetSettingsOptions();
+                _options = new DbHelper( GetDbSettings() ).GetSettingsOptions();
             }
         }
     }

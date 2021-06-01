@@ -15,4 +15,11 @@
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="..\dbSettings.json">
+        <Link>dbSettings.json</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

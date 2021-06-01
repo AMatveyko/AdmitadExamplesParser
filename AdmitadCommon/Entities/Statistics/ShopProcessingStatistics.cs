@@ -17,7 +17,7 @@ namespace AdmitadCommon.Entities.Statistics
         public ShopProcessingStatistics( DownloadInfo info, Action<string, bool> messageAdder, Logger logger )
         {
             ( _addMessage, _info, _logger ) = ( messageAdder, info, logger );
-            _productStatistics = new ShopProductStatistics {
+            _product = new ShopProduct {
                 ShopId = info.ShopId,
                 ShopName = info.ShopName
             };
@@ -27,10 +27,10 @@ namespace AdmitadCommon.Entities.Statistics
         public int ShopId => _info.ShopId;
         public long FileSize => _info.FileSize;
         public int OfferCount => _shopData?.Offers?.Count ?? 0;
-        public int SoldOutOfferCount => _productStatistics?.SoldoutAfter ?? 0;
+        public int SoldOutOfferCount => _product?.SoldoutCount ?? 0;
         public int CategoryCount => _shopData?.Categories?.Count ?? 0;
         public long DownloadTime => _info.DownloadTime;
-        private readonly ShopProductStatistics _productStatistics;
+        private readonly ShopProduct _product;
         private ShopData _shopData;
 
         public ShopData GetShopData( Func<ShopData> action )
@@ -39,15 +39,10 @@ namespace AdmitadCommon.Entities.Statistics
             return _shopData;
         }
 
-        public void SetProductStatisticsBefore( int count, int soldOut ) {
-            _productStatistics.TotalBefore = count;
-            _productStatistics.SoldoutBefore = soldOut;
-        }
-
-        public void SetProductsStatisticsAfter( int count, int soldOut )
+        public void SetProductsStatistics( int count, int soldOut )
         {
-            _productStatistics.TotalAfter = count;
-            _productStatistics.SoldoutAfter = soldOut;
+            _product.TotalCount = count;
+            _product.SoldoutCount = soldOut;
         }
         
         public void Write( DbWorkersContainer container )
@@ -70,7 +65,7 @@ namespace AdmitadCommon.Entities.Statistics
         
         private void UpdateShopStatistics( DbWorkersContainer container )
         {
-            container.UpdateShopStatistics( _productStatistics );
+            container.UpdateShopStatistics( _product );
         }
 
         private void WriteCategories( DbWorkersContainer container )
@@ -97,38 +92,6 @@ namespace AdmitadCommon.Entities.Statistics
                 _logger.Error( e );
             }
         }
-        
-        // public void FillCategories( List<Product> products )
-        // {
-        //     if( products != null &&
-        //         products.Any() &&
-        //         _shopData.Categories != null &&
-        //         _shopData.Categories.Any() ) {
-        //         var groupedProducts = products.Where( p => p.OriginalCategoryId.IsNotNullOrWhiteSpace() )
-        //             .GroupBy( p => p.OriginalCategoryId ).ToArray();
-        //         
-        //         if( groupedProducts.Any() == false ) {
-        //             return;
-        //         }
-        //
-        //         foreach( var group in groupedProducts ) {
-        //             FillCategory( group );
-        //         }
-        //         
-        //     }
-        // }
-
-        // private void FillCategory( IGrouping<string, Product> group )
-        // {
-        //     if( _shopData.Categories.ContainsKey( group.Key ) == false ) {
-        //         return;
-        //     }
-        //
-        //     var category = _shopData.Categories[ group.Key ];
-        //     category.TotalProductsNumber = group.Count();
-        //     category.MenProductsNumber = group.Count( p => p.Gender == "m" );
-        //     category.WomenProductsNumber = group.Count( p => p.Gender == "w" );
-        // }
 
     }
 }

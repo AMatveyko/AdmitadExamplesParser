@@ -2,13 +2,15 @@
 
 using Admitad.Converters.Handlers;
 
+using AdmitadSqlData.Helpers;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal sealed class IncantoShopWorker : BaseShopWorker, IShopWorker
     {
-        public IncantoShopWorker()
+        public IncantoShopWorker( DbHelper dbHelper ) : base( dbHelper )
         {
-            _handlers.Add( new AlwaysAdultWomen() );
+            Handlers.Add( new AlwaysAdultWomen() );
         }
     }
 }
