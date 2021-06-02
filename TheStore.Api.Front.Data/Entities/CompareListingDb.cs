@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TheStore.Api.Front.Data.Entities
 {
     [ Table( "compare_listings" ) ]
-    public class CompareListingDb
+    public sealed class CompareListingDb
     {
         [ Column( "id" ) ]
         public int Id { get; set; }

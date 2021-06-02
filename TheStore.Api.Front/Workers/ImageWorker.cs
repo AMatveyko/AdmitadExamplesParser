@@ -2,8 +2,10 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -16,21 +18,24 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 
+using TheStore.Api.Front.Entity;
+
+using Web.Common.Entities;
+using Web.Common.Helpers;
+using Web.Common.Workers;
+
 namespace TheStore.Api.Front.Workers
 {
 
-    public static class ImageWorker
+    internal static class ImageWorker
     {
 
-        //private static readonly ProxyInfo Proxy = new ProxyInfo( "http://193.47.45.60:8000", "U0acrR", "qHYQ0o" );
-        
         private static readonly Logger Logger = LogManager.GetLogger( "DownloadError" );
+        private static readonly Logger Statistics = LogManager.GetLogger( "ProxyStatistics" );
 
         private const string CacheDirectoryTemplate = "cache/{0}/{1}/{2}.jpg";
-        //private static readonly ConcurrentDictionary<string, string> HashCache = new ConcurrentDictionary<string, string>();
-        //private static readonly ConcurrentDictionary<string, bool> FsCache = new ConcurrentDictionary<string, bool>();
-        
-        public static async Task<IActionResult> Get( string rawUrl )
+
+        public static async Task<IActionResult> Get( string rawUrl, Proxies proxies )
         {
             var url = HttpUtility.UrlDecode( rawUrl );
             try {
@@ -38,7 +43,7 @@ namespace TheStore.Api.Front.Workers
                     return GetResult( imageFromFs );
                 }
 
-                var image = await DownloadAndSaveImage( url );
+                var image = await DownloadAndSaveImage( url, proxies );
                 //Task.Run( () => SaveImage( url, image ) );
                 return GetResult( image );
             }
@@ -75,21 +80,32 @@ namespace TheStore.Api.Front.Workers
 
         #region Download
 
-        private static async Task<byte[]> DownloadAndSaveImage( string url )
+        private static async Task<byte[]> DownloadAndSaveImage( string url, Proxies proxyInfos )
         {
-            try {
-                var result = await DoDownloadImage( url, true );
-                SaveImage( url, result );
-                return result;
-            }
-            catch( Exception e ) {
-                if( e.Message.Contains( "(Not Found)" ) ) {
-                    //Logger.Error( e, $"{url} NotFound" );
-                    return GetNotFound();
+
+            var result = new byte[0];
+            var proxies = ProxyDistributor.GetProxies( proxyInfos.Infos );
+            foreach( var proxy in proxies ) {
+                try {
+                    result = await DoDownloadImage( url, proxy );
+                    Statistics.Info( $"{proxy?.Url ?? "self"} {url} Ok" );
+                    SaveImage( url, result );
+                    return result;
                 }
-                Logger.Error( e, $"{url} first attempt" );
-                return await DoDownloadImage( url, true );
+                catch( Exception e ) {
+                    if( e.Message.Contains( "(Not Found)" ) ) {
+                        Statistics.Info( $"{proxy?.Url ?? "self"} {url} NotFound" );
+                        return GetNotFound();
+                    }
+                    Statistics.Info( $"{proxy?.Url ?? "self"} {url} Error" );
+                    Logger.Error( e, $"{url} first attempt" );
+                    if( e is UnknownImageFormatException ) {
+                        File.WriteAllBytes( $"logs/data/{url.Split('/').ToList().LastOrDefault() ?? "null"}", result );
+                    }
+                }
             }
+            
+            return GetNotFound();
         }
 
         private static byte[] GetNotFound()
@@ -98,33 +114,10 @@ namespace TheStore.Api.Front.Workers
             return File.Exists( path ) ? File.ReadAllBytes( path ) : new byte[0];
         }
         
-        private static async Task<byte[]> DoDownloadImage( string url, bool useProxy )
+        private static async Task<byte[]> DoDownloadImage( string url, ProxyInfo proxyInfo )
         {
-            var uri = new Uri( url );
-            if( useProxy ) {
-                var proxy = new WebProxy
-                {
-                    Address = new Uri( "http://193.47.45.60:8000" ),
-                    BypassProxyOnLocal = false,
-                    UseDefaultCredentials = false,
-                    
-                    Credentials = new NetworkCredential( userName: "U0acrR", password: "qHYQ0o" )
-                };
-                
-                var httpClientHandler = new HttpClientHandler
-                {
-                    Proxy = proxy,
-                };
-                
-                using var httpClient = new HttpClient( httpClientHandler );
-                var imageBytes = await httpClient.GetByteArrayAsync( uri );
-                return ResizeImage( imageBytes );
-            }
-            else {
-                using var httpClient = new HttpClient();
-                var imageBytes = await httpClient.GetByteArrayAsync( uri );
-                return ResizeImage( imageBytes );
-            }
+            var imageBytes = await WebRequester.Request( url, proxyInfo );
+            return ResizeImage( imageBytes );
         }
         
         private static byte[] ResizeImage( byte[] imageByte )

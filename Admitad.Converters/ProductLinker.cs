@@ -13,6 +13,9 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Entities;
+using Common.Settings;
+
 namespace Admitad.Converters
 {
     public sealed class ProductLinker : BaseComponent

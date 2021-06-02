@@ -11,6 +11,8 @@ using AdmitadCommon.Types;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Workers;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -50,7 +52,8 @@ namespace TheStore.Api.Core
                             Version = "v1"
                         } );
                 } );
-            services.AddTransient( provider => SettingsBuilder.GetSettings() );
+            var settingsBuilder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
+            services.AddTransient( provider => settingsBuilder.GetSettings() );
             services.AddSingleton<PriorityQueue>();
             services.AddSingleton<BackgroundWorks>();
             services.AddTransient( r => 

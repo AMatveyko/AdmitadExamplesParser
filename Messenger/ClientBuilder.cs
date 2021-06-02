@@ -7,6 +7,9 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 
+using Common.Entities;
+using Common.Settings;
+
 using Messenger.Clients;
 
 namespace Messenger

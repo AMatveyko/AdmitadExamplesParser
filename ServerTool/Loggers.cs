@@ -4,6 +4,8 @@ using System;
 
 using AdmitadCommon.Entities;
 
+using Common.Settings;
+
 using Messenger;
 
 using NLog;

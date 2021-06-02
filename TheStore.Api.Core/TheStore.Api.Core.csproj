@@ -11,7 +11,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
-      <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
       <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
       <ProjectReference Include="..\Web.Common\Web.Common.csproj" />
@@ -34,6 +33,12 @@
         <Link>dbSettings.json</Link>
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="AdmitadCommon, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\AdmitadSqlDataTests\bin\Debug\net5.0\AdmitadCommon.dll</HintPath>
+      </Reference>
     </ItemGroup>
 
 </Project>

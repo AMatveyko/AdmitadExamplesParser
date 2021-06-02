@@ -1,20 +1,19 @@
 ﻿// a.snegovoy@gmail.com
 
-namespace TheStore.Api.Front.Entity
+namespace Web.Common.Entities
 {
-    internal sealed class ProxyInfo
+    public sealed class ProxyInfo
     {
 
-        public ProxyInfo( string url, string userName, string password )
+        public ProxyInfo( string ip, string port, string userName, string password ) : this( ip, port )
         {
-            Url = url;
             UserName = userName;
             Password = password;
         }
 
-        public ProxyInfo( string url )
+        public ProxyInfo( string ip, string port )
         {
-            Url = url;
+            Url = $"http://{ip}:{port}";
         }
         
         public string Url { get; }

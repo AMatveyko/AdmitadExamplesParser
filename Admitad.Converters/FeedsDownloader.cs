@@ -14,6 +14,8 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Entities;
+
 using Nest;
 
 namespace Admitad.Converters

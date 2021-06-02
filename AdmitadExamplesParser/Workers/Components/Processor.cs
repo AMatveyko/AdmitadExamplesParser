@@ -16,6 +16,10 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Entities;
+using Common.Settings;
+using Common.Workers;
+
 using Messenger;
 
 namespace AdmitadExamplesParser.Workers.Components

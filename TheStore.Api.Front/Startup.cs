@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Common.Workers;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -15,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 using TheStore.Api.Front.Data.Repositories;
+using TheStore.Api.Front.Entity;
 
 namespace TheStore.Api.Front
 {
@@ -42,6 +45,11 @@ namespace TheStore.Api.Front
                             Version = "v1"
                         } );
                 } );
+
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            services.AddTransient( r => 
+                new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
+            services.AddSingleton<Proxies>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

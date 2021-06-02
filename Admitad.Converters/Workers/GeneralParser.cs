@@ -11,6 +11,8 @@ using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Workers
 {
     public sealed class GeneralParser : BaseComponent

@@ -14,6 +14,8 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Entities;
 
+using Common.Settings;
+
 namespace AdmitadSqlData.Helpers
 {
     internal static class EntityConverter

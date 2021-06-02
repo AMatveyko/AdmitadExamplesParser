@@ -1,14 +1,13 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-using Admitad.Converters;
-
-using AdmitadCommon.Entities.Settings;
+using AdmitadSqlData.Helpers;
 
 using ApiClient.Responces;
+
+using Common.Workers;
 
 using MySqlConnector;
 
@@ -146,7 +145,8 @@ namespace ApiClient
         
         private static void SendMessage( string message )
         {
-            var settings = SettingsBuilder.GetMessengerSettings();
+            var builder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
+            var settings = builder.GetMessengerSettings();
             var messenger = new Messenger.Messenger( settings );
             messenger.Send( message );
         }

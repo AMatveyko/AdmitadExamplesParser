@@ -11,6 +11,8 @@ using AdmitadCommon.Entities.Statistics;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Settings;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace TheStore.Api.Core.Sources.Workers

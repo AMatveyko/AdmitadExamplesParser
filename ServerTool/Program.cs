@@ -2,6 +2,10 @@
 
 using Admitad.Converters;
 
+using AdmitadSqlData.Helpers;
+
+using Common.Workers;
+
 using ServerTool.Workers;
 
 namespace ServerTool
@@ -39,7 +43,8 @@ namespace ServerTool
 
         private static void ServiceCheck()
         {
-            var settings = SettingsBuilder.GetMessengerSettings();
+            var builder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
+            var settings = builder.GetMessengerSettings();
             var loggers = new Loggers( settings );
             var serviceWorker = new ServiceWorker( _services, loggers );
             serviceWorker.Check();

@@ -1,6 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
-namespace AdmitadCommon.Entities
+namespace Common.Entities
 {
     public enum MessengerType
     {

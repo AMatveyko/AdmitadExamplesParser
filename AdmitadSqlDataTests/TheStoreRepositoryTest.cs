@@ -13,6 +13,8 @@ using AdmitadCommon.Helpers;
 using AdmitadSqlData.Helpers;
 using AdmitadSqlData.Repositories;
 
+using Common.Workers;
+
 using NUnit.Framework;
 
 namespace AdmitadSqlDataTests

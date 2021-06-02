@@ -10,6 +10,8 @@ using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Workers
 {
     public sealed class OfferConverter : BaseComponent

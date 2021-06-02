@@ -2,6 +2,8 @@
 
 using AdmitadCommon.Entities;
 
+using Common.Settings;
+
 using Microsoft.AspNetCore.Mvc;
 
 using TheStore.Api.Core.Sources.Workers;

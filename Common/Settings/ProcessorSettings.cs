@@ -1,6 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
-namespace AdmitadCommon.Entities
+namespace Common.Settings
 {
     public sealed class ProcessorSettings
     {

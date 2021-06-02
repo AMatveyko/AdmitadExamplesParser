@@ -10,10 +10,11 @@ using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Entities.Settings;
 using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
+
+using Common.Workers;
 
 using NUnit.Framework;
 

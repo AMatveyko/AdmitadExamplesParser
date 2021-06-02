@@ -14,6 +14,9 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Settings;
+using Common.Workers;
+
 using NUnit.Framework;
 
 namespace AdmitadExamplesParserTests

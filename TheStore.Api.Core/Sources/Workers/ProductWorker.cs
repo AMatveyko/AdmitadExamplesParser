@@ -5,6 +5,8 @@ using Admitad.Converters.Workers;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 
+using Common.Settings;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace TheStore.Api.Core.Sources.Workers

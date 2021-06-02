@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\Messenger\Messenger.csproj" />
       <ProjectReference Include="..\TheStore.Api.Core\TheStore.Api.Core.csproj" />
       <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />

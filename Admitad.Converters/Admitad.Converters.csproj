@@ -7,6 +7,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\Messenger\Messenger.csproj" />
     </ItemGroup>
 

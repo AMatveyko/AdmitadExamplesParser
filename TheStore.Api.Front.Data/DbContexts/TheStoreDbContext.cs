@@ -22,6 +22,8 @@ namespace TheStore.Api.Front.Data.DbContexts
         }
 
         public DbSet<CompareListingDb> CompareListings { get; set; }
+        public DbSet<ProxyDb> Proxies { get; set; }
+        public DbSet<CoreSettingDb> CoreSettings { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

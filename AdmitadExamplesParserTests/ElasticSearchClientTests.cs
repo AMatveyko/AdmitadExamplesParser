@@ -8,6 +8,8 @@ using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Extensions;
 
+using Common.Settings;
+
 using NUnit.Framework;
 
 namespace AdmitadExamplesParserTests

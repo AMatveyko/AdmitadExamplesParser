@@ -12,6 +12,9 @@ using AdmitadCommon.Entities.Responses;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
 
+using Common.Entities;
+using Common.Settings;
+
 using Elasticsearch.Net;
 
 using Nest;

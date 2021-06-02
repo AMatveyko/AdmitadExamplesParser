@@ -6,6 +6,8 @@ using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
 
+using Common.Settings;
+
 using Messenger;
 
 using NUnit.Framework;
@@ -13,6 +15,8 @@ using NUnit.Framework;
 using TheStore.Api.Core.Sources.Entities;
 using TheStore.Api.Core.Sources.Workers;
 using TheStore.Api.Front.Data.Repositories;
+
+using Web.Common.Helpers;
 
 namespace UtilsTests
 {
@@ -24,6 +28,14 @@ namespace UtilsTests
             ChatId = "sdfaslkfjsladf"
         };
 
+        [ Test ]
+        public void TestUserAgents()
+        {
+            var agent1 = UserAgents.Get();
+            var agent2 = UserAgents.Get();
+            Assert.AreNotEqual( agent1, agent2 );
+        }
+        
         [ Test ]
         public void TestUpdateResult()
         {

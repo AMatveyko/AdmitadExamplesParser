@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-namespace AdmitadCommon.Entities.Settings
+namespace Common.Settings
 {
     public class DbSettings
     {

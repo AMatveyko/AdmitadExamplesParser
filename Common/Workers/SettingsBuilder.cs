@@ -5,25 +5,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Settings;
-
-using AdmitadSqlData.Helpers;
-
-using Messenger;
+using Common.Entities;
+using Common.Settings;
 
 using Newtonsoft.Json;
 
-namespace Admitad.Converters
+namespace Common.Workers
 {
-    public static class SettingsBuilder
+    public sealed class SettingsBuilder
     {
 
-        private static List<SettingsOption> _options;
+        private List<SettingsOption> _options;
 
-        static SettingsBuilder()
+        public SettingsBuilder( ISettingsRepository repository )
         {
-            FillSettings();
+            FillSettings( repository );
         }
 
         public static ApiClientSettings GetApiClientSettings()
@@ -38,7 +34,7 @@ namespace Admitad.Converters
             return JsonConvert.DeserializeObject<DbSettings>( File.ReadAllText( settingsPath ) );
         }
         
-        public static MessengerSettings GetMessengerSettings()
+        public MessengerSettings GetMessengerSettings()
         {
             var settings = GetSettings();
 
@@ -50,7 +46,7 @@ namespace Admitad.Converters
             return messengerSettings;
         } 
         
-        public static ProcessorSettings GetSettings()
+        public ProcessorSettings GetSettings()
         {
             var telegramSetting = new TelegramSettings {
                 Enabled = GetBool( "TelegramEnabled" ),
@@ -76,7 +72,7 @@ namespace Admitad.Converters
             return settings;
         }
 
-        private static string GetOptionByName( string name ) {
+        private string GetOptionByName( string name ) {
             try {
                 var option = _options.First( o => o.Option == name );
                 return option.Value;
@@ -86,24 +82,24 @@ namespace Admitad.Converters
             }
         }
 
-        private static int GetInt( string name ) {
+        private int GetInt( string name ) {
             var value = GetOptionByName( name );
             return int.Parse( value );
         }
 
-        private static bool GetBool( string name ) {
+        private bool GetBool( string name ) {
             var value = GetOptionByName( name );
             return bool.Parse( value );
         }
 
-        private static string GetString( string name ) =>
+        private string GetString( string name ) =>
             GetOptionByName( name );
 
-        private static void FillSettings()
+        private void FillSettings( ISettingsRepository repository )
         {
             if( _options == null ||
                 _options.Any() == false ) {
-                _options = new DbHelper( GetDbSettings() ).GetSettingsOptions();
+                _options = repository.GetSettingsOptions();
             }
         }
     }

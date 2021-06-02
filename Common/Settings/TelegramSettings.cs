@@ -1,6 +1,8 @@
 ﻿// a.snegovoy@gmail.com
 
-namespace AdmitadCommon.Entities
+using Common.Entities;
+
+namespace Common.Settings
 {
     public sealed class TelegramSettings : IClientSettings
     {

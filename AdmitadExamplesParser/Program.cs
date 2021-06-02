@@ -6,6 +6,8 @@ using AdmitadCommon.Entities.Api;
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.Components;
 
+using Common.Settings;
+
 using Newtonsoft.Json;
 
 namespace AdmitadExamplesParser

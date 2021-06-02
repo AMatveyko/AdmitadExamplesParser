@@ -14,6 +14,8 @@ using AdmitadCommon.Entities.Statistics;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Settings;
+
 using NLog;
 
 namespace TheStore.Api.Core.Sources.Workers

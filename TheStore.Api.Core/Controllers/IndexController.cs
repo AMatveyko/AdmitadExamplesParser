@@ -8,6 +8,8 @@ using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Settings;
+
 using Microsoft.AspNetCore.Mvc;
 
 using TheStore.Api.Core.Sources.Workers;
@@ -77,7 +79,7 @@ namespace TheStore.Api.Core.Controllers
             var worker = new IndexWorker( _settings, context, _works, _dbHelper );
             return _works.AddToQueue( worker.IndexAll, context, QueuePriority.Parallel, clean );
         }
-        
+
         [ HttpGet ]
         [ Route("RelinkTag") ]
         public IActionResult RelinkTag( int id, bool relink = false, bool clean = true )

@@ -7,6 +7,8 @@ using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Settings;
+
 namespace TheStore.Api.Core.Sources.Workers
 {
     internal sealed class CategoryWorker : BaseLinkWorker

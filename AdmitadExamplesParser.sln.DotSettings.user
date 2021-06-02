@@ -1,46 +1,6 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1891f6be_002D1b53_002D4a29_002D9ca8_002Dd285692c4b91/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="UpdateAddDate" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=dc43a652_002Dcdf6_002D472f_002D89a9_002D9d72152779dd/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestUserAgents" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.UpdateAddDate&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.SaveCountries&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.TestPathGenerator&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.GetProperty&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=51c93591_002Db826_002D4748_002Dac6a_002D7ff33ad97a1f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="UnknownBrands" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.UnknownBrands&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.CategoryLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.TagRelinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.CategoryRelinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.WarmCategories&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.TagLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.CategoriesLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.UpdateTag&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.DeleteWordFromTag&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.RelinkTagsForCategory&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.CategoryEnd&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.TestUpdateResult&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.GetChildren&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.RelinkCategory&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.DisableOldProducts&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.ExcludeSearchField&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("brandshop")&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.UnknownCountries&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("vipavenue")&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("gloriajeans")&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("tamaris")&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("laredoute")&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.CountryLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.LinkProperties&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.LinkCountries&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.LinkCountry&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("gullivermarket")&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.TagsLinkTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.UrlParserTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ElasticSearchClientTests.ScrollApi&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.FindDuplicates&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.UpdateAddDate&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.GetProperty&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::187F4F39-DFCC-4D05-8EB4-3A0AC7498E19::net5.0::UtilsTests.UtilsTest.TestUserAgents&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -3,6 +3,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Common.Entities;
+using Common.Settings;
+
 using TheStore.Api.Front.Data.Entities;
 
 namespace TheStore.Api.Front.Data.Repositories
@@ -12,11 +15,17 @@ namespace TheStore.Api.Front.Data.Repositories
 
         public TheStoreRepository( string connectionString, string version )
             : base( connectionString, version ) { }
+
+        public List<ProxyDb> GetProxies()
+        {
+            using var db = DB;
+            return db.Proxies.ToList();
+        }
         
         public void UpdateCompareList( IEnumerable<CompareListingDb> compareList )
         {
-
-            var fromDb = DB.CompareListings.ToList();
+            using var db = DB;
+            var fromDb = db.CompareListings.ToList();
             foreach( var line in compareList ) {
                 var lineDb = fromDb.FirstOrDefault( f => f.Url == line.Url );
                 

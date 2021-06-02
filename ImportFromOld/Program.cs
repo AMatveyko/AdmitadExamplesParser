@@ -8,6 +8,9 @@ using Admitad.Converters.Workers;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Api;
 
+using Common.Entities;
+using Common.Settings;
+
 using ImportFromOld.Data;
 using ImportFromOld.Data.Entity;
 using ImportFromOld.Entities;

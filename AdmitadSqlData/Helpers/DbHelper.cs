@@ -7,18 +7,20 @@ using System.Linq;
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Settings;
 using AdmitadCommon.Entities.Statistics;
 using AdmitadCommon.Extensions;
 
 using AdmitadSqlData.Entities;
 using AdmitadSqlData.Repositories;
 
+using Common.Entities;
+using Common.Settings;
+
 using Country = AdmitadCommon.Country;
 
 namespace AdmitadSqlData.Helpers
 {
-    public sealed class DbHelper
+    public sealed class DbHelper : ISettingsRepository
     {
 
         #region Repository
