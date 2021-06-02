@@ -40,6 +40,8 @@ namespace AdmitadExamplesParserTests
         [ TestCase( "tamaris" ) ]
         [ TestCase( "laredoute" ) ]
         [ TestCase( "gullivermarket" ) ]
+        [ TestCase( "svmoscow" ) ]
+        [ TestCase( "intimshop" ) ]
         public void ParsingTest( string shopName )
         {
             DoParsing( shopName );

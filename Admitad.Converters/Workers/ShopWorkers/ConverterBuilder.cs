@@ -28,6 +28,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 "newchic" => new NewchicWorker( dbHelper ),
                 "belleyou" => new BelleyouWorker( dbHelper ),
                 "intimshop" => new IntimShopWorker( dbHelper ),
+                "svmoscow" => new SvMoscowWorker( dbHelper ),
                 _ => new DefaultShopWorker( dbHelper )
             };
         }

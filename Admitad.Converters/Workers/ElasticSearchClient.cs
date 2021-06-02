@@ -435,7 +435,9 @@ namespace Admitad.Converters.Workers
             BoolQueryDescriptor<Product> boolQuery,
             string categoryId )
         {
-             boolQuery = boolQuery.Filter( f => f.Term( t => t.Field( c => c.Categories ).Value( categoryId ) ) );
+            var terms = new List<Func<QueryContainerDescriptor<Product>, QueryContainer>>();
+            terms.Add( f => f.Term( t => t.Field( c => c.Categories ).Value( categoryId ) ) );
+            boolQuery = boolQuery.Filter( terms );
              return boolQuery;
         }
         
@@ -688,6 +690,18 @@ namespace Admitad.Converters.Workers
         }
             
         #region Disable/Enable documetns
+
+        public UpdateResult DisableShopProducts(
+            string shopId )
+        {
+            var response = _client.UpdateByQuery<Product>(
+                upq => upq.Query( 
+                        q => q.Term( t => t.Field( p => p.ShopId ).Value( shopId ) ) )
+                    .Script( script => script.Source( "ctx._source.soldout = 1" ) )
+                    .Conflicts( Conflicts.Proceed )
+                    .Refresh( true ) );
+            return new UpdateResult( response );
+        }
         
         public UpdateResult DisableOldProducts( DateTime indexTime, string shopId ) {
             var response = _client.UpdateByQuery<Product>( upq =>

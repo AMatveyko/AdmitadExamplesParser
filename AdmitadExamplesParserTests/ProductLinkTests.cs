@@ -28,12 +28,19 @@ namespace AdmitadExamplesParserTests
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            ElasticSearchUrl = "http://185.221.152.127:9200",
-            // ElasticSearchUrl = "http://127.0.0.1:8888",
+            // ElasticSearchUrl = "http://185.221.152.127:9200",
+            ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-1",
             FrameSize = 10000
         };
 
+        [ Test ]
+        public void DisableShopProducts()
+        {
+            var client = CreateClient();
+            var result = client.DisableShopProducts( "160" );
+        }
+        
         [ Test ]
         public void DisableOldProducts()
         {

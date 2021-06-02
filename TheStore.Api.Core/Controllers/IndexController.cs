@@ -81,6 +81,15 @@ namespace TheStore.Api.Core.Controllers
         }
 
         [ HttpGet ]
+        [ Route( "SellShopProducts" ) ]
+        public IActionResult SellShopProducts( int shopId, bool clean = true )
+        {
+            var context = new SellShopProductsContext( shopId );
+            var worker = new ProductsHandler( _settings.ElasticSearchClientSettings, context, _works, _dbHelper );
+            return _works.AddToQueue( worker.SellShopProducts, context, QueuePriority.Low, clean );
+        }
+        
+        [ HttpGet ]
         [ Route("RelinkTag") ]
         public IActionResult RelinkTag( int id, bool relink = false, bool clean = true )
         {
