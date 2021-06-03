@@ -33,6 +33,14 @@ namespace TheStore.Api.Core.Sources.Workers
             context.Content = $"Disabled {result.Pretty}";
         }
 
+        public void UnlinkShop( UnlinkShopContext context )
+        {
+            CheckContextType( context );
+            var client = CreateElasticClient( context );
+            var result = client.UnlinkShop( context.ShopId );
+            context.Content = $"Unlinked {result.Pretty} products";
+        }
+        
         private void CheckContextType< T >( T context )
         {
             if( ReferenceEquals( context, _context ) == false ) {

@@ -36,33 +36,26 @@ namespace Admitad.Converters.Workers
         UpdateResult UnlinkProductsByProperty( BaseProperty property );
         public long GetCountAllDocuments();
 
-        UpdateResult UnlinkCategory(
-            Category category );
+        UpdateResult UnlinkCategory( Category category );
 
-        UpdateResult UnlinkTag(
-            Tag tag );
+        UpdateResult UnlinkTag( Tag tag );
 
-        long CountForDisableProducts(
-            DateTime indexTime,
-            string shopId );
+        long CountForDisableProducts( DateTime indexTime, string shopId );
 
-        long CountProductsForShop(
-            string shopId );
+        long CountProductsForShop( string shopId );
 
-        long CountDisabledProductsByShop(
-            string shopId );
+        long CountDisabledProductsByShop( string shopId );
 
         long CountProducts();
         long CountSoldOutProducts();
 
-        ProductResponse GetProduct(
-            string id );
+        ProductResponse GetProduct( string id );
 
-        UpdateResult UpdateProductsFroCountry(
-            Country country );
+        UpdateResult UpdateProductsFroCountry( Country country );
 
-        UpdateResult UpdateAddDate(
-            DateTime? date = null );
+        UpdateResult UpdateAddDate( DateTime? date = null );
+
+        UpdateResult UnlinkShop( string shopId );
 
     }
 }

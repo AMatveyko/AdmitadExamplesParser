@@ -96,6 +96,13 @@ namespace AdmitadExamplesParserTests
         }
 
         [ Test ]
+        public void UnlinkShop()
+        {
+            var client = CreateClient();
+            var result = client.UnlinkShop( "146" );
+        }
+        
+        [ Test ]
         public void CategoryRelinkTest()
         {
             var categoryId = "10107000";

@@ -5,5 +5,6 @@
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.DisableShopProducts&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest("svmoscow")&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ProductLinkTests.UnlinkShop&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

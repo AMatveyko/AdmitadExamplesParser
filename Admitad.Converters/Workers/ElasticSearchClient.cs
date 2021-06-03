@@ -688,7 +688,25 @@ namespace Admitad.Converters.Workers
                 );
             return new UpdateResult( response );
         }
-            
+
+        public UpdateResult UnlinkShop( string shopId ) {
+            var response = _client.UpdateByQuery<Product>( 
+                upq => upq.Query( 
+                    q => q.Bool( 
+                        b => b.Must( 
+                            m => m.Term( 
+                                t => t.Field( p => p.ShopId ).Value( shopId ) )
+                            )
+                        )
+                    )
+                    .Script( s => s.Source( "ctx._source.categories = new ArrayList(); ctx._source.tags = new ArrayList();" ) )
+                );
+            return new UpdateResult( response );
+        }
+
+
+
+
         #region Disable/Enable documetns
 
         public UpdateResult DisableShopProducts(

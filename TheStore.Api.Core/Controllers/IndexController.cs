@@ -88,6 +88,15 @@ namespace TheStore.Api.Core.Controllers
             var worker = new ProductsHandler( _settings.ElasticSearchClientSettings, context, _works, _dbHelper );
             return _works.AddToQueue( worker.SellShopProducts, context, QueuePriority.Low, clean );
         }
+
+        [ HttpGet ]
+        [ Route( "UnlinkShop" ) ]
+        public IActionResult UnlinkShop( int shopId, bool clean = true )
+        {
+            var context = new UnlinkShopContext( shopId );
+            var worker = new ProductsHandler( _settings.ElasticSearchClientSettings, context, _works, _dbHelper );
+            return _works.AddToQueue( worker.UnlinkShop, context, QueuePriority.Low, clean );
+        }
         
         [ HttpGet ]
         [ Route("RelinkTag") ]
