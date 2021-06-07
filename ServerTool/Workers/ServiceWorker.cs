@@ -11,7 +11,7 @@ using ServerTool.Entities;
 
 namespace ServerTool.Workers
 {
-    internal class ServiceWorker
+    internal sealed class ServiceWorker
     {
         
         private static readonly Regex Pattern =

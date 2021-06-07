@@ -50,7 +50,7 @@ namespace ServerTool.Commands
             _process.Start();
             var output = string.Concat( _process.StandardError.ReadToEnd(), _process.StandardOutput.ReadToEnd() );
             if( _needSleap ) {
-                Thread.Sleep( 2000 );
+                Thread.Sleep( 10000 );
             }
             return output;
         }

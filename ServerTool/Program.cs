@@ -13,7 +13,7 @@ namespace ServerTool
     class Program
     {
         private static HashSet<(string, bool)> _services = new() {
-            ( "php56-php-fpm", true ),
+            ( "php56-php-fpm", false ),
             ( "mariadb", false ),
             ( "docker", false ),
             ( "elasticsearch", false )
