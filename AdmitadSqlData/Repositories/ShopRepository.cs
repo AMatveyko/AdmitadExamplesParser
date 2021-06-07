@@ -16,11 +16,10 @@ namespace AdmitadSqlData.Repositories
         public ShopRepository( string connectionString, string version )
             : base( connectionString, version ) { }
         
-        public List<XmlFileInfo> GetEnableShops()
+        public List<Shop> GetEnableShops()
         {
             using var db = GetDb();
-            return db.Shops.Where( s => s.Enabled )
-                .Select( s => new XmlFileInfo( s.Name, s.NameLatin, s.XmlFeed, s.Id ) ).ToList();
+            return db.Shops.Where( s => s.Enabled ).ToList();
         }
 
         public Shop GetShop( int id )

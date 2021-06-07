@@ -10,18 +10,24 @@ namespace Web.Common.Helpers
 {
     public static class ProxyDistributor
     {
-        
-        public static List<ProxyInfo> GetProxies( List<ProxyInfo> infos )
+
+        public static IEnumerable<ProxyInfo> GetProxies( IEnumerable<ProxyInfo> infos ) =>
+            DoGet( infos.ToList() );
+
+        private static List<ProxyInfo> DoGet( IList<ProxyInfo> workProxies )
         {
-            infos.Add( null ); //добавляем вместо себя
+            workProxies.Add( null ); //добавляем вместо себя
+
+            var forUse = new List<ProxyInfo>();
             var rnd = new Random();
-            var set = rnd.Next( 1, 4 );
-            var forUse = set switch {
-                1 => new[] {3, 1, 2},
-                2 => new[] {3, 2, 1},
-                _ => new[] {2, 1, 3}
-            };
-            return forUse.Select( i => infos[i] ).ToList();
+            
+            while( forUse.Count <= 3 && workProxies.Count > 0 ) {
+                var set = rnd.Next( 0, workProxies.Count );
+                forUse.Add( workProxies[set] );
+                workProxies.RemoveAt( set );
+            }
+            
+            return forUse;
         }
     }
 }

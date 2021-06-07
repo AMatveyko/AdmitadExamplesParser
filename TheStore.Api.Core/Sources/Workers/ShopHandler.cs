@@ -15,6 +15,7 @@ using AdmitadCommon.Entities.Statistics;
 using AdmitadSqlData.Helpers;
 
 using Common.Settings;
+using Common.Workers;
 
 using NLog;
 
@@ -43,7 +44,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var shopData = _statistics.GetShopData( ParseShop );
             var cleanOffers = CleanOffers( shopData );
-            var products = ConvertOffers( cleanOffers );
+            var products = ConvertOffers( cleanOffers, shopData.Weight );
             UpdateProducts( products );
             DisableProductsIfNeed();
             Finish();
@@ -69,8 +70,9 @@ namespace TheStore.Api.Core.Sources.Workers
         
         private ShopData ParseShop() {
             var parser = new GeneralParser(
-                _context.DownloadInfo.FilePath,
-                _context.DownloadInfo.NameLatin,
+                //_context.DownloadInfo.FilePath,
+                //_context.DownloadInfo.NameLatin,
+                _context.DownloadInfo,
                 _context,
                 _settings.EnableExtendedStatistics );
             var shopData = parser.Parse();
@@ -88,9 +90,11 @@ namespace TheStore.Api.Core.Sources.Workers
             return cleanOffers;
         }
 
-        private List<Product> ConvertOffers( IEnumerable<Offer> offers )
+        private List<Product> ConvertOffers( IEnumerable<Offer> offers, int shopWeight )
         {
-            var products = new ProductConverter( _dbHelper ).GetProductsContainer( offers ); 
+            var calculation = new RatingCalculation( shopWeight );
+            var products =
+                new ProductConverter( _dbHelper, calculation ).GetProductsContainer( offers ); 
             SetProgress( 80 );
             AddMessage( "Convert to products complete" );
             return products;

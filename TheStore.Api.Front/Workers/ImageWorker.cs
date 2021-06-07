@@ -49,7 +49,7 @@ namespace TheStore.Api.Front.Workers
             }
             catch( Exception e ) {
                 Logger.Error( e, url );
-                throw new Exception( "File error!" );
+                throw;
             }
         }
 
@@ -82,10 +82,11 @@ namespace TheStore.Api.Front.Workers
 
         private static async Task<byte[]> DownloadAndSaveImage( string url, Proxies proxyInfos )
         {
-
+            var attempt = 0;
             var result = new byte[0];
             var proxies = ProxyDistributor.GetProxies( proxyInfos.Infos );
             foreach( var proxy in proxies ) {
+                attempt++;
                 try {
                     result = await DoDownloadImage( url, proxy );
                     Statistics.Info( $"{proxy?.Url ?? "self"} {url} Ok" );
@@ -98,7 +99,7 @@ namespace TheStore.Api.Front.Workers
                         return GetNotFound();
                     }
                     Statistics.Info( $"{proxy?.Url ?? "self"} {url} Error" );
-                    Logger.Error( e, $"{url} first attempt" );
+                    Logger.Error( e, $"{url} {attempt} attempt" );
                     if( e is UnknownImageFormatException ) {
                         File.WriteAllBytes( $"logs/data/{url.Split('/').ToList().LastOrDefault() ?? "null"}", result );
                     }

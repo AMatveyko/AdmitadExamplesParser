@@ -133,7 +133,7 @@ namespace AdmitadExamplesParser.Workers.Components
         {
             var fileInfos = Directory.GetFiles( _settings.DirectoryPath );
             return fileInfos.Where( f => f.Contains( "_" ) == false ).Select(
-                f => new DownloadInfo( 0, Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value ) {
+                f => new DownloadInfo( 0, Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value, 0 ) {
                     DownloadTime = 0,
                     FilePath = f,
                     ShopName = Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value
@@ -158,7 +158,7 @@ namespace AdmitadExamplesParser.Workers.Components
                 LogWriter.Log( "Category loop!" );
             }
             var offers = CleanOffers( shopData );
-            var products = ConvertToProducts( offers );
+            var products = ConvertToProducts( offers, shopData.Weight );
 
             _settings.ElasticSearchClientSettings.ShopName = shopData.Name;
 
@@ -168,16 +168,18 @@ namespace AdmitadExamplesParser.Workers.Components
 
         private ShopData ParseFile( DownloadInfo fileInfo ) {
             var parser = new GeneralParser(
-                fileInfo.FilePath,
-                fileInfo.ShopName,
+                //fileInfo.FilePath,
+                //fileInfo.ShopName,
+                fileInfo,
                 _context,
                 _settings.EnableExtendedStatistics );
             return parser.Parse();
         }
 
-        private List<Product> ConvertToProducts( List<Offer> offers )
+        private List<Product> ConvertToProducts( List<Offer> offers, int shopWeight )
         {
-            return new ProductConverter( _dbHelper ).GetProductsContainer( offers );
+            return new ProductConverter( _dbHelper, new RatingCalculation( shopWeight ) )
+                .GetProductsContainer( offers );
         }
         
         private List<Offer> CleanOffers(

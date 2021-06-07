@@ -14,7 +14,7 @@ namespace TheStore.Api.Front.Controllers
     public class ImgController : ControllerBase
     {
 
-        private Proxies _proxies;
+        private readonly Proxies _proxies;
 
         public ImgController( Proxies proxies ) => _proxies = proxies;
 

@@ -35,6 +35,7 @@ namespace AdmitadCommon.Entities
         [ JsonProperty ( "salesNotes" ) ] public string SalesNotes { get; }
         [ JsonProperty( "offerIds" ) ] public string[] OfferIds { get; }
         [ JsonProperty( "soldout" ) ] public byte Soldout { get; set; }
+        [ JsonProperty( "rating" ) ] public int Rating { get; set; }
         
     }
 }

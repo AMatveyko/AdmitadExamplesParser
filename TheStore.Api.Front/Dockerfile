@@ -10,6 +10,7 @@ WORKDIR /src
 COPY ["TheStore.Api.Front/TheStore.Api.Front.csproj", "TheStore.Api.Front/"]
 COPY ["TheStore.Api.Front.Data/TheStore.Api.Front.Data.csproj", "TheStore.Api.Front.Data/"]
 COPY ["Web.Common/Web.Common.csproj", "Web.Common/"]
+COPY ["Common/Common.csproj", "Common/"]
 RUN dotnet restore "TheStore.Api.Front/TheStore.Api.Front.csproj"
 COPY . .
 WORKDIR "/src/TheStore.Api.Front"

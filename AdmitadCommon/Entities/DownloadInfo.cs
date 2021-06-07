@@ -6,13 +6,11 @@ namespace AdmitadCommon.Entities
 {
     public sealed class DownloadInfo
     {
-
-        private const string ErrorStatusOk = "Ok";
-        
-        public DownloadInfo( int shopId, string nameLatin )
+        public DownloadInfo( int shopId, string nameLatin, int shopWeight )
         {
             ShopId = shopId;
             NameLatin = nameLatin;
+            ShopWeight = shopWeight;
         } 
         
         public DateTime StartTime { get; set; }
@@ -25,5 +23,6 @@ namespace AdmitadCommon.Entities
         public DownloadError Error { get; set; }
         public long FileSize { get; set; }
         public bool HasError => Error != DownloadError.Ok;
+        public int ShopWeight { get; }
     }
 }

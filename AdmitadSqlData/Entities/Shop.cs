@@ -20,5 +20,7 @@ namespace AdmitadSqlData.Entities
         public bool Enabled { get; set; }
         [ Column( "date_update" ) ]
         public DateTime? UpdateDate { get; set; }
+        [ Column( "weight" ) ]
+        public int Weight { get; set; }
     }
 }

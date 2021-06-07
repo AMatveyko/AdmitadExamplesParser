@@ -72,15 +72,18 @@ namespace Admitad.Converters.Workers
         private static int Count { get; set; }
 
         public GeneralParser(
-            string filePath,
-            string shopNameLatin,
+            //string filePath,
+            //string shopNameLatin,
+            DownloadInfo downloadInfo,
             BackgroundBaseContext context ,
             bool enableExtendedStatistic = false ) : base( ComponentType.GeneralParser, context )
         {
-            _filePath = filePath;
+            //_filePath = filePath;
+            _filePath = downloadInfo.FilePath;
             _enableExtendedStatistic = enableExtendedStatistic;
-            _shopData = new ShopData();
-            _shopNameLatin = shopNameLatin;
+            _shopData = new ShopData( downloadInfo.ShopWeight );
+            //_shopNameLatin = shopNameLatin;
+            _shopNameLatin = downloadInfo.NameLatin;
             _updateTime = DateTime.Now;
         }
 

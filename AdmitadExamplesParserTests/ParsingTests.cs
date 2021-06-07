@@ -61,7 +61,7 @@ namespace AdmitadExamplesParserTests
             var dbSettings = SettingsBuilder.GetDbSettings();
             var dbHelper = new DbHelper( dbSettings );
             
-            var downloadInfo = new DownloadInfo( 0, shopName ) {
+            var downloadInfo = new DownloadInfo( 0, shopName, 0 ) {
                 FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
                 ShopName = shopName
             };
@@ -83,7 +83,7 @@ namespace AdmitadExamplesParserTests
             var allOffers = offers.Count;
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
-            var products = new ProductConverter( dbHelper ).GetProductsContainer( offers );
+            var products = new ProductConverter( dbHelper, new RatingCalculation( 0 ) ).GetProductsContainer( offers );
             var clothesCount = products.Count( p => p.CategoryName.ToLower().Contains( "рюкзаки" ) );
             var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
@@ -166,8 +166,9 @@ namespace AdmitadExamplesParserTests
         
         private static ShopData ParseFile( DownloadInfo fileInfo, bool enableExtendedStat ) {
             var parser = new GeneralParser(
-                fileInfo.FilePath,
-                fileInfo.ShopName,
+                //fileInfo.FilePath,
+                //fileInfo.ShopName,
+                fileInfo,
                 new BackgroundBaseContext("1", "name" ),
                 enableExtendedStat );
             return parser.Parse();

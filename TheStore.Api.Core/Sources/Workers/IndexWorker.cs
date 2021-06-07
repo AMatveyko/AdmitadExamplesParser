@@ -234,7 +234,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 return file;
             }
 
-            return new DownloadInfo( xmlInfo.ShopId, xmlInfo.NameLatin ) {
+            return new DownloadInfo( xmlInfo.ShopId, xmlInfo.NameLatin, xmlInfo.Weight ) {
                 ShopName = xmlInfo.NameLatin,
                 FilePath = filePath
             };

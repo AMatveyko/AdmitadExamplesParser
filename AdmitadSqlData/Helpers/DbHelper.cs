@@ -179,11 +179,11 @@ namespace AdmitadSqlData.Helpers
         }
 
         public List<XmlFileInfo> GetEnableShops() =>
-            _shopRepository.GetEnableShops();
+            _shopRepository.GetEnableShops().Select( EntityConverter.Convert ).ToList();
 
         public XmlFileInfo GetShop( int id ) {
             var shop = _shopRepository.GetShop( id );
-            return new XmlFileInfo( shop.Name, shop.NameLatin, shop.XmlFeed, shop.Id );
+            return EntityConverter.Convert( shop );
         }
 
         public int GetShopId(

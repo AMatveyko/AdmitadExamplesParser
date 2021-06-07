@@ -112,7 +112,7 @@ namespace Admitad.Converters
             
             FileWork( directoryPath, fileInfo );
             
-            var downloadInfo = new DownloadInfo( fileInfo.ShopId, fileInfo.NameLatin ) {
+            var downloadInfo = new DownloadInfo( fileInfo.ShopId, fileInfo.NameLatin, fileInfo.Weight ) {
                 StartTime = DateTime.Now,
                 ShopName = fileInfo.Name,
                 Url = fileInfo.XmlFeed,

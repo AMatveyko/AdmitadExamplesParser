@@ -1,35 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="RuWeb  theStore@185.221.152.127">
+<dataSource name="Hetzner">
   <database-model serializer="dbm" dbms="MARIADB" family-id="MARIADB" format-version="4.21">
     <root id="1">
-      <ServerVersion>10.2.38</ServerVersion>
-      <Grants>theStore|schema||thestore|178.219.172.167|ALTER|G
-theStore|schema||thestore|178.219.172.167|ALTER ROUTINE|G
-theStore|schema||thestore|178.219.172.167|CREATE|G
-theStore|schema||thestore|178.219.172.167|CREATE ROUTINE|G
-theStore|schema||thestore|178.219.172.167|CREATE TEMPORARY TABLES|G
-theStore|schema||thestore|178.219.172.167|CREATE VIEW|G
-theStore|schema||thestore|178.219.172.167|DELETE|G
-theStore|schema||thestore|178.219.172.167|DROP|G
-theStore|schema||thestore|178.219.172.167|EVENT|G
-theStore|schema||thestore|178.219.172.167|EXECUTE|G
-theStore|schema||thestore|178.219.172.167|INDEX|G
-theStore|schema||thestore|178.219.172.167|INSERT|G
-theStore|schema||thestore|178.219.172.167|LOCK TABLES|G
-theStore|schema||thestore|178.219.172.167|REFERENCES|G
-theStore|schema||thestore|178.219.172.167|SELECT|G
-theStore|schema||thestore|178.219.172.167|SHOW VIEW|G
-theStore|schema||thestore|178.219.172.167|TRIGGER|G
-theStore|schema||thestore|178.219.172.167|UPDATE|G</Grants>
+      <ServerVersion>10.3.27</ServerVersion>
+      <Grants>theStoreua|schema||thestoreua||ALTER|G
+theStoreua|schema||thestoreua||ALTER ROUTINE|G
+theStoreua|schema||thestoreua||CREATE|G
+theStoreua|schema||thestoreua||CREATE ROUTINE|G
+theStoreua|schema||thestoreua||CREATE TEMPORARY TABLES|G
+theStoreua|schema||thestoreua||CREATE VIEW|G
+theStoreua|schema||thestoreua||DELETE|G
+theStoreua|schema||thestoreua||DELETE HISTORY|G
+theStoreua|schema||thestoreua||DROP|G
+theStoreua|schema||thestoreua||EVENT|G
+theStoreua|schema||thestoreua||EXECUTE|G
+theStoreua|schema||thestoreua||INDEX|G
+theStoreua|schema||thestoreua||INSERT|G
+theStoreua|schema||thestoreua||LOCK TABLES|G
+theStoreua|schema||thestoreua||REFERENCES|G
+theStoreua|schema||thestoreua||SELECT|G
+theStoreua|schema||thestoreua||SHOW VIEW|G
+theStoreua|schema||thestoreua||TRIGGER|G
+theStoreua|schema||thestoreua||UPDATE|G</Grants>
       <DefaultEngine>InnoDB</DefaultEngine>
       <DefaultCasing>exact</DefaultCasing>
     </root>
     <schema id="2" parent="1" name="information_schema">
-      <Current>1</Current>
       <Collation>utf8_general_ci</Collation>
     </schema>
-    <schema id="3" parent="1" name="theStore">
-      <Collation>latin1_swedish_ci</Collation>
+    <schema id="3" parent="1" name="theStoreua">
+      <Current>1</Current>
+      <Collation>utf8mb4_unicode_ci</Collation>
     </schema>
     <collation id="4" parent="1" name="armscii8_bin">
       <Charset>armscii8</Charset>
@@ -1037,11 +1038,13 @@ theStore|schema||thestore|178.219.172.167|UPDATE|G</Grants>
     <collation id="325" parent="1" name="utf8mb4_vietnamese_ci">
       <Charset>utf8mb4</Charset>
     </collation>
-    <user id="326" parent="1" name="thestore">
-      <Host>178.219.172.167</Host>
-    </user>
-    <table id="327" parent="3" name="404"/>
-    <table id="328" parent="3" name="404_backup"/>
+    <user id="326" parent="1" name="thestoreua"/>
+    <table id="327" parent="3" name="404">
+      <Collation>latin1_swedish_ci</Collation>
+    </table>
+    <table id="328" parent="3" name="404_backup">
+      <Collation>latin1_swedish_ci</Collation>
+    </table>
     <table id="329" parent="3" name="UnknownBrands">
       <Collation>utf8_general_ci</Collation>
     </table>
@@ -1115,7 +1118,9 @@ theStore|schema||thestore|178.219.172.167|UPDATE|G</Grants>
     <table id="351" parent="3" name="products_by_category">
       <Collation>utf8_general_ci</Collation>
     </table>
-    <table id="352" parent="3" name="proxies"/>
+    <table id="352" parent="3" name="proxies">
+      <Collation>latin1_swedish_ci</Collation>
+    </table>
     <table id="353" parent="3" name="search_log">
       <Comment>логирование запрсов</Comment>
       <Collation>utf8_general_ci</Collation>

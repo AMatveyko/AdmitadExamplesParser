@@ -10,7 +10,6 @@ namespace AdmitadCommon.Entities
     public sealed class Product : IProductForIndex
     {
         [ JsonProperty( "view" ) ] public long View { get; set; }
-
         [ JsonProperty( "categories" ) ] public string[] Categories { get; set; }
         [ JsonProperty( "originalCategoryId" ) ] public string OriginalCategoryId { get; set; }
         [ JsonProperty( "tags" ) ] public string[] Tags { get; set; }
@@ -49,5 +48,6 @@ namespace AdmitadCommon.Entities
         [ JsonProperty( "currency" ) ] public string Currency { get; set; }
         [ JsonProperty( "salesNotes" ) ] public string SalesNotes { get; set; }
         [ JsonProperty( "offerIds" ) ] public string[] OfferIds { get; set; }
+        [ JsonProperty( "rating" ) ] public int Rating { get; set; }
     }
 }

@@ -8,10 +8,16 @@ namespace AdmitadCommon.Entities
 {
     public sealed class ShopData
     {
+
+        public ShopData(
+            int weight ) =>
+            Weight = weight;
+        
         public string Name { get; set; }
         public List<RawOffer> Offers { get; set; } = new();
         public Dictionary<string, ShopCategory> Categories { get; } = new ();
         public bool CategoryLoop { get; private set; }
+        public int Weight { get; }
 
         public void AddCategories( IEnumerable<ShopCategory> categories ) {
             foreach( var category in categories ) {

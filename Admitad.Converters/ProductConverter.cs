@@ -9,6 +9,8 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Workers;
+
 using Newtonsoft.Json;
 
 namespace Admitad.Converters
@@ -17,10 +19,12 @@ namespace Admitad.Converters
     {
 
         private readonly DbHelper _dbHelper;
+        private readonly RatingCalculation _calculation;
         
-        public ProductConverter( DbHelper dbHelper )
+        public ProductConverter( DbHelper dbHelper, RatingCalculation calculation )
         {
             _dbHelper = dbHelper;
+            _calculation = calculation;
         }
         
         public List<Product> GetProductsContainer( IEnumerable<Offer> offers )
@@ -112,7 +116,8 @@ namespace Admitad.Converters
                 SalesNotes = offer.SalesNotes,
                 OriginalCategoryId = offer.CategoryId,
                 OfferIds = offers.Select( o => o.OriginalId ).ToArray(),
-                Vendor = offer.OriginalVendor
+                Vendor = offer.OriginalVendor,
+                Rating = _calculation.Calculate()
             };
         }
     }

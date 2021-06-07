@@ -39,7 +39,7 @@ namespace TheStore.Api.Core.Sources.Helpers
         public List<UrlInfo> GetInfos()
         {
             
-            var settings = new RequestSettings("https://thestore.matveyko.su", LogManager.GetLogger( "ErrorLogger" ) );
+            var settings = new RequestSettings("https://thestore.ru", LogManager.GetLogger( "ErrorLogger" ) );
             var request = new PageStatisticsRequest( settings );
 
             var response = request.Execute(); 

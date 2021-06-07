@@ -21,10 +21,7 @@ namespace AdmitadSqlData.Helpers
     internal static class EntityConverter
     {
         private static readonly Regex _categoryName = new(@"([^a-zA-zа-яА-Я\d\s])", RegexOptions.Compiled);
-
-
-
-
+        
         #region Convert
         public static ShopCategoryDb Convert(
             int shopId,
@@ -48,6 +45,10 @@ namespace AdmitadSqlData.Helpers
             return _categoryName.Replace( data ?? string.Empty, string.Empty );
         }
 
+        public static XmlFileInfo Convert(
+            Shop shop ) =>
+            new XmlFileInfo( shop.Name, shop.NameLatin, shop.XmlFeed, shop.Id, shop.Weight );
+        
         public static ColorProperty Convert(
             ColorDb colorDb )
         {
@@ -191,10 +192,7 @@ namespace AdmitadSqlData.Helpers
             };
         }
         #endregion
-
-
-
-
+        
         #region Routin
         private static string[] CombineSearchWords(
             string comaSeparated,
