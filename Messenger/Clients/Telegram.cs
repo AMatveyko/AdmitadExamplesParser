@@ -6,6 +6,8 @@ using System.Net;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Helpers;
 
+using Common.Settings;
+
 using RestSharp;
 
 namespace Messenger.Clients

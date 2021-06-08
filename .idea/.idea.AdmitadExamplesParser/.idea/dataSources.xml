@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="MariaDB - theStore@elastic.matveyko.su" uuid="e1882b60-32ec-4020-8a8b-b50205e731a9">
+    <data-source source="LOCAL" name="RuWeb  theStore@185.221.152.127" uuid="22fc3bba-d1cd-4029-908c-766c2116899c">
       <driver-ref>mariadb</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mariadb://elastic.matveyko.su:3306/theStore</jdbc-url>
+      <jdbc-url>jdbc:mariadb://185.221.152.127:3306/</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+    <data-source source="LOCAL" name="Hetzner" uuid="4496a601-9010-4676-8965-77f2f594629c">
+      <driver-ref>mariadb</driver-ref>
+      <synchronize>true</synchronize>
+      <remarks>for UA</remarks>
+      <jdbc-driver>org.mariadb.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mariadb://95.216.200.114:3306/theStoreua</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

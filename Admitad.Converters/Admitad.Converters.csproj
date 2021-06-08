@@ -7,9 +7,12 @@
     <ItemGroup>
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\Messenger\Messenger.csproj" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="NLog" Version="4.7.10" />
       <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     </ItemGroup>
 

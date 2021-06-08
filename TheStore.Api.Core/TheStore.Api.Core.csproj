@@ -5,13 +5,34 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+        <PackageReference Include="NLog" Version="4.7.10" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.1.4" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
-      <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
+      <ProjectReference Include="..\Web.Common\Web.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="C:\Users\asneg\.nuget\packages\nlog.config\4.7.9\contentFiles\any\any\NLog.config">
+        <NuGetPackageId>NLog.Config</NuGetPackageId>
+        <NuGetPackageVersion>4.7.9</NuGetPackageVersion>
+        <NuGetItemType>None</NuGetItemType>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <TargetPath>NLog.config</TargetPath>
+        <Private>True</Private>
+        <Link>NLog.config</Link>
+      </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\dbSettings.json">
+        <Link>dbSettings.json</Link>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

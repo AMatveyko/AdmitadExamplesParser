@@ -8,14 +8,17 @@ using System.Text.RegularExpressions;
 using System.Threading;
 
 using Admitad.Converters;
+using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
-using AdmitadCommon.Workers;
-
-using AdmitadExamplesParser.Entities;
 
 using AdmitadSqlData.Helpers;
+
+using Common.Entities;
+using Common.Settings;
+using Common.Workers;
 
 using Messenger;
 
@@ -27,20 +30,22 @@ namespace AdmitadExamplesParser.Workers.Components
         private readonly ProcessorSettings _settings;
         private List<List<string>> _ids = new ();
         private readonly DateTime _startTime;
+        private readonly DbHelper _dbHelper;
         
         
         public Processor( ProcessorSettings settings, BackgroundBaseContext context )
             : base( ComponentType.Processor, context ) {
             _settings = settings;
             _startTime = DateTime.Now;
+            _dbHelper = new DbHelper( SettingsBuilder.GetDbSettings() );
         }
 
         public void Start() {
             MeasureWorkTime( DoParseAndSave );
             
-            var numberUnknownBrands = DbHelper.GetUnknownBrandsCount();
+            var numberUnknownBrands = _dbHelper.GetUnknownBrandsCount();
             LogWriter.Log( $"{numberUnknownBrands} найдено новых брендов", true );
-            DbHelper.WriteUnknownBrands();
+            _dbHelper.WriteUnknownBrands();
             
             PrintStatistics();
         }
@@ -97,13 +102,13 @@ namespace AdmitadExamplesParser.Workers.Components
 
             LogWriter.Log( $"{documentsAfter}/{documentsAfter - documentsBefore} всего товаров / новых товаров ", true );
             
-            var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _context );
-            linker.CategoryLink( DbHelper.GetCategories() );
-            linker.TagsLink( DbHelper.GetTags() );
+            var linker = new ProductLinker( _settings.ElasticSearchClientSettings, _dbHelper, _context );
+            linker.LinkCategories( _dbHelper.GetCategories() );
+            linker.LinkTags( _dbHelper.GetTags() );
 
-            var colors = DbHelper.GetColors();
-            var materials = DbHelper.GetMaterials();
-            var sizes = DbHelper.GetSizes();
+            var colors = _dbHelper.GetColors();
+            var materials = _dbHelper.GetMaterials();
+            var sizes = _dbHelper.GetSizes();
             
             linker.LinkProperties( colors, materials, sizes );
             linker.UnlinkProperties( colors, materials, sizes );
@@ -120,7 +125,7 @@ namespace AdmitadExamplesParser.Workers.Components
         }
 
         private List<DownloadInfo> DownloadFiles() {
-            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, _context );
+            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, _dbHelper, _context );
             return downloader.DownloadsAll( _settings.DirectoryPath );
         }
 
@@ -128,7 +133,7 @@ namespace AdmitadExamplesParser.Workers.Components
         {
             var fileInfos = Directory.GetFiles( _settings.DirectoryPath );
             return fileInfos.Where( f => f.Contains( "_" ) == false ).Select(
-                f => new DownloadInfo {
+                f => new DownloadInfo( 0, Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value, 0 ) {
                     DownloadTime = 0,
                     FilePath = f,
                     ShopName = Regex.Match( f, @".*\\(\w+)\.xml" ).Groups[ 1 ].Value
@@ -153,7 +158,7 @@ namespace AdmitadExamplesParser.Workers.Components
                 LogWriter.Log( "Category loop!" );
             }
             var offers = CleanOffers( shopData );
-            var products = ConvertToProducts( offers );
+            var products = ConvertToProducts( offers, shopData.Weight );
 
             _settings.ElasticSearchClientSettings.ShopName = shopData.Name;
 
@@ -163,21 +168,23 @@ namespace AdmitadExamplesParser.Workers.Components
 
         private ShopData ParseFile( DownloadInfo fileInfo ) {
             var parser = new GeneralParser(
-                fileInfo.FilePath,
-                fileInfo.ShopName,
+                //fileInfo.FilePath,
+                //fileInfo.ShopName,
+                fileInfo,
                 _context,
                 _settings.EnableExtendedStatistics );
             return parser.Parse();
         }
 
-        private static List<Product> ConvertToProducts( List<Offer> offers )
+        private List<Product> ConvertToProducts( List<Offer> offers, int shopWeight )
         {
-            return ProductConverter.GetProductsContainer( offers );
+            return new ProductConverter( _dbHelper, new RatingCalculation( shopWeight ) )
+                .GetProductsContainer( offers );
         }
         
         private List<Offer> CleanOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData, _context );
+            var converter = new OfferConverter( shopData, _dbHelper, _context );
             return converter.GetCleanOffers();
         }
 

@@ -6,13 +6,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using Admitad.Converters;
+using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
 
-using AdmitadExamplesParser.Entities;
+using AdmitadSqlData.Helpers;
 
-using AdmitadExamplesParser.Workers.Components;
+using Common.Workers;
 
 using NUnit.Framework;
 
@@ -32,6 +34,14 @@ namespace AdmitadExamplesParserTests
         [ TestCase( "akusherstvo" ) ]
         [ TestCase( "amersport" ) ]
         [ TestCase( "anabel" ) ]
+        [ TestCase( "brandshop" ) ]
+        [ TestCase( "vipavenue" ) ]
+        [ TestCase( "gloriajeans" ) ]
+        [ TestCase( "tamaris" ) ]
+        [ TestCase( "laredoute" ) ]
+        [ TestCase( "gullivermarket" ) ]
+        [ TestCase( "svmoscow" ) ]
+        [ TestCase( "intimshop" ) ]
         public void ParsingTest( string shopName )
         {
             DoParsing( shopName );
@@ -47,9 +57,12 @@ namespace AdmitadExamplesParserTests
         private static void DoParsing(
             string shopName )
         {
+
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            var dbHelper = new DbHelper( dbSettings );
             
-            var downloadInfo = new DownloadInfo {
-                FilePath = $@"o:\admitad\feeds\{ shopName }.xml",
+            var downloadInfo = new DownloadInfo( 0, shopName, 0 ) {
+                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
                 ShopName = shopName
             };
             
@@ -57,6 +70,8 @@ namespace AdmitadExamplesParserTests
             var sortedRawOffers = shopData.Offers.OrderBy( o => o.OldPrice ).ToList();
             var unique = GetUnique( shopData.Offers, shopName );
             var offers = ConvertOffers( shopData );
+            var years = offers.SelectMany( o => o.Params ).Where( p => p.Unit.ToLower() == "Years" )
+                .SelectMany( p => p.Values ).ToList();
             var sortedOffers = offers.OrderBy( o => o.OldPrice ).ToList();
             var countryIds = offers.Select( o => o.CountryId ).Distinct().ToList();
             var genders = offers.Select( o => o.Gender ).Distinct().ToList();
@@ -68,7 +83,8 @@ namespace AdmitadExamplesParserTests
             var allOffers = offers.Count;
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
-            var products = ProductConverter.GetProductsContainer( offers );
+            var products = new ProductConverter( dbHelper, new RatingCalculation( 0 ) ).GetProductsContainer( offers );
+            var clothesCount = products.Count( p => p.CategoryName.ToLower().Contains( "рюкзаки" ) );
             var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
         }
@@ -81,6 +97,7 @@ namespace AdmitadExamplesParserTests
             public string AgeFromParam { get; set; }
             public List<string> CategoryPaths { get; set; }
             public List<string> Countries { get; set; }
+            public List<string> Sizes { get; set; }
         }
         
         private static ShopUnique GetUnique( List<RawOffer> offers, string shopName )
@@ -95,6 +112,7 @@ namespace AdmitadExamplesParserTests
                     ",",
                     offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() == "возраст" ) )
                         .Select( p => p.Value ).Distinct() ),
+                Sizes = offers.SelectMany( o => o.Params ).Select( p => $"{p.Name} {p.UnitFromXml} {p.Value}").Distinct().ToList(),
                 CategoryPaths = offers.Select( o => o.CategoryPath ).Distinct().ToList(),
                 Countries = offers.Select( GetCountryGetter( shopName ) ).Distinct().ToList()
             };
@@ -140,15 +158,18 @@ namespace AdmitadExamplesParserTests
         
         private static List<Offer> ConvertOffers(
             ShopData shopData ) {
-            var converter = new OfferConverter( shopData, new BackgroundBaseContext("1") );
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            var dbHelper = new DbHelper( dbSettings );
+            var converter = new OfferConverter( shopData,  dbHelper, new BackgroundBaseContext("1", "name" ) );
             return converter.GetCleanOffers();
         }
         
         private static ShopData ParseFile( DownloadInfo fileInfo, bool enableExtendedStat ) {
             var parser = new GeneralParser(
-                fileInfo.FilePath,
-                fileInfo.ShopName,
-                new BackgroundBaseContext("1"),
+                //fileInfo.FilePath,
+                //fileInfo.ShopName,
+                fileInfo,
+                new BackgroundBaseContext("1", "name" ),
                 enableExtendedStat );
             return parser.Parse();
         }

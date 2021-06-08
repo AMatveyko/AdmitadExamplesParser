@@ -37,6 +37,8 @@ namespace AdmitadCommon.Entities
         [ XmlElement( "vendorCode" ) ] public string VendorCode { get; set; }
         [ XmlElement( "country_of_origin" ) ] public string Country { get; set; }
         [ XmlElement( "gender" ) ] public string Gender { get; set; }
+        [ XmlElement( "Color" ) ] public string Colors { get; set; }
+        [ XmlElement( "Size" ) ] public string Size { get; set; }
         [ XmlIgnore ] public string CategoryPath { get; set; }
         [ XmlIgnore ] public string ShopName { get; set; }
         [ XmlIgnore ] public DateTime UpdateTime { get; set; }

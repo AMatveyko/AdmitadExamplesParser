@@ -4,31 +4,38 @@ using System;
 using System.Linq;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Workers;
+using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
-using TheStore.Api.Core.Sources.Entity;
+using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
     internal sealed class TagsWorker : BaseLinkWorker
     {
 
-        public TagsWorker( ElasticSearchClientSettings settings ) 
-            :base( settings ) { }
+        public TagsWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper ) 
+            :base( settings, works, dbHelper ) { }
 
         public void RelinkTag( RelinkTagContext context )
         {
-            var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == context.TagId );
+            var tag = Db.GetTags().FirstOrDefault( t => t.Id == context.TagId );
             context.Title = tag.Title;
             var linker = CreateLinker( context );
-            linker.RelinkTag( tag );
+            if( context.Relink ) {
+                linker.RelinkTag( tag );
+            }
+            else {
+                linker.LinkTag( tag );
+            }
         }
 
         public void LinkTags( LinkTagsContext context )
         {
-            throw new NotImplementedException();
+            var tags = Db.GetTags();
+            var linker = CreateLinker( context );
+            linker.LinkTags( tags );
         }
 
     }

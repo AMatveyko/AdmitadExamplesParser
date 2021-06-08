@@ -5,16 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Admitad.Converters;
+using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Extensions;
 using AdmitadCommon.Helpers;
-using AdmitadCommon.Workers;
-
-using AdmitadExamplesParser.Entities;
-using AdmitadExamplesParser.Workers.Components;
 
 using AdmitadSqlData.Helpers;
+
+using Common.Settings;
+using Common.Workers;
 
 using NUnit.Framework;
 
@@ -23,35 +24,62 @@ namespace AdmitadExamplesParserTests
     public class ProductLinkTests
     {
 
+        private static DbHelper _dbHelper = new DbHelper( SettingsBuilder.GetDbSettings() );
+        
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            // ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            // ElasticSearchUrl = "http://185.221.152.127:9200",
             ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-25",
+            DefaultIndex = "products-1",
             FrameSize = 10000
         };
 
         [ Test ]
+        public void DisableShopProducts()
+        {
+            var client = CreateClient();
+            var result = client.DisableShopProducts( "160" );
+        }
+        
+        [ Test ]
         public void DisableOldProducts()
         {
             var client = CreateClient();
-            client.DisableOldProducts( DateTime.Now );
+            client.DisableOldProducts( DateTime.Now, "163" );
         }
 
         [ Test ]
         public void CountDisabledProducts()
         {
-            var count = CreateClient().CountDisabledProducts( DateTime.Now );
+            var count = CreateClient().CountForDisableProducts( DateTime.Now, null );
         }
 
         [ Test ]
+        public void LinkCountries()
+        {
+            var linker = new ProductLinker( _settings, _dbHelper, new CountriesLinkContext( "1" ) );
+
+            var countries = _dbHelper.GetCountries();
+            linker.LinkCountries( countries );
+        }
+
+        [ Test ]
+        public void LinkCountry()
+        {
+            var country = _dbHelper.GetCountries().FirstOrDefault( c => c.Id == 19 );
+            var client = CreateClient();
+            var result = client.UpdateProductsFroCountry( country );
+            ;
+        }
+        
+        [ Test ]
         public void LinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1" ) );
+            var linker = new ProductLinker( _settings, _dbHelper, new BackgroundBaseContext( "1", "name" ) );
 
-            var colors = DbHelper.GetColors();
-            var materials = DbHelper.GetMaterials();
-            var sizes = DbHelper.GetSizes();
+            var colors = _dbHelper.GetColors();
+            var materials = _dbHelper.GetMaterials();
+            var sizes = _dbHelper.GetSizes();
 
             linker.ColorsLink( colors );
             linker.MaterialsLink( materials );
@@ -63,17 +91,23 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void CategoriesLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext( "1" ) );
-            linker.CategoryLink( DbHelper.GetCategories() );
+            var linker = new ProductLinker( _settings, _dbHelper, new BackgroundBaseContext( "1", "name" ) );
+            linker.LinkCategories( _dbHelper.GetCategories() );
         }
 
         [ Test ]
+        public void UnlinkShop()
+        {
+            var client = CreateClient();
+            var result = client.UnlinkShop( "146" );
+        }
+        
+        [ Test ]
         public void CategoryRelinkTest()
         {
-            //",jeans"
-            var categoryId = "10101080";
-            var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == categoryId );
-            var client = CreateClient( "products-25" );
+            var categoryId = "10107000";
+            var category = _dbHelper.GetCategories().FirstOrDefault( c => c.Id == categoryId );
+            var client = CreateClient( "products-1" );
             var unlinkResult = client.UnlinkCategory( category );
             var linkResult = client.UpdateProductsForCategoryFieldNameModel( category );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
@@ -82,50 +116,76 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void RelinkCategory()
         {
-            var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == "20712020" ); 
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            var category = _dbHelper.GetCategories().FirstOrDefault( c => c.Id == "20712020" ); 
+            var linker = new ProductLinker( _settings, _dbHelper, new BackgroundBaseContext("1", "name") );
             linker.RelinkCategory( category );
         }
 
         [ Test ]
+        public void CountryLinkTest()
+        {
+            var countries = _dbHelper.GetCountries().FirstOrDefault();
+            var client = CreateClient( "products-1" );
+            var result = client.UpdateProductsFroCountry( countries );
+            Console.WriteLine( $"Linked: {result.Updated}/{result.Updated}");
+        }
+        
+        [ Test ]
         public void TagRelinkTest()
         {
-            TagRelinkTest( "902" );
+            TagRelinkTest( "427" );
         }
 
         private void TagRelinkTest( string tagId )
         {
-            var tag = DbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
-            var client = CreateClient( "products-25" );
+            var tag = _dbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
+            var client = CreateClient( "products-1" );
             var unlinkResult = client.UnlinkTag( tag );
             var linkResult = client.UpdateProductsForTag( tag );
             Console.WriteLine( $"Unlinked: {unlinkResult.Updated}/{unlinkResult.Updated}, Linked: {linkResult}" );
+        }
+
+        [ Test ]
+        public void TagLinkTest()
+        {
+            var tagId = "3";
+            var client = CreateClient( "products-1" );
+            var tag = _dbHelper.GetTags().FirstOrDefault( t => t.Id == tagId );
+            var linkResult = client.UpdateProductsForTag( tag );
+            Console.WriteLine( $"Linked: {linkResult}" );
+        }
+
+        [ Test ]
+        public void UpdateAddDate()
+        {
+            var client = CreateClient();
+            var result = client.UpdateAddDate();
         }
         
         [ Test ]
         public void RelinkTagsForCategory()
         {
             var categoryId = 10103000;
-            var tagsForCategory = DbHelper.GetTags().Where( t => t.IdCategory == categoryId ).ToList();
+            var tagsForCategory = _dbHelper.GetTags().Where( t => t.IdCategory == categoryId ).ToList();
             foreach( var tag in tagsForCategory ) {
                 TagRelinkTest( tag.Id );
             }
         }
         
         [ Test ]
-        public void TagLinkTest()
+        public void TagsLinkTest()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
-            linker.TagsLink( DbHelper.GetTags() );
+            var linker = new ProductLinker( _settings, _dbHelper, new BackgroundBaseContext("1", "name") );
+            linker.LinkTags( _dbHelper.GetTags() );
         }
 
         [ Test ]
         public void UnlinkedPropertyCounts()
         {
             var client = CreateClient();
-            var colors = DbHelper.GetColors();
-            var materials = DbHelper.GetMaterials();
-            var sizes = DbHelper.GetSizes();
+            var colors = _dbHelper.GetColors();
+            var materials = _dbHelper.GetMaterials();
+            var sizes = _dbHelper.GetSizes();
             var allProperties = new List<( string, BaseProperty )>();
             allProperties.AddRange( colors.Select( i => ( i.FieldName, (BaseProperty) i ) ) );
             allProperties.AddRange( materials.Select( i => ( i.FieldName, (BaseProperty) i ) ) );
@@ -138,11 +198,11 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void UnlinkProperties()
         {
-            var linker = new ProductLinker( _settings, new BackgroundBaseContext("1") );
+            var linker = new ProductLinker( _settings, _dbHelper, new BackgroundBaseContext("1", "name") );
             
-            var colors = DbHelper.GetColors();
-            var materials = DbHelper.GetMaterials();
-            var sizes = DbHelper.GetSizes();
+            var colors = _dbHelper.GetColors();
+            var materials = _dbHelper.GetMaterials();
+            var sizes = _dbHelper.GetSizes();
 
             linker.UnlinkProperties( colors, materials, sizes );
         }
@@ -234,7 +294,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings, new BackgroundBaseContext("1") );
+            return new ( _settings, new BackgroundBaseContext("1", "name") );
         }
         
         private static Category GetFirstCategory()
@@ -248,8 +308,8 @@ namespace AdmitadExamplesParserTests
             return category;
         }
 
-        private static List<Category> GetCategories() => DbHelper.GetCategories();
-        private static List<Tag> GetTags() => DbHelper.GetTags();
+        private static List<Category> GetCategories() => _dbHelper.GetCategories();
+        private static List<Tag> GetTags() => _dbHelper.GetTags();
         
         private static string Join( string[] strings )
         {

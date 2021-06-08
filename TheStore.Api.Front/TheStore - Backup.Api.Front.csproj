@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <UserSecretsId>77d60648-95b9-43bf-8356-cacf784de219</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NLog" Version="4.7.9" />
+        <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
+      <ProjectReference Include="..\Web.Common\Web.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="NLog.config">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
+</Project>

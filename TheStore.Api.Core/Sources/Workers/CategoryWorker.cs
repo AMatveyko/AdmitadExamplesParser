@@ -3,26 +3,54 @@
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
-using TheStore.Api.Core.Sources.Entity;
+using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
-    public sealed class CategoryWorker : BaseLinkWorker
+    internal sealed class CategoryWorker : BaseLinkWorker
     {
 
-        public CategoryWorker( ElasticSearchClientSettings settings ) 
-            :base( settings ) {}
+        public CategoryWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper db ) 
+            :base( settings, works, db ) { }
 
         public void RelinkCategory( RelinkCategoryContext context ) {
             
-            var category = DbHelper.GetCategories().FirstOrDefault( c => c.Id == context.CategoryId );
-            context.Name = category.NameH1;
+            var category = Db.GetCategories().FirstOrDefault( c => c.Id == context.CategoryId );
+            context.CategoryName = category.NameH1;
             var linker = CreateLinker( context );
-            linker.RelinkCategory( category );
+            if( context.Relink ) {
+                linker.RelinkCategory( category );    
+            }
+            else {
+                linker.LinkCategory( category );
+            }
         }
+
+        public void LinkCategories( LinkCategoriesContext context )
+        {
+            var categories = Db.GetCategories();
+            var linker = CreateLinker( context );
+            linker.LinkCategories( categories );
+        }
+
+        // public void RelinkAllCategories( RelinkAllCategories context )
+        // {
+        //     var categories = DbHelper.GetCategories();
+        //     foreach( var category in categories ) {
+        //         var singleContext = new RelinkCategoryContext( category.Id );
+        //         context.AddContext( singleContext );
+        //         Works.AddToQueue( RelinkCategory, singleContext, QueuePriority.Low, true );
+        //         context.AddMessage( $"Добавили перепривязку для категории { category.Id }" );
+        //     }
+        //
+        //     while( context.Contexts.Any( c => c.IsFinished == false ) ) {
+        //         Thread.Sleep( 1000 );
+        //     }
+        // }
 
     }
 }

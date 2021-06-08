@@ -9,14 +9,25 @@ using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Workers;
+
 using Newtonsoft.Json;
 
 namespace Admitad.Converters
 {
-    public static class ProductConverter
+    public sealed class ProductConverter
     {
 
-        public static List<Product> GetProductsContainer( List<Offer> offers )
+        private readonly DbHelper _dbHelper;
+        private readonly RatingCalculation _calculation;
+        
+        public ProductConverter( DbHelper dbHelper, RatingCalculation calculation )
+        {
+            _dbHelper = dbHelper;
+            _calculation = calculation;
+        }
+        
+        public List<Product> GetProductsContainer( IEnumerable<Offer> offers )
         {
             var groupedOffers = offers.GroupBy( o => o.ProductId ).ToList();
             var products =
@@ -26,7 +37,7 @@ namespace Admitad.Converters
             return filteredProducts;
         }
 
-        public static Product CollectProduct( List<Offer> offers ) {
+        private Product CollectProduct( List<Offer> offers ) {
             if( offers.Any() == false ) {
                 throw new Exception( "Offer list is empty" );
             }
@@ -70,11 +81,14 @@ namespace Admitad.Converters
             product.Params.AddRange( offer.Params.SelectMany( p => p.Values ) );
         }
 
-        private static Product CreateNewProduct(
+        private Product CreateNewProduct(
             List<Offer> offers,
             DateTime updateDate )
         {
             var offer = offers.First();
+            var soldOut = offers.All( o => o.SoldOut );
+            _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
+            
             return new Product {
                 Id = offer.ProductId,
                 Url = offer.Url,
@@ -96,10 +110,14 @@ namespace Admitad.Converters
                 Photos = new List<string>(),
                 Params = new List<string>(),
                 Enable = 1,
-                Soldout = 0,
+                Soldout = (byte)( soldOut ? 1 : 0 ),
                 Delivery = 0,
-                BrandId = DbHelper.GetBrandId( offer.VendorNameClearly ),
-                SalesNotes = offer.SalesNotes
+                BrandId = _dbHelper.GetBrandId( offer.VendorNameClearly ),
+                SalesNotes = offer.SalesNotes,
+                OriginalCategoryId = offer.CategoryId,
+                OfferIds = offers.Select( o => o.OriginalId ).ToArray(),
+                Vendor = offer.OriginalVendor,
+                Rating = _calculation.Calculate()
             };
         }
     }

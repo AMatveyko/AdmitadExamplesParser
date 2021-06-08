@@ -11,6 +11,8 @@ namespace AdmitadSqlData.Entities
         public int Id { get; set; }
         [ Column( "Name" ) ]
         public string Name { get; set; }
+        [ Column( "original_name" ) ]
+        public string OriginalName { get; set; }
         [ Column( "NumberOfProducts" ) ]
         public long NumberOfProducts { get; set; }
     }

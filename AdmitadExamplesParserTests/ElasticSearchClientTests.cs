@@ -1,11 +1,14 @@
 ﻿// a.snegovoy@gmail.com
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Workers;
+using System.IO;
 
-using AdmitadExamplesParser.Entities;
-using AdmitadExamplesParser.Workers.Components;
+using Admitad.Converters.Workers;
+
+using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
+using AdmitadCommon.Extensions;
+
+using Common.Settings;
 
 using NUnit.Framework;
 
@@ -15,22 +18,20 @@ namespace AdmitadExamplesParserTests
     {
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             //ElasticSearchUrl = "http://127.0.0.1:9200",
-            ElasticSearchUrl = "http://elastic.matveyko.su:9200",
+            ElasticSearchUrl = "http://185.221.152.127:9200",
             //ElasticSearchUrl = "http://127.0.0.1:8888",
-            DefaultIndex = "products-25",
+            DefaultIndex = "products-old-1",
             FrameSize = 10000
         };
 
         [ Test ]
-        public void GetUnlinkedIds()
+        public void ScrollApi()
         {
-            var client2 = CreateClient( "products-2" );
-            var client3 = CreateClient( "products-3" );
-            var ids2 = client2.GetIdsUnlinkedProductsByScroll();
-            var ids3 = client3.GetIdsUnlinkedProductsByScroll();
-
+            var client = CreateClient();
+            var ids = client.GetIds();
+            File.WriteAllLines( @"o:\admitad\workData\scrollApi\products-old-1.txt", ids );
         }
-
+        
         [ Test ]
         public void GetCountAllDocuments()
         {
@@ -43,7 +44,7 @@ namespace AdmitadExamplesParserTests
             if( indexName.IsNotNullOrWhiteSpace() ) {
                 _settings.DefaultIndex = indexName;
             }
-            return new ( _settings, new BackgroundBaseContext("1") );
+            return new ( _settings, new BackgroundBaseContext("1", "name" ) );
         }
     }
 }

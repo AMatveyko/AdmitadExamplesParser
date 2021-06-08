@@ -10,8 +10,8 @@ namespace AdmitadCommon.Entities
     public sealed class Product : IProductForIndex
     {
         [ JsonProperty( "view" ) ] public long View { get; set; }
-
         [ JsonProperty( "categories" ) ] public string[] Categories { get; set; }
+        [ JsonProperty( "originalCategoryId" ) ] public string OriginalCategoryId { get; set; }
         [ JsonProperty( "tags" ) ] public string[] Tags { get; set; }
         [ JsonProperty( "colors" ) ] public string[] Colors { get; set; }
         [ JsonProperty( "materials" ) ] public string[] Materials { get; set; }
@@ -40,11 +40,14 @@ namespace AdmitadCommon.Entities
         [ JsonProperty( "brandId" ) ] public string BrandId { get; set; }
         [ JsonProperty( "vendorNameClearly" ) ]
         public string VendorNameClearly { get; set; }
+        [ JsonProperty ( "vendor" ) ] public string Vendor { get; set; }
         [ JsonProperty( "country" ) ] public string CountryId { get; set; }
         [ JsonProperty( "price" ) ] public decimal Price { get; set; }
         [ JsonProperty( "oldPrice" ) ] public decimal OldPrice { get; set; }
         [ JsonProperty( "discount" ) ] public short Discount { get; set; }
         [ JsonProperty( "currency" ) ] public string Currency { get; set; }
         [ JsonProperty( "salesNotes" ) ] public string SalesNotes { get; set; }
+        [ JsonProperty( "offerIds" ) ] public string[] OfferIds { get; set; }
+        [ JsonProperty( "rating" ) ] public int Rating { get; set; }
     }
 }

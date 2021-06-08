@@ -1,9 +1,12 @@
 ﻿using System.IO;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 
 using AdmitadExamplesParser.Entities;
 using AdmitadExamplesParser.Workers.Components;
+
+using Common.Settings;
 
 using Newtonsoft.Json;
 
@@ -19,7 +22,7 @@ namespace AdmitadExamplesParser
         {
             var configString = File.ReadAllText( SettingsPath );
             var settings = JsonConvert.DeserializeObject<ProcessorSettings>( configString );
-            var processor = new Processor( settings, new BackgroundBaseContext("1") );
+            var processor = new Processor( settings, new BackgroundBaseContext("1", "name" ) );
             processor.Start();
         }
     }

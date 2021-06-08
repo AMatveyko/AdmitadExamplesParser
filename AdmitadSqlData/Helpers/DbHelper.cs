@@ -7,40 +7,104 @@ using System.Linq;
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Statistics;
 using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Entities;
 using AdmitadSqlData.Repositories;
 
+using Common.Entities;
+using Common.Settings;
+
+using Country = AdmitadCommon.Country;
+
 namespace AdmitadSqlData.Helpers
 {
-    public static class DbHelper
+    public sealed class DbHelper : ISettingsRepository
     {
-        
+
         #region Repository
-        private static ShopRepository _shopRepository = new();
-        private static CountryRepository _countryRepository = new();
-        private static CategoryRepository _categoryRepository = new();
-        private static TagRepository _tagRepository = new();
-        private static TheStoreRepository _theStoreRepository = new();
+        private readonly ShopRepository _shopRepository;
+        private readonly CountryRepository _countryRepository;
+        private readonly CategoryRepository _categoryRepository;
+        private readonly TagRepository _tagRepository;
+        private readonly TheStoreRepository _theStoreRepository;
         #endregion
         
         private static readonly ConcurrentDictionary<string, int> ShopIdCache = new();
-        private static Dictionary<int, string[]> CountriesCache;
-        private static Dictionary<string, string> BrandCache;
-        private static Dictionary<string, UnknownBrands> UnknownBrands = new();
-        private static bool UnknownBrandsNeedClean = true;
+        private static Dictionary<int, string[]> _countriesCache;
+        private static Dictionary<string, string> _brandCache;
+        private static readonly Dictionary<string, UnknownBrands> UnknownBrands = new();
+        private static readonly Dictionary<string, int> UnknownCountries = new();
+        private static bool _unknownBrandsNeedClean = true;
 
-        public static List<SettingsOption> GetSettingsOptions() =>
-            _theStoreRepository.GetSettingsOptions().Select( Convert ).ToList();
+
+        public DbHelper( DbSettings settings )
+        {
+            var connectionString = settings.GetConnectionString();
+                ( _shopRepository, _countryRepository, _categoryRepository, _tagRepository, _theStoreRepository ) = (
+                new ShopRepository( connectionString, settings.Version ),
+                new CountryRepository( connectionString, settings.Version ),
+                new CategoryRepository( connectionString, settings.Version ),
+                new TagRepository( connectionString, settings.Version ),
+                new TheStoreRepository( connectionString, settings.Version ) );
+        }
+
+        public void WriteShopStatistics( ShopProcessingStatistics statistics )
+        {
+            var container = new DbWorkersContainer(
+                UpdateShopCategory,
+                UpdateShopStatistics,
+                WriteShopProcessLog,
+                UpdateShopUpdateDate );
+            statistics.Write( container );
+        }
+
+        private void UpdateShopUpdateDate( int shopDate, DateTime dateTime )
+        {
+            _shopRepository.UpdateDate( shopDate, dateTime );
+        }
         
-        public static int GetUnknownBrandsCount()
+        private void WriteShopProcessLog( IShopStatisticsForDb statistics )
+        {
+            _theStoreRepository.WriteShopProcessingLog( EntityConverter.Convert( statistics ) );
+        }
+        
+        public List<SettingsOption> GetSettingsOptions() =>
+            _theStoreRepository.GetSettingsOptions().Select( EntityConverter.Convert ).ToList();
+
+        public List<ShopProductsStatistics> GetShopStatisticsList()
+        {
+            var raw = _theStoreRepository.GetShopStatistics();
+            return raw.Select( EntityConverter.Convert )
+                .GroupBy( i => i.ShopId )
+                .Select( g => GetNeedStatistics( g.ToList() ) )
+                .ToList();
+        }
+
+        private ShopProductsStatistics GetNeedStatistics(
+            List<ShopProduct> statistisc )
+        {
+            if( statistisc.Any() == false ) {
+                return null;
+            }
+            var sorted = statistisc.OrderByDescending( s => s.UpdateDate ).Take( 2 ).ToList();
+            var after = sorted.First();
+            var before = sorted.Last();
+            return new ShopProductsStatistics( before, after );
+        }
+        
+        private void UpdateShopStatistics( ShopProduct product )
+        {
+            _theStoreRepository.InsertShopStatistics( EntityConverter.Convert( product ) );
+        }
+        
+        public int GetUnknownBrandsCount()
         {
             return UnknownBrands.Count;
         }
 
-        public static void UpdateProductsByCategory(
+        public void UpdateProductsByCategory(
             Category category,
             int before,
             int after )
@@ -48,11 +112,15 @@ namespace AdmitadSqlData.Helpers
             _theStoreRepository.UpdateProductsByCategory( category, before, after );
         }
         
-        public static void RememberVendorIfUnknown( string cleanName )
+        public void RememberVendorIfUnknown( string cleanName, string originalName )
         {
-            if( UnknownBrandsNeedClean ) {
+            if( _unknownBrandsNeedClean ) {
                 _theStoreRepository.ClearUnknownBrands();
-                UnknownBrandsNeedClean = false;
+                _unknownBrandsNeedClean = false;
+            }
+
+            if( cleanName == null || cleanName.Trim() == string.Empty ) {
+                cleanName = "NoBrandName";
             }
 
             var brandId = GetBrandId( cleanName );
@@ -61,83 +129,112 @@ namespace AdmitadSqlData.Helpers
             }
 
             if( UnknownBrands.ContainsKey( cleanName ) == false ) {
-                UnknownBrands[ cleanName ] =  new UnknownBrands { Name = cleanName, NumberOfProducts = 0 };
+                UnknownBrands[ cleanName ] =  new UnknownBrands {
+                    Name = cleanName,
+                    OriginalName = originalName,
+                    NumberOfProducts = 0
+                };
             }
 
             UnknownBrands[ cleanName ].NumberOfProducts++;
             
         }
 
-        public static void WriteUnknownBrands()
+        public void WriteUnknownBrands()
         {
             _theStoreRepository.AddUnknownBrands(
                 UnknownBrands.Where( b => b.Value.NumberOfProducts > 50 )
                     .Select( b => b.Value ) );
         }
         
-        public static string GetBrandId( string clearlyName )
+        public string GetBrandId( string clearlyName )
         {
-            if( BrandCache == null ) {
-                BrandCache = new();
+            if( _brandCache == null ) {
+                _brandCache = new();
                 var brands = _theStoreRepository.GetBrands();
 
                 foreach( var brandDb in brands ) {
-                    if( BrandCache.ContainsKey( brandDb.ClearlyName ) == false ) {
-                        BrandCache[ brandDb.ClearlyName ] = brandDb.Id.ToString();
+                    if( _brandCache.ContainsKey( brandDb.ClearlyName ) == false ) {
+                        _brandCache[ brandDb.ClearlyName ] = brandDb.Id.ToString();
                     }
                     if( brandDb.SecondClearlyName.IsNotNullOrWhiteSpace() &&
-                        BrandCache.ContainsKey( brandDb.SecondClearlyName ) == false ) {
-                        BrandCache[ brandDb.SecondClearlyName ] = brandDb.Id.ToString();
+                        _brandCache.ContainsKey( brandDb.SecondClearlyName ) == false ) {
+                        _brandCache[ brandDb.SecondClearlyName ] = brandDb.Id.ToString();
                     }
                 }
                 
             }
 
-            return BrandCache.ContainsKey( clearlyName ) ? BrandCache[ clearlyName ] : Constants.UndefinedBrandId;
+            return _brandCache.ContainsKey( clearlyName ) ? _brandCache[ clearlyName ] : Constants.UndefinedBrandId;
         }
         
-        public static List<Tag> GetTags()
+        public List<Tag> GetTags()
         {
             var categories = GetDictionaryCategory();
-            return _tagRepository.GetTags().Select( t => Convert( t, categories ) ).ToList();
+            return _tagRepository.GetTags().Select( t =>
+                EntityConverter.Convert(
+                    t,
+                    GetCategoryChildren( t.IdCategory, categories ) ) )
+                .ToList();
         }
 
-        public static List<XmlFileInfo> GetEnableShops() =>
-            _shopRepository.GetEnableShops();
+        public List<XmlFileInfo> GetEnableShops() =>
+            _shopRepository.GetEnableShops().Select( EntityConverter.Convert ).ToList();
 
-        public static int GetShopId(
+        public XmlFileInfo GetShop( int id ) {
+            var shop = _shopRepository.GetShop( id );
+            return EntityConverter.Convert( shop );
+        }
+
+        public int GetNumberEnabledShops() => _shopRepository.GetEnableShops().Count;
+
+        public int GetShopId(
             string shopNameLatin ) =>
             GetFromCache( ShopIdCache, shopNameLatin, _shopRepository.GetShopId );
 
-        public static int GetCountryId( string countryName ) {
-            if( CountriesCache == null ) {
+        public int GetCountryId( string countryName ) {
+            if( _countriesCache == null ) {
                 FillCountryCache();
             }
 
             return GetCountryIdFromCache( countryName );
         }
 
-        public static List<Category> GetCategories() {
-            var categories = _categoryRepository.GetEnabledCategories().Select( Convert ).ToList();
-            //categories = categories.Where( c => c.Id[ 0 ] == '1' || c.Id[ 0 ] == '2' ).ToList();
+        public List<Country> GetCountries()
+        {
+            return _countryRepository.GetAllCountries().Select( EntityConverter.Convert ).ToList();
+        }
+        
+        public void SaveUnknownCountries()
+        {
+            var newCountries = UnknownCountries.Select(
+                c => new UnknownCountry {
+                    Name = c.Key,
+                    OfferCount = c.Value
+                } ).ToList();
+            _theStoreRepository.SaveUnknownCountries( newCountries );
+        }
+        
+        public List<Category> GetCategories() {
+            var categories = _categoryRepository.GetEnabledCategories().Select( EntityConverter.Convert ).ToList();
             return categories;
         }
 
-        public static List<Category> GetAllCategories()
+        public List<Category> GetAllCategories()
         {
-            return _categoryRepository.GetAllCategories().Select( Convert ).ToList();
+            return _categoryRepository.GetAllCategories().Select( EntityConverter.Convert ).ToList();
         }
         
-        public static List<Category> GetCategoryChildren( int categoryId, Dictionary<int, List<CategoryDb>> allCategories = null )
+        public List<Category> GetCategoryChildren( int categoryId, Dictionary<int, List<CategoryDb>> allCategories = null )
         {
             var categories = allCategories ?? GetDictionaryCategory();
-            return DoGetCategoryChildren( categoryId, categories ).Select( Convert ).ToList();
+            return DoGetCategoryChildren( categoryId, categories ).Select( EntityConverter.Convert ).ToList();
         }
 
-        private static Dictionary<int, List<CategoryDb>> GetDictionaryCategory() =>
+        private Dictionary<int, List<CategoryDb>> GetDictionaryCategory() =>
             _categoryRepository.GetAllCategories().GroupBy( c => c.ParentId ).ToDictionary( g => g.Key, g => g.ToList() );
         
-        private static List<CategoryDb> DoGetCategoryChildren( int categoryId, Dictionary<int,List<CategoryDb>> allCategory )
+        private List<CategoryDb> DoGetCategoryChildren( int categoryId, Dictionary<int,List<CategoryDb>> allCategory )
         {
             if( allCategory.ContainsKey( categoryId ) == false ) {
                 return new List<CategoryDb>();
@@ -153,114 +250,53 @@ namespace AdmitadSqlData.Helpers
             
             return children;
         }
+
+        public void ExcludeSearchField( string name )
+        {
+            _categoryRepository.ExcludeSearchField( name );
+        }
         
-        public static List<ColorProperty> GetColors() => _theStoreRepository.GetColors().Select( Convert ).ToList();
+        public List<ColorProperty> GetColors() => _theStoreRepository.GetColors().Select( EntityConverter.Convert ).ToList();
 
-        public static List<MaterialProperty> GetMaterials() =>
-            _theStoreRepository.GetMaterials().Select( Convert ).ToList();
+        public List<MaterialProperty> GetMaterials() =>
+            _theStoreRepository.GetMaterials().Select( EntityConverter.Convert ).ToList();
 
-        public static List<SizeProperty> GetSizes() => _theStoreRepository.GetSizes().Select( Convert ).ToList();
+        public List<SizeProperty> GetSizes() => _theStoreRepository.GetSizes().Select( EntityConverter.Convert ).ToList();
 
-        public static void UpdateTags()
+        public void UpdateTags()
         {
             _tagRepository.AddDescriptionField();
         }
 
-        public static void DeleteWordFromTag(
+        public void DeleteWordFromTag(
             string word,
             int categoryId )
         {
             _tagRepository.DeleteWordFromTagSearch( word, categoryId );
         }
 
-        #region Convert
 
-        private static ColorProperty Convert( ColorDb colorDb ) =>
-            new () {
-                Id = colorDb.Id.ToString(),
-                ParentId = colorDb.ParentId.ToString(),
-                Names = NotEmptyStringsToList(
-                    colorDb.Name,
-                    colorDb.Name2,
-                    colorDb.Name3,
-                    colorDb.Name4,
-                    colorDb.SynonymName )
-            };
 
-        private static MaterialProperty Convert(
-            SostavDb sostavDb ) =>
-            new() {
-                Id = sostavDb.Id.ToString(),
-                Names = NotEmptyStringsToList( sostavDb.Name, sostavDb.Name2, sostavDb.Name3, sostavDb.SynonymName )
-            };
 
-        private static SizeProperty Convert(
-            SizeDb sizeDb ) =>
-            new() {
-                Id = sizeDb.Id.ToString(),
-                Names = NotEmptyStringsToList( sizeDb.Name, sizeDb.SynonymName )
-            };
+        #region OriginalCategory
 
-        private static Tag Convert( TagDb tagDb, Dictionary<int,List<CategoryDb>> allCategories )
+        private void UpdateShopCategory( string shopName, List<ShopCategory> categories )
         {
-            var tag = new Tag();
-            tag.Id = tagDb.Id.ToString();
-            tag.Fields = SplitComa( tagDb.SearchFields );
-            tag.SearchTerms = CreateTerms( tagDb.Name );
-            tag.Gender = GenderHelper.ConvertFromTag( tagDb.Pol );
-            tag.IdCategory = tagDb.IdCategory;
-            tag.SpecifyWords = SplitComa( tagDb.SpecifyWords );
-            tag.ExcludePhrase = CreateTerms( tagDb.ExcludePhrase );
-            tag.Title = tagDb.NameTitle;
-            var categories = GetCategoryChildren( tagDb.IdCategory, allCategories ).Select( c => c.Id ).ToList();
-            categories.Add( tag.IdCategory.ToString() );
-            tag.Categories = categories.ToArray();
-            return tag;
-        }
-        
-        private static Category Convert( CategoryDb fromDb ) =>
-            new Category {
-                Id = fromDb.Id.ToString(),
-                Age = AgeHelper.Convert( fromDb.Age ),
-                ExcludeTerms = CreateTerms( fromDb.SearchExclude ),
-                Fields = SplitComa( fromDb.Fields ),
-                Gender = fromDb.Gender,
-                Terms = CreateTerms( fromDb.Search ),
-                ExcludeWordsFields = fromDb.ExcludeWordsFields.IsNotNullOrWhiteSpace()
-                    ? SplitComa( fromDb.ExcludeWordsFields )
-                    : SplitComa( fromDb.Fields ),
-                Name = fromDb.Name,
-                NameH1 = fromDb.NameH1,
-                SearchSpecify = CreateTerms( fromDb.SearchSpecify )
-            };
+            if( categories == null ||
+                categories.Any() == false ) {
+                return;
+            }
 
-        private static SettingsOption Convert( OptionDb optionDb ) =>
-            new SettingsOption {
-                Option = optionDb.Option,
-                Value = optionDb.Value
-            };
+            var shopId = GetShopId( shopName );
+            
+            var categoriesForDb = categories.Select( c => EntityConverter.Convert( shopId, c ) ).ToList();
+            _theStoreRepository.UpdateShopCategories( categoriesForDb );
+
+        }
         
         #endregion
 
         #region Routin
-
-        private static List<string> NotEmptyStringsToList(
-            params string[] strings ) =>
-            strings.Where( s => s.IsNotNullOrWhiteSpace() ).Select( CreateTerm ).ToList();
-        
-        private static string[] CreateTerms( string terms )
-        {
-            return SplitComa( terms ).Select( CreateTerm ).ToArray();
-        }
-        
-        private static string CreateTerm( string term )
-        {
-            return $"\"{term}\"";
-        }
-        
-        private static string[] SplitComa( string input ) =>
-            input?.Split( ',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries )
-            ?? Array.Empty<string>();
         
         private static int GetCountryIdFromCache( string countryName ) {
 
@@ -268,25 +304,31 @@ namespace AdmitadSqlData.Helpers
                 return Constants.UndefinedCountryId;
             }
             
-            foreach( var (key, value) in CountriesCache ) {
+            foreach( var (key, value) in _countriesCache ) {
                 if( value.Contains( countryName.ToLower() ) ) {
                     return key;
                 }
             }
 
+            if( UnknownCountries.ContainsKey( countryName ) == false ) {
+                UnknownCountries[ countryName ] = 0;
+            }
+            UnknownCountries[ countryName ]++;
+
             return Constants.UndefinedCountryId;
         }
         
-        private static void FillCountryCache() {
-            CountriesCache = new Dictionary<int, string[]>();
+        private void FillCountryCache() {
+            _countriesCache = new Dictionary<int, string[]>();
             var countries = _countryRepository.GetAllCountries();
             foreach( var country in countries ) {
                 var synonyms = new List<string>();
                 FillSynonyms( synonyms, country.From );
+                FillSynonyms( synonyms, country.From.Replace( "из ", string.Empty ) );
                 FillSynonyms( synonyms, country.Name );
                 FillSynonyms( synonyms, country.Synonym );
                 FillSynonyms( synonyms, country.LatinName );
-                CountriesCache[ country.Id ] = synonyms.ToArray();
+                _countriesCache[ country.Id ] = synonyms.ToArray();
             }
         }
 

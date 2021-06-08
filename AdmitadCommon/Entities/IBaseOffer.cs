@@ -8,6 +8,7 @@ namespace AdmitadCommon.Entities
     public interface IBaseOffer
     {
         public string Id { get; set; }
+        public string OriginalId { get; set; }
         public string ProductId { get; set; }
         public string Url { get; set; }
         public DateTime UpdateDate { get; set; }
@@ -27,5 +28,6 @@ namespace AdmitadCommon.Entities
         bool Delivery { get; set; }
         //List<string> AllParams { get; set; }
         string SalesNotes { get; set; }
+        string OriginalVendor { get; set; }
     }
 }

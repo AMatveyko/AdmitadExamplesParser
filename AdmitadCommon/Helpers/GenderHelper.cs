@@ -11,8 +11,8 @@ namespace AdmitadCommon.Helpers
     public static class GenderHelper
     {
 
-        private static Regex _womanPattern = new( @"(женщинам|беременных|женский|женская|женские|женское|женщина|женщин|women)", RegexOptions.Compiled );
-        private static Regex _menPattern = new( @"(мужчинам|мужской|мужская|мужские|мужское|мужчина|мужчин|men)", RegexOptions.Compiled );
+        private static Regex _womanPattern = new( @"(женщинам|беременных|женский|женская|женские|женское|женщина|женщин|women|female)", RegexOptions.Compiled );
+        private static Regex _menPattern = new( @"(мужчинам|мужской|мужская|мужские|мужское|мужчина|мужчин|men|male)", RegexOptions.Compiled );
         private static Regex _unisexPattern = new( @"(унисекс|unisex|nisex)", RegexOptions.Compiled );
         private static Regex _childPattern = new( @"(детская|(для )?детей|детям)", RegexOptions.Compiled );
         private static Regex _babyPattern = new( @"(новорожденных|новорожденным|(для )?младенцев|младенцам)", RegexOptions.Compiled );
@@ -65,10 +65,10 @@ namespace AdmitadCommon.Helpers
                 ( _womanPattern, Gender.Woman ),
                 ( _menPattern, Gender.Man ),
                 ( _unisexPattern, Gender.Unisex ),
-                ( _childPattern, Gender.Child ),
                 //( _babyPattern, Gender.Child ),
                 ( _girlPattern, Gender.Girl ),
-                ( _boyPattern, Gender.Boy )
+                ( _boyPattern, Gender.Boy ),
+                ( _childPattern, Gender.Child ),
             };
             foreach( var ( pattern, gender ) in patterns ) {
                 var m = pattern.Match( line.ToLower() );

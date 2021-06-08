@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AdmitadCommon.Entities
 {
-    public class MaterialProperty : BaseProperty
+    public sealed class MaterialProperty : BaseProperty
     {
         public override string FieldName => "materials";
         public override List<string> FieldsForSearch =>

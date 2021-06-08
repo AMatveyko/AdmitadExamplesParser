@@ -6,14 +6,15 @@ namespace AdmitadSqlData.Repositories
 {
     internal abstract class BaseRepository
     {
+        private readonly string _connectionString;
+        private readonly string _version;
 
-        protected readonly string ConnectionString;
-
-        protected BaseRepository( string connectionString = null )
+        protected BaseRepository( string connectionString, string version )
         {
-            ConnectionString = connectionString ?? "server=elastic.matveyko.su;user=thestore;password=moonlike-mitts-0Concord;database=theStore;";
+            _connectionString = connectionString;
+            _version = version;
         }
         
-        protected ShopDbContext GetDb() => new ShopDbContext( ConnectionString );
+        protected ShopDbContext GetDb() => new ShopDbContext( _connectionString, _version );
     }
 }

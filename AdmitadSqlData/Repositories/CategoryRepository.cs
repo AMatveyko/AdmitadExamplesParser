@@ -12,6 +12,9 @@ namespace AdmitadSqlData.Repositories
 {
     internal sealed class CategoryRepository : BaseRepository
     {
+        
+        public CategoryRepository( string connectionString, string version ) : base( connectionString, version ) { }
+        
         public List<CategoryDb> GetCategoriesWithTerms() {
             using var db = GetDb();
             return db.Categories
@@ -34,9 +37,23 @@ namespace AdmitadSqlData.Repositories
                 // .OrderByDescending( c => c.Level )
                 .ToList();
         }
+
+        public void ExcludeSearchField( string name )
+        {
+            var db = GetDb();
+            var categories = db.Categories.ToList();
+            foreach( var category in categories ) {
+                var fields = category.Fields?.Split( ',' ).Where( f => f != name ).ToList();
+                if( fields == null || fields.Any() == false ) {
+                    continue;
+                }
+                
+                category.Fields = string.Join( ',', fields );
+            }
+
+            db.SaveChanges();
+        }
         
-        public CategoryRepository(
-            string connectionString = null )
-            : base( connectionString ) { }
+
     }
 }

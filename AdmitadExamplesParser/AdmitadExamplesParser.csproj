@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Elasticsearch.Net" Version="7.11.1" />
-      <PackageReference Include="NEST" Version="7.11.1" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1-beta1" />
-      <PackageReference Include="RestSharp" Version="106.11.8-alpha.0.12" />
+      <PackageReference Include="Elasticsearch.Net" Version="7.12.1" />
+      <PackageReference Include="NEST" Version="7.12.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="RestSharp" Version="106.11.8-alpha.0.14" />
       <PackageReference Include="SixLabors.ImageSharp" Version="1.0.3" />
     </ItemGroup>
     <ItemGroup>
@@ -21,6 +21,7 @@
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\Messenger\Messenger.csproj" />
     </ItemGroup>
     <ItemGroup>

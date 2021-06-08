@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AdmitadSqlData.Entities
 {
     [ Table( "color" ) ]
-    public class ColorDb
+    public class ColorDb : ISearchNamesDb
     {
         [ Column( "id" ) ] public int Id { get; set; }
         [ Column( "id_parent" ) ] public int ParentId { get; set; }
@@ -14,5 +14,7 @@ namespace AdmitadSqlData.Entities
         [ Column( "name3" ) ] public string Name3 { get; set; }
         [ Column( "name4" ) ] public string Name4 { get; set; }
         [ Column( "name_sin1" ) ] public string SynonymName { get; set; }
+        [ Column( "name_search" ) ] public string SearchNames { get; set; }
+        [ Column( "name_lat" ) ] public string LatinName { get; set; }
     }
 }

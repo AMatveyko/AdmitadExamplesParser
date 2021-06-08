@@ -33,5 +33,7 @@ namespace AdmitadSqlData.Entities
         public string NameH1 { get; set; }
         [ Column( "search_specify" ) ]
         public string SearchSpecify { get; set; }
+        [ Column( "take_unisex" ) ]
+        public bool TakeUnisex { get; set; }
     }
 }

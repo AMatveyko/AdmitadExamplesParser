@@ -1,12 +1,22 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 using AdmitadCommon.Entities;
+using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Helpers;
+
+using Common.Settings;
 
 using Messenger;
 
 using NUnit.Framework;
+
+using TheStore.Api.Core.Sources.Entities;
+using TheStore.Api.Core.Sources.Workers;
+using TheStore.Api.Front.Data.Repositories;
+
+using Web.Common.Helpers;
 
 namespace UtilsTests
 {
@@ -18,6 +28,14 @@ namespace UtilsTests
             ChatId = "sdfaslkfjsladf"
         };
 
+        [ Test ]
+        public void TestUserAgents()
+        {
+            var agent1 = UserAgents.Get();
+            var agent2 = UserAgents.Get();
+            Assert.AreNotEqual( agent1, agent2 );
+        }
+        
         [ Test ]
         public void TestUpdateResult()
         {
@@ -58,6 +76,39 @@ namespace UtilsTests
             messenger.Send( "Test" );
         }
 
+        [ Test ]
+        public void TestPathGenerator() {
+            var path = FilePathHelper.CombinePath( "o:/test/", "old/" );
+            ;
+        }
+        
+        [ Test ]
+        public void UrlParserTest()
+        {
+            var repository = new TheStoreRepository( "server=185.221.152.127;user=thestore;password=moonlike-mitts-0Concord;database=theStore;", "10.3.27" );
+            var worker = new CompareWorker( repository, new BackgroundBaseContext("1","1"));
+            var result = worker.Convert( new UrlInfo(
+                1,
+                "https://thestore.ru/brand-jb4/",
+                "https://thestore.matveyko.su/brand-jb4/" ) );
+        }
+
+        [ Test ]
+        public void FindDuplicates()
+        {
+            var indexIdPath = @"o:\admitad\workData\scrollApi\products-1.txt";
+            var indexOldIdPath = @"o:\admitad\workData\scrollApi\products-old-1.txt";
+            var duplicate = @"o:\admitad\workData\scrollApi\duplicate.txt";
+
+            var newIds = File.ReadAllLines( indexIdPath ).ToList();
+            var oldIds = File.ReadAllLines( indexOldIdPath ).ToList();
+            var newIdsSet = newIds.ToHashSet();
+            var oldIdsSet = oldIds.ToHashSet();
+            var duplicates = oldIdsSet.Where( id => newIdsSet.Contains( id ) ).ToHashSet();
+            File.WriteAllLines( duplicate, duplicates );
+
+        }
+        
         private IMessenger CreateMessenger()
         {
             var messengerSettings = new MessengerSettings();
