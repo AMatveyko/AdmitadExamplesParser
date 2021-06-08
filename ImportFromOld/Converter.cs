@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
+using Common.Entities;
+using Common.Helpers;
 
 using ImportFromOld.Data.Entity;
 

@@ -6,6 +6,8 @@ using System.Linq;
 
 using AdmitadCommon.Entities;
 
+using Common.Entities;
+
 namespace AdmitadCommon.Types
 {
     public sealed class PriorityQueue

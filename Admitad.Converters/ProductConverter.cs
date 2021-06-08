@@ -4,11 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 
+using Common.Entities;
+using Common.Helpers;
 using Common.Workers;
 
 using Newtonsoft.Json;

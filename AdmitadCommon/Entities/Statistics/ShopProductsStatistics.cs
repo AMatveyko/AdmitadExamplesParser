@@ -1,5 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
+using Common.Entities;
+
 namespace AdmitadCommon.Entities.Statistics
 {
     public sealed class ShopProductsStatistics

@@ -4,10 +4,11 @@ using System;
 using System.Threading.Tasks;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Entities;
 using Common.Settings;
 
 using Microsoft.AspNetCore.Mvc;

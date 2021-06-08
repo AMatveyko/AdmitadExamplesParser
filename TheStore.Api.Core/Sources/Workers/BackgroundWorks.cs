@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Entities.Queue;
 using AdmitadCommon.Types;
+
+using Common.Api;
+using Common.Entities;
 
 using Microsoft.AspNetCore.Mvc;
 

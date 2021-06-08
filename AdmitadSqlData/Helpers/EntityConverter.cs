@@ -6,14 +6,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using AdmitadCommon;
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.ForElastic;
 using AdmitadCommon.Entities.Statistics;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Entities;
 
+using Common.Entities;
+using Common.Entities.ForElastic;
+using Common.Extensions;
+using Common.Helpers;
 using Common.Settings;
 
 namespace AdmitadSqlData.Helpers

@@ -1,10 +1,10 @@
 ﻿// a.snegovoy@gmail.com
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers

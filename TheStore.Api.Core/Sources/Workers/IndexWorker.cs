@@ -8,12 +8,11 @@ using System.Threading;
 
 using Admitad.Converters;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Entities;
+using Common.Helpers;
 using Common.Settings;
 
 using Newtonsoft.Json;
@@ -234,7 +233,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 return file;
             }
 
-            return new DownloadInfo( xmlInfo.ShopId, xmlInfo.NameLatin, xmlInfo.Weight ) {
+            return new DownloadInfo( xmlInfo ) {
                 ShopName = xmlInfo.NameLatin,
                 FilePath = filePath
             };

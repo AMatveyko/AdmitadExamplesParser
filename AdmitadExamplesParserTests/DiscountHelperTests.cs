@@ -1,7 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
-using AdmitadCommon.Helpers;
-
+using Common.Helpers;
 
 using NUnit.Framework;
 

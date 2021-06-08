@@ -3,9 +3,7 @@
 using System;
 using System.Net;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
-
+using Common.Helpers;
 using Common.Settings;
 
 using RestSharp;

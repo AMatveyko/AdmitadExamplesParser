@@ -7,12 +7,13 @@ using System.Threading;
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Entities.Responses;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
 
+using Common;
+using Common.Api;
 using Common.Entities;
+using Common.Extensions;
+using Common.Helpers;
 using Common.Settings;
 
 using Elasticsearch.Net;
@@ -545,29 +546,29 @@ namespace Admitad.Converters.Workers
 
         #region Upload products and LinkedData
         
-        public void BulkLinkedData( List<LinkedData> data )
-        {
-            var result = _client.Bulk( b => b.CreateMany( data, (
-                descriptor,
-                linkedData ) => descriptor.Routing( linkedData.RoutingId ) ) );
-            ResponseCollector.Responses.Add( ( _settings.ShopName, "ld", result ) );
-        }
+        // public void BulkLinkedData( List<LinkedData> data )
+        // {
+        //     var result = _client.Bulk( b => b.CreateMany( data, (
+        //         descriptor,
+        //         linkedData ) => descriptor.Routing( linkedData.RoutingId ) ) );
+        //     ResponseCollector.Responses.Add( ( _settings.ShopName, "ld", result ) );
+        // }
         
-        public void DoBulkAllInsert(
-            IEnumerable<T> entities )
-        {
-            var list = entities.ToList();
-            var position = 0;
-            var frameSize = 300000;
-            while( position < list.Count ) {
-                var portion = list.Skip( position ).Take( frameSize );
-                var result = _client.Bulk( b => b.IndexMany( portion, (
-                    descriptor,
-                    entity ) => descriptor.Routing( entity.RoutingId ) ) );
-                ResponseCollector.Responses.Add( ( _settings.ShopName, "p", result ) );
-                position += frameSize;
-            }
-        }
+        // public void DoBulkAllInsert(
+        //     IEnumerable<T> entities )
+        // {
+        //     var list = entities.ToList();
+        //     var position = 0;
+        //     var frameSize = 300000;
+        //     while( position < list.Count ) {
+        //         var portion = list.Skip( position ).Take( frameSize );
+        //         var result = _client.Bulk( b => b.IndexMany( portion, (
+        //             descriptor,
+        //             entity ) => descriptor.Routing( entity.RoutingId ) ) );
+        //         ResponseCollector.Responses.Add( ( _settings.ShopName, "p", result ) );
+        //         position += frameSize;
+        //     }
+        // }
         
         public void DoBulkAll(
             IEnumerable<T> entities )
@@ -581,7 +582,6 @@ namespace Admitad.Converters.Workers
                 var result = _client.Bulk( b => b.UpdateMany<T,IProductForIndex>( portion, (
                     descriptor,
                     entity ) => descriptor.Upsert( entity ).DocAsUpsert().Doc( (IProductForIndex)entity ).Routing( entity.RoutingId ) ) );
-                ResponseCollector.Responses.Add( ( _settings.ShopName, "products", result ) );
                 position += frameSize;
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {
@@ -605,7 +605,6 @@ namespace Admitad.Converters.Workers
                 var result = _client.Bulk( b => b.UpdateMany<T,T>( portion, (
                     descriptor,
                     entity ) => descriptor.Upsert( entity ).DocAsUpsert().Doc( (T)entity ).Routing( entity.RoutingId ) ) );
-                ResponseCollector.Responses.Add( ( _settings.ShopName, "products", result ) );
                 position += frameSize;
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {

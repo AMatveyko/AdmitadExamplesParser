@@ -2,8 +2,7 @@
 
 using System;
 
-using AdmitadCommon.Entities.Api;
-
+using Common.Api;
 
 using TheStore.Api.Core.Sources.Helpers;
 using TheStore.Api.Front.Data.Repositories;

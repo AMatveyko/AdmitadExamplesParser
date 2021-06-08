@@ -5,14 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Admitad.Converters;
-
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 using AdmitadSqlData.Repositories;
 
+using Common.Entities;
+using Common.Helpers;
 using Common.Workers;
 
 using NUnit.Framework;

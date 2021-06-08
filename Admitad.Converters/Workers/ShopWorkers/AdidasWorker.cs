@@ -7,6 +7,9 @@ using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
 
+using Common;
+using Common.Entities;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal sealed class AdidasWorker : BaseShopWorker, IShopWorker

@@ -3,9 +3,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadCommon.Extensions;
-
-using AdmitadSqlData.DbContexts;
 using AdmitadSqlData.Entities;
 
 namespace AdmitadSqlData.Repositories

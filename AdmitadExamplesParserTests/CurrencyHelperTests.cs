@@ -2,8 +2,8 @@
 
 using System;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
+using Common.Entities;
+using Common.Helpers;
 
 using NUnit.Framework;
 

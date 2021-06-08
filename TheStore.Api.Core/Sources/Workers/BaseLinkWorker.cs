@@ -4,10 +4,11 @@ using Admitad.Converters;
 using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Entities;
 using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers

@@ -2,10 +2,10 @@
 
 using System.Linq;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
-
 using AdmitadSqlData.Helpers;
+
+using Common.Entities;
+using Common.Extensions;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {

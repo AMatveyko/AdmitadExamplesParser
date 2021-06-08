@@ -8,6 +8,8 @@ using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Entities;
 
+using Common.Entities;
+
 namespace AdmitadSqlData.Repositories
 {
     internal sealed class TheStoreRepository : BaseRepository

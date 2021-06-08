@@ -8,12 +8,11 @@ using System.Text.RegularExpressions;
 using Admitad.Converters;
 using Admitad.Converters.Workers;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Entities;
+using Common.Helpers;
 using Common.Workers;
 
 using NUnit.Framework;
@@ -61,7 +60,7 @@ namespace AdmitadExamplesParserTests
             var dbSettings = SettingsBuilder.GetDbSettings();
             var dbHelper = new DbHelper( dbSettings );
             
-            var downloadInfo = new DownloadInfo( 0, shopName, 0 ) {
+            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", "n", "n", 0, 0, 1, null ) ) {
                 FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
                 ShopName = shopName
             };

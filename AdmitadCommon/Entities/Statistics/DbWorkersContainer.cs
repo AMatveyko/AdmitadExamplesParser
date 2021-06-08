@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 
+using Common.Entities;
+
 namespace AdmitadCommon.Entities.Statistics
 {
     public sealed class DbWorkersContainer

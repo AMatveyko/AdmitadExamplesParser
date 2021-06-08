@@ -2,10 +2,11 @@
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common;
+using Common.Api;
 using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers

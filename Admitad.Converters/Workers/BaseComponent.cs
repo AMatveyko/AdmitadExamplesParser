@@ -2,11 +2,9 @@
 
 using System;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
-
+using Common.Api;
 using Common.Entities;
+using Common.Helpers;
 
 namespace Admitad.Converters.Workers
 {

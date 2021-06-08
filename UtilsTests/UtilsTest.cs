@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
 
+using Common.Api;
+using Common.Helpers;
 using Common.Settings;
 
 using Messenger;

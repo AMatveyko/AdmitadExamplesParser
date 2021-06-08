@@ -7,6 +7,8 @@ using AdmitadCommon;
 using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Responses;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Workers
 {
     public interface IElasticClient<T>
@@ -31,7 +33,7 @@ namespace Admitad.Converters.Workers
             BaseProperty property );
         long CountProductsWithTag( string tagId );
         long CountProductsForTag( Tag tag );
-        void BulkLinkedData( List<LinkedData> data );
+        // void BulkLinkedData( List<LinkedData> data );
         UpdateResult DisableOldProducts( DateTime indexTime, string shopId );
         UpdateResult UnlinkProductsByProperty( BaseProperty property );
         public long GetCountAllDocuments();

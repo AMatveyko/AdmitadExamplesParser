@@ -4,10 +4,9 @@ using System.IO;
 
 using Admitad.Converters.Workers;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Extensions;
-
+using Common.Api;
+using Common.Entities;
+using Common.Extensions;
 using Common.Settings;
 
 using NUnit.Framework;

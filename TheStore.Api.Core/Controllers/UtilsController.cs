@@ -1,7 +1,9 @@
 ﻿// a.snegovoy@gmail.com
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
+
+using Common.Api;
+using Common.Entities;
 
 using Microsoft.AspNetCore.Mvc;
 

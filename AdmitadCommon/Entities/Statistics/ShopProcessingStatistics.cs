@@ -3,6 +3,8 @@
 using System;
 using System.Linq;
 
+using Common.Entities;
+
 using NLog;
 
 namespace AdmitadCommon.Entities.Statistics

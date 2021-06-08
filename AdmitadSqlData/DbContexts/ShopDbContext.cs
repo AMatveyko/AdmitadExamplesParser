@@ -6,6 +6,8 @@ using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Entities;
 
+using Common.Entities;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace AdmitadSqlData.DbContexts

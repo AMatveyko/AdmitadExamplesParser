@@ -7,13 +7,12 @@ using System.Linq;
 using Admitad.Converters;
 using Admitad.Converters.Workers;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Entities;
+using Common.Extensions;
+using Common.Helpers;
 using Common.Settings;
 using Common.Workers;
 

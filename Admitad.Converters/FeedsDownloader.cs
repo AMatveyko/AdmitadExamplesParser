@@ -8,15 +8,11 @@ using System.Net;
 
 using Admitad.Converters.Workers;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Entities;
-
-using Nest;
+using Common.Helpers;
 
 namespace Admitad.Converters
 {
@@ -37,9 +33,6 @@ namespace Admitad.Converters
             _db = dbHelper;
         }
 
-        public List<DownloadInfo> DownloadsAll( string filePath ) =>
-            MeasureWorkTime( () => DoDownloadAll( filePath ) );
-
         public void DownloadsAll( string filePath, List<XmlFileInfo> infos )
         {
             MeasureWorkTime( () => DoDownloadAll( filePath, infos ) );
@@ -47,16 +40,15 @@ namespace Admitad.Converters
 
         public DownloadInfo Download( string filePath, XmlFileInfo info )
         {
-            return DoDownload( new() {info}, filePath ).First();
+            return DoDownload( new List<XmlFileInfo> {info}, filePath ).First();
         }
 
-        private List<DownloadInfo> DoDownloadAll( string filePath, List<XmlFileInfo> infos = null )
+        private List<DownloadInfo> DoDownloadAll( string filePath, List<XmlFileInfo> infos )
         {
-            var files = infos ?? GetFilesInfo();
-            return DoDownload( files, filePath );
+            return DoDownload( infos, filePath );
         }
 
-        private List<DownloadInfo> DoDownload( List<XmlFileInfo> files, string filePath )
+        private List<DownloadInfo> DoDownload( IReadOnlyCollection<XmlFileInfo> files, string filePath )
         {
             _context.TotalActions = files.Count;
             var downloadInfos = files.AsParallel().Select( f => DownloadFile( f, filePath ) ).ToList();
@@ -105,7 +97,7 @@ namespace Admitad.Converters
             
             FileWork( directoryPath, fileInfo );
             
-            var downloadInfo = new DownloadInfo( fileInfo.ShopId, fileInfo.NameLatin, fileInfo.Weight ) {
+            var downloadInfo = new DownloadInfo( fileInfo ) {
                 StartTime = DateTime.Now,
                 ShopName = fileInfo.Name,
                 Url = fileInfo.XmlFeed,
@@ -139,10 +131,15 @@ namespace Admitad.Converters
         
         private DownloadInfo DoDownloadFile( DownloadInfo info ) {
             try {
+                var date = info.LastUpdate.ToString( "yyyy.MM.dd.HH.mm" );
+                var url = info.VersionProcessing == 2
+                    ? $"{info.Url}&last_import={date}"
+                    : info.Url;
+                    
                 Measure(
                     () => {
                         var webClient = new WebClient();
-                        webClient.DownloadFile( info.Url, info.FilePath );
+                        webClient.DownloadFile( url, info.FilePath );
                     },
                     out var workTime );
                 info.Error = DownloadError.Ok;

@@ -6,10 +6,10 @@ using System.Linq;
 using Admitad.Converters.Workers.ShopWorkers;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Entities;
 
 namespace Admitad.Converters.Workers

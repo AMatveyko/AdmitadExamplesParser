@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 
 using Admitad.Converters.Handlers;
 
-using AdmitadCommon;
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
+
+using Common;
+using Common.Entities;
+using Common.Extensions;
+using Common.Helpers;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
