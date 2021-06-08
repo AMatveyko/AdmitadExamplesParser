@@ -35,10 +35,4 @@
       </Content>
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="AdmitadCommon, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>..\AdmitadSqlDataTests\bin\Debug\net5.0\AdmitadCommon.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
 </Project>

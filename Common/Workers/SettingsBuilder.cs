@@ -28,10 +28,10 @@ namespace Common.Workers
             return JsonConvert.DeserializeObject<ApiClientSettings>( File.ReadAllText( settingsPath ) );
         }
 
-        public static DbSettings GetDbSettings()
+        public static DbSettings GetDbSettings( string path = null)
         {
             const string settingsPath = "dbSettings.json";
-            return JsonConvert.DeserializeObject<DbSettings>( File.ReadAllText( settingsPath ) );
+            return JsonConvert.DeserializeObject<DbSettings>( File.ReadAllText( path == null ? settingsPath : $"{path}/{settingsPath}" ) );
         }
         
         public MessengerSettings GetMessengerSettings()

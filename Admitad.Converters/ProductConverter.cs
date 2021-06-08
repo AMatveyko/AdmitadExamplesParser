@@ -86,7 +86,7 @@ namespace Admitad.Converters
             DateTime updateDate )
         {
             var offer = offers.First();
-            
+            var soldOut = offers.All( o => o.SoldOut );
             _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
             
             return new Product {
@@ -110,7 +110,7 @@ namespace Admitad.Converters
                 Photos = new List<string>(),
                 Params = new List<string>(),
                 Enable = 1,
-                Soldout = 0,
+                Soldout = (byte)( soldOut ? 1 : 0 ),
                 Delivery = 0,
                 BrandId = _dbHelper.GetBrandId( offer.VendorNameClearly ),
                 SalesNotes = offer.SalesNotes,

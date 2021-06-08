@@ -11,6 +11,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
         public BelleyouWorker( DbHelper dbHelper ) : base( dbHelper )
         {
             Handlers.Add( new AlwaysAdultWomen() );
+            Handlers.Add( new IdFromOfferIdAndShopId() );
         }
     }
 }

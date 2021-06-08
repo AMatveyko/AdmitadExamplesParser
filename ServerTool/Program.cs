@@ -28,6 +28,7 @@ namespace ServerTool
             string[] args )
         {
             if( args.Length == 0 ) {
+                ServiceCheck();
                 return;
             }
 
@@ -43,7 +44,7 @@ namespace ServerTool
 
         private static void ServiceCheck()
         {
-            var builder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
+            var builder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings( "/var/www/serverTool" ) ) );
             var settings = builder.GetMessengerSettings();
             var loggers = new Loggers( settings );
             var serviceWorker = new ServiceWorker( _services, loggers );
