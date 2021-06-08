@@ -22,5 +22,7 @@ namespace AdmitadSqlData.Entities
         public DateTime? UpdateDate { get; set; }
         [ Column( "weight" ) ]
         public int Weight { get; set; }
+        [ Column( "version_processing" ) ]
+        public byte VersionProcessing { get; set; }
     }
 }

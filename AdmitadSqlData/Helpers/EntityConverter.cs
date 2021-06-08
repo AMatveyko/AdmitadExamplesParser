@@ -47,7 +47,14 @@ namespace AdmitadSqlData.Helpers
 
         public static XmlFileInfo Convert(
             Shop shop ) =>
-            new XmlFileInfo( shop.Name, shop.NameLatin, shop.XmlFeed, shop.Id, shop.Weight );
+            new (
+                shop.Name,
+                shop.NameLatin,
+                shop.XmlFeed,
+                shop.Id,
+                shop.Weight,
+                shop.VersionProcessing,
+                shop.UpdateDate );
         
         public static ColorProperty Convert(
             ColorDb colorDb )

@@ -55,7 +55,7 @@ namespace AdmitadCommon.Entities.Statistics
 
         private void UpdateShopUpdateDate( DbWorkersContainer container )
         {
-            container.UpdateShopUpdateDate( _info.ShopId, DateTime.Now );
+            container.UpdateShopUpdateDate( _info.ShopId, _info.StartTime );
         }
         
         private void WriteShopProcessLog( DbWorkersContainer container )

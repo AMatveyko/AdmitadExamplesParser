@@ -186,6 +186,8 @@ namespace AdmitadSqlData.Helpers
             return EntityConverter.Convert( shop );
         }
 
+        public int GetNumberEnabledShops() => _shopRepository.GetEnableShops().Count;
+
         public int GetShopId(
             string shopNameLatin ) =>
             GetFromCache( ShopIdCache, shopNameLatin, _shopRepository.GetShopId );

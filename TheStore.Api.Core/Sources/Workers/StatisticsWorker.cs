@@ -30,7 +30,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var statistics = new TotalShopsStatistics {
                 ByShop = _dbHelper.GetShopStatisticsList(),
-                TotalEnabledShops = _dbHelper.GetEnableShops().Count
+                TotalEnabledShops = _dbHelper.GetNumberEnabledShops()
             };
             return new JsonResult( statistics );
         }

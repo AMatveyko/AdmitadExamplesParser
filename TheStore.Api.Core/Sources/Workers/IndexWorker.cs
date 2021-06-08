@@ -226,7 +226,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 context.Contexts.Add( downloadContext );
                 
                 var downloader = new FeedsDownloader( _settings.AttemptsToDownload, Db, downloadContext );
-                var file = downloader.Download( xmlInfo, _settings.DirectoryPath );
+                var file = downloader.Download( _settings.DirectoryPath, xmlInfo );
 
                 downloadContext.Content = "Все скачали";
                 downloadContext.Finish();

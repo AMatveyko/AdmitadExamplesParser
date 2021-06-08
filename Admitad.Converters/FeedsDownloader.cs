@@ -37,29 +37,22 @@ namespace Admitad.Converters
             _db = dbHelper;
         }
 
-        public List<DownloadInfo> DownloadsAll(
-            string filePath ) =>
+        public List<DownloadInfo> DownloadsAll( string filePath ) =>
             MeasureWorkTime( () => DoDownloadAll( filePath ) );
 
         public void DownloadsAll( string filePath, List<XmlFileInfo> infos )
         {
-            MeasureWorkTime( () => DoDownloadAll( filePath ) );
+            MeasureWorkTime( () => DoDownloadAll( filePath, infos ) );
         }
 
-        public DownloadInfo Download( XmlFileInfo info, string filePath )
+        public DownloadInfo Download( string filePath, XmlFileInfo info )
         {
             return DoDownload( new() {info}, filePath ).First();
         }
-        
-        private List<DownloadInfo> DoDownloadAll( string filePath, List<XmlFileInfo> infos )
+
+        private List<DownloadInfo> DoDownloadAll( string filePath, List<XmlFileInfo> infos = null )
         {
-            return DoDownload( infos, filePath );
-        }
-        
-        private List<DownloadInfo> DoDownloadAll(
-            string filePath )
-        {
-            var files = GetFilesInfo();
+            var files = infos ?? GetFilesInfo();
             return DoDownload( files, filePath );
         }
 
