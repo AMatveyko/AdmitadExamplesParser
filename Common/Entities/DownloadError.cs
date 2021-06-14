@@ -11,6 +11,7 @@ namespace Common.Entities
         ManyRequests,
         [ Description("Closed store")]
         ClosedStore,
+        Unfinished,
         UnknownError
     }
 }

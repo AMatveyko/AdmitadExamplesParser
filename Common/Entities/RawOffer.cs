@@ -39,6 +39,7 @@ namespace Common.Entities
         [ XmlElement( "gender" ) ] public string Gender { get; set; }
         [ XmlElement( "Color" ) ] public string Colors { get; set; }
         [ XmlElement( "Size" ) ] public string Size { get; set; }
+        [ XmlAttribute( "group_id" ) ] public string GroupId { get; set; }
         [ XmlIgnore ] public string CategoryPath { get; set; }
         [ XmlIgnore ] public string ShopName { get; set; }
         [ XmlIgnore ] public DateTime UpdateTime { get; set; }

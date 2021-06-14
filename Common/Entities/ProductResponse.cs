@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
-namespace AdmitadCommon.Entities.Responses
+namespace Common.Entities.Responses
 {
     public sealed class ProductResponse
     {
@@ -77,5 +77,7 @@ namespace AdmitadCommon.Entities.Responses
         public string Currency { get; set; }
         [ JsonProperty( "salesNotes" ) ]
         public string SalesNotes { get; set; }
+        [ JsonProperty( "offerIds" ) ]
+        public List<string> OfferIds { get; set; }
     }
 }

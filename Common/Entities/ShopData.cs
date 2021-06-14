@@ -6,15 +6,17 @@ using Common.Helpers;
 
 namespace Common.Entities
 {
-    public sealed class ShopData
+    public sealed class ShopData : IShopDataWithNewOffers, IShopDataWithDeletedOffers
     {
 
-        public ShopData(
-            int weight ) =>
+        public ShopData( int weight ) =>
             Weight = weight;
         
         public string Name { get; set; }
-        public List<RawOffer> Offers { get; set; } = new List<RawOffer>();
+        public List<RawOffer> NewOffers { get; } = new List<RawOffer>();
+        public List<RawOffer> DeletedOffers { get; } = new List<RawOffer>();
+        //public List<RawOffer> AllOffers => NewOffers.Concat( DeletedOffers ).ToList();
+         
         public Dictionary<string, ShopCategory> Categories { get; } = new Dictionary<string, ShopCategory>();
         public bool CategoryLoop { get; private set; }
         public int Weight { get; }

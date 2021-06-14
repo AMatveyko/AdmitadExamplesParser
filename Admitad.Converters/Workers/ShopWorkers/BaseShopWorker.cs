@@ -1,10 +1,12 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using Admitad.Converters.Handlers;
+using Admitad.Converters.Helpers;
 
 using AdmitadSqlData.Helpers;
 
@@ -25,12 +27,12 @@ namespace Admitad.Converters.Workers.ShopWorkers
         protected readonly string[] GenderParamName = { "пол", "gender" };
         protected readonly List<IOfferHandler> Handlers = new ();
         protected readonly DbHelper DbHelper;
+        protected readonly Func<RawOffer, int, string> IdGetter;
 
         private static readonly Regex PricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
-        protected BaseShopWorker(
-            DbHelper dbHelper ) =>
-            DbHelper = dbHelper; 
+        protected BaseShopWorker( DbHelper dbHelper, Func<RawOffer, int, string> idGetter = null ) =>
+            ( DbHelper, IdGetter ) = ( dbHelper, idGetter ?? ProductIdGetter.FirstImageUrl );
         
         public Offer Convert( RawOffer rawOfer )
         {
@@ -85,13 +87,17 @@ namespace Admitad.Converters.Workers.ShopWorkers
         }
         
         
+        
         private void FillBaseOffer( IBaseOffer offer, RawOffer rawOffer )
         {
+
+            var shopId = DbHelper.GetShopId( rawOffer.ShopNameLatin );
             var price = GetPrice( rawOffer.Price );
             var oldPrice = GetPrice( rawOffer.OldPriceClean );
+            
             offer.Id = HashHelper.GetMd5Hash( rawOffer.ShopName, rawOffer.OfferId );
             offer.OriginalId = rawOffer.OfferId;
-            offer.ProductId = HashHelper.GetMd5Hash( rawOffer.Pictures.FirstOrDefault() ?? rawOffer.Url );
+            offer.ProductId = IdGetter( rawOffer, shopId );
             offer.Url = rawOffer.Url;
             offer.Currency = CurrencyHelper.GetCurrency( rawOffer.CurrencyId );
             offer.Description = rawOffer.Description;
@@ -105,7 +111,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             offer.Name = rawOffer.Name;
             offer.Photos = rawOffer.Pictures;
             offer.Price = price;
-            offer.ShopId = DbHelper.GetShopId( rawOffer.ShopNameLatin );
+            offer.ShopId = shopId;
             offer.UpdateDate = rawOffer.UpdateTime;
             offer.Delivery = rawOffer.IsDelivered ?? false;
             offer.SalesNotes = rawOffer.SalesNotes;

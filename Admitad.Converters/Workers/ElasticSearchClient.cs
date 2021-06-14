@@ -3,15 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
-using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Responses;
 
 using Common;
 using Common.Api;
 using Common.Entities;
+using Common.Entities.Responses;
 using Common.Extensions;
 using Common.Helpers;
 using Common.Settings;
@@ -24,7 +22,7 @@ using NLog;
 
 namespace Admitad.Converters.Workers
 {
-    public sealed class ElasticSearchClient< T > : BaseComponent, IElasticClient<T>
+    public sealed class ElasticSearchClient< T > : BaseComponent, IElasticClient<T>, IClientForShopStatistics
         where T : class, IIndexedEntities
     {
 
@@ -529,11 +527,11 @@ namespace Admitad.Converters.Workers
 
         #region Routin
         
-        private static IEnumerable<Func<QueryContainerDescriptor<Product>, QueryContainer>> GetTerms( string[] fields, string[] terms ) {
-            foreach( var field in fields ) {
-                yield return m => m.Terms( t => t.Field( field ).Terms( terms ) );
-            }
-        }
+        // private static IEnumerable<Func<QueryContainerDescriptor<Product>, QueryContainer>> GetTerms( string[] fields, string[] terms ) {
+        //     foreach( var field in fields ) {
+        //         yield return m => m.Terms( t => t.Field( field ).Terms( terms ) );
+        //     }
+        // }
         
         private static FieldsDescriptor<Product> GetFields( FieldsDescriptor<Product> descriptor, string[] fields )
         {
@@ -616,40 +614,40 @@ namespace Admitad.Converters.Workers
             _context.AddMessage( $"Update { count } products" );
         }
         
-        public void DoBulkAllOld(
-            IEnumerable<T> entities )
-        {
-            
-            var entitiesList = entities.ToList();
-            var count = entitiesList.Count;
-            var countUniq = entities.Select( e => e.Id ).Distinct();
-            
-            AddStatisticLine( $"Count: {count}" );
-            AddStatisticLine( $"Uniq: {countUniq}" );
-            
-            var bulkAllObservable = _client.BulkAll(
-                entities, b =>
-                    b.Index( _settings.DefaultIndex )
-                        .BackOffTime( "3s" )
-                        .BackOffRetries( 10 )
-                        .RefreshOnCompleted()
-                        .MaxDegreeOfParallelism( 6 )
-                        .Size( 20000 )
-                        .ContinueAfterDroppedDocuments()
-                        .DroppedDocumentCallback( DroppedDocumentCallback ) );
-            var handler = new Handler();
-            var bulkAllObserver = new BulkAllObserver(
-                onNext: response => Console.Write( $"{response.Page} " ),
-                onError: response => Console.Write( "E " ),
-                onCompleted: () => {
-                    LogWriter.Log( "Complete!" );
-                    handler.Complete();
-                } );
-            bulkAllObservable.Subscribe( bulkAllObserver );
-            while( handler.IsWait() ) {
-                Thread.Sleep( 5000 );
-            }
-        }
+        // public void DoBulkAllOld(
+        //     IEnumerable<T> entities )
+        // {
+        //     
+        //     var entitiesList = entities.ToList();
+        //     var count = entitiesList.Count;
+        //     var countUniq = entities.Select( e => e.Id ).Distinct();
+        //     
+        //     AddStatisticLine( $"Count: {count}" );
+        //     AddStatisticLine( $"Uniq: {countUniq}" );
+        //     
+        //     var bulkAllObservable = _client.BulkAll(
+        //         entities, b =>
+        //             b.Index( _settings.DefaultIndex )
+        //                 .BackOffTime( "3s" )
+        //                 .BackOffRetries( 10 )
+        //                 .RefreshOnCompleted()
+        //                 .MaxDegreeOfParallelism( 6 )
+        //                 .Size( 20000 )
+        //                 .ContinueAfterDroppedDocuments()
+        //                 .DroppedDocumentCallback( DroppedDocumentCallback ) );
+        //     var handler = new Handler();
+        //     var bulkAllObserver = new BulkAllObserver(
+        //         onNext: response => Console.Write( $"{response.Page} " ),
+        //         onError: response => Console.Write( "E " ),
+        //         onCompleted: () => {
+        //             LogWriter.Log( "Complete!" );
+        //             handler.Complete();
+        //         } );
+        //     bulkAllObservable.Subscribe( bulkAllObserver );
+        //     while( handler.IsWait() ) {
+        //         Thread.Sleep( 5000 );
+        //     }
+        // }
 
         private void DroppedDocumentCallback(
             BulkResponseItemBase response,

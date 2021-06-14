@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadCommon;
 using AdmitadCommon.Entities.Statistics;
 
 using AdmitadSqlData.Entities;
@@ -16,7 +15,7 @@ using Common.Entities;
 using Common.Extensions;
 using Common.Settings;
 
-using Country = AdmitadCommon.Country;
+using Country = Common.Country;
 
 namespace AdmitadSqlData.Helpers
 {

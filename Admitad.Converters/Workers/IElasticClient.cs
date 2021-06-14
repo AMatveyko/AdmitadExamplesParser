@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 
-using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Responses;
 
+using Common;
 using Common.Entities;
+using Common.Entities.Responses;
 
 namespace Admitad.Converters.Workers
 {

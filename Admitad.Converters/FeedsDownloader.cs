@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 
+using Admitad.Converters.Helpers;
 using Admitad.Converters.Workers;
 
 using AdmitadSqlData.Helpers;
@@ -142,6 +143,13 @@ namespace Admitad.Converters
                         webClient.DownloadFile( url, info.FilePath );
                     },
                     out var workTime );
+
+                if( FileChecker.WithAnEnd( info.FilePath ) == false ) {
+                    info.Error = DownloadError.Unfinished;
+                    LogWriter.Log( $"{info.ShopName} ошибка { info.Error }", true );
+                    return info;
+                }
+                
                 info.Error = DownloadError.Ok;
                 info.FileSize = new FileInfo( info.FilePath ).Length;
                 info.DownloadTime = workTime;

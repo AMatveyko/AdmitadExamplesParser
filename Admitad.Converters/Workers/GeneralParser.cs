@@ -42,7 +42,7 @@ namespace Admitad.Converters.Workers
             RegexOptions.Compiled );
 
         private static readonly Regex StartOffer = new( @"<offer[^s]", RegexOptions.Compiled );
-        private static readonly Regex EndOffer = new( @"<\/offer>", RegexOptions.Compiled );
+        private static readonly Regex EndOffer = new( @"<\/offer>|deleted=""true"" id="".*""\/>", RegexOptions.Compiled );
 
         private static readonly Regex StartCategory = new( @"<categories>", RegexOptions.Compiled );
         private static readonly Regex EndCategory = new( @"<\/categories>", RegexOptions.Compiled );
@@ -97,7 +97,7 @@ namespace Admitad.Converters.Workers
             ParseCategories();
             Measure( () => ParseOffer( formattedLines ), out var serializeTime );
             AddStatistics( formattedLines.Count, getLinesTime, serializeTime );
-            _context.AddMessage( $"Offers count {_shopData.Offers.Count}" );
+            _context.AddMessage( $"Offers count {_shopData.NewOffers.Count}" );
             
         }
 
@@ -122,7 +122,7 @@ namespace Admitad.Converters.Workers
             AddStatisticLine( $"File size: { new FileInfo( _filePath ).Length.ToString() }" );
             AddStatisticLine( $"Find offer entries count: { _offersTagCount }" );
             AddStatisticLine( $"Formatted lines count: { formattedLinesCount }", getLinesTime );
-            AddStatisticLine( $"Find products count: { _shopData.Offers.Count }", serializeTime);
+            AddStatisticLine( $"Find products count: { _shopData.NewOffers.Count }", serializeTime);
             // if( _enableExtendedStatistic ) {
             //     Measure(
             //         () =>
@@ -275,8 +275,12 @@ namespace Admitad.Converters.Workers
             if( offerRaw == null ) {
                 return;
             }
+
+            var collector = offerRaw.IsDeleted
+                ? _shopData.DeletedOffers
+                : _shopData.NewOffers;
             
-            _shopData.Offers.Add( offerRaw );
+            collector.Add( offerRaw );
         }
 
         private RawOffer GetOfferRaw(

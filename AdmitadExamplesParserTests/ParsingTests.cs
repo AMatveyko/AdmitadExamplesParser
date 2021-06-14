@@ -25,22 +25,24 @@ namespace AdmitadExamplesParserTests
         private static readonly Regex BadParams = new ( @"[^0-9\w]", RegexOptions.Compiled );
         private static readonly Regex DefineCountry12Storeez = new ( @"Сделано в (?<country>[a-zA-Zа-яА-Я0-9_]+)\.", RegexOptions.Compiled );
 
-        [ TestCase( "lamoda" ) ]
-        [ TestCase( "adidas" ) ]
-        [ TestCase( "asos" ) ]
-        [ TestCase( "yoox" ) ]
-        [ TestCase( "12storeez" ) ]
-        [ TestCase( "akusherstvo" ) ]
-        [ TestCase( "amersport" ) ]
-        [ TestCase( "anabel" ) ]
-        [ TestCase( "brandshop" ) ]
-        [ TestCase( "vipavenue" ) ]
-        [ TestCase( "gloriajeans" ) ]
-        [ TestCase( "tamaris" ) ]
-        [ TestCase( "laredoute" ) ]
-        [ TestCase( "gullivermarket" ) ]
-        [ TestCase( "svmoscow" ) ]
-        [ TestCase( "intimshop" ) ]
+        // [ TestCase( "lamoda" ) ]
+        // [ TestCase( "adidas" ) ]
+        // [ TestCase( "asos" ) ]
+        // [ TestCase( "yoox" ) ]
+        // [ TestCase( "12storeez" ) ]
+        // [ TestCase( "akusherstvo" ) ]
+        // [ TestCase( "amersport" ) ]
+        // [ TestCase( "anabel" ) ]
+        // [ TestCase( "brandshop" ) ]
+        // [ TestCase( "vipavenue" ) ]
+        // [ TestCase( "gloriajeans" ) ]
+        // [ TestCase( "tamaris" ) ]
+        // [ TestCase( "laredoute" ) ]
+        // [ TestCase( "gullivermarket" ) ]
+        // [ TestCase( "svmoscow" ) ]
+        // [ TestCase( "intimshop" ) ]
+        [ TestCase( "yoins" ) ]
+        [ TestCase( "goldenline" ) ]
         public void ParsingTest( string shopName )
         {
             DoParsing( shopName );
@@ -60,14 +62,14 @@ namespace AdmitadExamplesParserTests
             var dbSettings = SettingsBuilder.GetDbSettings();
             var dbHelper = new DbHelper( dbSettings );
             
-            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", "n", "n", 0, 0, 1, null ) ) {
+            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
                 FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
                 ShopName = shopName
             };
             
             var shopData = ParseFile( downloadInfo, false );
-            var sortedRawOffers = shopData.Offers.OrderBy( o => o.OldPrice ).ToList();
-            var unique = GetUnique( shopData.Offers, shopName );
+            var sortedRawOffers = shopData.NewOffers.OrderBy( o => o.OldPrice ).ToList();
+            var unique = GetUnique( shopData.NewOffers, shopName );
             var offers = ConvertOffers( shopData );
             var years = offers.SelectMany( o => o.Params ).Where( p => p.Unit.ToLower() == "Years" )
                 .SelectMany( p => p.Values ).ToList();
@@ -82,7 +84,7 @@ namespace AdmitadExamplesParserTests
             var allOffers = offers.Count;
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
-            var products = new ProductConverter( dbHelper, new RatingCalculation( 0 ) ).GetProductsContainer( offers );
+            var products = new ProductConverter( dbHelper, new RatingCalculation( 0 ) ).GetProducts( offers );
             var clothesCount = products.Count( p => p.CategoryName.ToLower().Contains( "рюкзаки" ) );
             var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
@@ -90,7 +92,7 @@ namespace AdmitadExamplesParserTests
 
         //Сделано в (?<country>.+)\.
         
-        private class ShopUnique
+        private sealed class ShopUnique
         {
             public string GendersFromParam { get; set; }
             public string AgeFromParam { get; set; }
@@ -156,14 +158,14 @@ namespace AdmitadExamplesParserTests
         }
         
         private static List<Offer> ConvertOffers(
-            ShopData shopData ) {
+            IShopDataWithNewOffers shopData ) {
             var dbSettings = SettingsBuilder.GetDbSettings();
             var dbHelper = new DbHelper( dbSettings );
             var converter = new OfferConverter( shopData,  dbHelper, new BackgroundBaseContext("1", "name" ) );
             return converter.GetCleanOffers();
         }
         
-        private static ShopData ParseFile( DownloadInfo fileInfo, bool enableExtendedStat ) {
+        private static IShopDataWithNewOffers ParseFile( DownloadInfo fileInfo, bool enableExtendedStat ) {
             var parser = new GeneralParser(
                 //fileInfo.FilePath,
                 //fileInfo.ShopName,

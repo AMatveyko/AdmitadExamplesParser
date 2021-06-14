@@ -7,9 +7,10 @@ using AdmitadSqlData.Helpers;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    internal sealed class BelleyouWorker : BaseShopWorker, IShopWorker
+    internal sealed class YoinsWorker : BaseShopWorker, IShopWorker
     {
-        public BelleyouWorker( DbHelper dbHelper )
+        public YoinsWorker(
+            DbHelper dbHelper )
             : base( dbHelper, ProductIdGetter.OfferIdAndShopId )
         {
             Handlers.Add( new AlwaysAdultWomen() );

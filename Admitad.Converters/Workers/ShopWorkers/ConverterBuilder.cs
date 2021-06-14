@@ -30,6 +30,8 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 "intimshop" => new IntimShopWorker( dbHelper ),
                 "svmoscow" => new SvMoscowWorker( dbHelper ),
                 "smartcasual" => new SmartcasualWorker( dbHelper ),
+                "goldenline" => new GoldenLineWorker( dbHelper ),
+                "yoins" => new YoinsWorker( dbHelper ),
                 _ => new DefaultShopWorker( dbHelper )
             };
         }

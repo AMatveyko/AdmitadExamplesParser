@@ -73,7 +73,7 @@ namespace TheStore.Api.Core.Sources.Workers
                 return;
             }
             
-            DoIndexShop( xmlInfo.ShopId, file, true, context.NeedSoldOut );
+            DoIndexShop( xmlInfo.ShopId, file, "single", context.NeedSoldOut );
             context.SetProgress( 60, 100 );
             if( context.NeedLink ) {
                 DoLink();
@@ -126,7 +126,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private void HandleDownloadEvent( object sender, DownloadEventArgs e )
         {
-            DoIndexShop( e.Info.ShopId, e.Info, false, true );
+            DoIndexShop( e.Info.ShopId, e.Info, "all", true );
         }
 
         private void Wait()
@@ -136,10 +136,10 @@ namespace TheStore.Api.Core.Sources.Workers
             }
         }
         
-        private void DoIndexShop( int shopId, DownloadInfo fileInfo, bool single, bool needSoldOut )
+        private void DoIndexShop( int shopId, DownloadInfo fileInfo, string type, bool needSoldOut )
         {
             var processShopContext = new ProcessShopContext(
-                $"{shopId}:{(single ? "single" : "all")}",
+                $"{shopId}:{type}",
                 shopId,
                 fileInfo,
                 needSoldOut );
@@ -149,9 +149,14 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private void UpdateShop( ProcessShopContext context )
         {
-            var shopHandler = new ShopHandler( context, _settings, Db );
+            var shopHandler = GetShopHandler( context );
             shopHandler.Process();
         }
+
+        private ShopHandlerBase GetShopHandler( ProcessShopContext context ) =>
+            context.VersionProcessing == 2 && context.DownloadInfo.LastUpdate > default( DateTime )
+                ? new ShopChangesHandler( context, _settings.ElasticSearchClientSettings, Db )
+                : new ShopHandler( context, _settings, Db ); 
         
         private void DoLink()
         {

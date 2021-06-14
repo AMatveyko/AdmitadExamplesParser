@@ -13,7 +13,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
+      <ProjectReference Include="..\Common.Elastic\Common.Elastic.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\TheStore.Api.Core\TheStore.Api.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>

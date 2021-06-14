@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<dataSource name="RuWeb  theStore@185.221.152.127">
+<dataSource name="RuWeb  theStore">
   <database-model serializer="dbm" dbms="MARIADB" family-id="MARIADB" format-version="4.21">
     <root id="1">
       <ServerVersion>10.2.38</ServerVersion>

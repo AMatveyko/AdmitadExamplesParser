@@ -10,6 +10,7 @@ using AdmitadCommon.Entities.Statistics;
 
 using AdmitadSqlData.Entities;
 
+using Common;
 using Common.Entities;
 using Common.Entities.ForElastic;
 using Common.Extensions;

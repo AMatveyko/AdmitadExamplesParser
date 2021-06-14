@@ -16,7 +16,10 @@ namespace AdmitadCommon.Entities.Statistics
         private readonly Logger _logger;
         private readonly DownloadInfo _info;
 
-        public ShopProcessingStatistics( DownloadInfo info, Action<string, bool> messageAdder, Logger logger )
+        public ShopProcessingStatistics(
+            DownloadInfo info,
+            Action<string, bool> messageAdder,
+            Logger logger )
         {
             ( _addMessage, _info, _logger ) = ( messageAdder, info, logger );
             _product = new ShopProduct {
@@ -28,7 +31,7 @@ namespace AdmitadCommon.Entities.Statistics
         public DateTime StartDownloadFeed => _info.StartTime;
         public int ShopId => _info.ShopId;
         public long FileSize => _info.FileSize;
-        public int OfferCount => _shopData?.Offers?.Count ?? 0;
+        public int OfferCount => _shopData?.NewOffers?.Count ?? 0;
         public int SoldOutOfferCount => _product?.SoldoutCount ?? 0;
         public int CategoryCount => _shopData?.Categories?.Count ?? 0;
         public long DownloadTime => _info.DownloadTime;

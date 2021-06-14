@@ -14,6 +14,7 @@ namespace Common.Api
         }
         public int ShopId { get; }
         public bool NeedSoldOut { get; }
-        public DownloadInfo DownloadInfo { get; }  
+        public DownloadInfo DownloadInfo { get; }
+        public int VersionProcessing => DownloadInfo.VersionProcessing;
     }
 }

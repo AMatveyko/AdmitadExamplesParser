@@ -1,9 +1,8 @@
 ﻿// a.snegovoy@gmail.com
 
-using System.Collections.Generic;
 using System.Linq;
 
-namespace AdmitadCommon
+namespace Common
 {
     public sealed class Country
     {
