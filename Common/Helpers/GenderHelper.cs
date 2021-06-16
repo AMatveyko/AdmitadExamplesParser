@@ -79,5 +79,14 @@ namespace Common.Helpers
 
             return Gender.Undefined;
         }
+
+        public static Gender GetByName(
+            string name ) =>
+            name switch {
+                "Man" => Gender.Man,
+                "Woman" => Gender.Woman,
+                "Unisex" => Gender.Unisex,
+                _ => Gender.Undefined
+            };
     }
 }

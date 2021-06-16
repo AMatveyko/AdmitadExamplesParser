@@ -6,10 +6,10 @@ namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal static class ConverterBuilder
     {
-        //private const string Lamoda = "lamoda.ru";
-        
+
         public static IShopWorker GetConverterByShop( string shopName, DbHelper dbHelper )
         {
+
             return shopName switch {
                 "yoox" => new YooxWorker( dbHelper ),
                 "lamoda" => new LamodaWorker( dbHelper ),
@@ -32,6 +32,13 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 "smartcasual" => new SmartcasualWorker( dbHelper ),
                 "goldenline" => new GoldenLineWorker( dbHelper ),
                 "yoins" => new YoinsWorker( dbHelper ),
+                "vipavenue" => new VipAvenueWorker( dbHelper ),
+                "gerryweber" => new GerryWeberWorker( dbHelper ),
+                "gate31" => new Gate31Worker( dbHelper ),
+                "freeage" => new FreeageWorker( dbHelper ),
+                "vassaco" => new VassaCoWorker( dbHelper ),
+                "camper" => new CamperWorker( dbHelper ),
+                "inavokich" => new InavokichWorker( dbHelper ),
                 _ => new DefaultShopWorker( dbHelper )
             };
         }

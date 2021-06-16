@@ -31,6 +31,15 @@ namespace Common.Helpers
                 _ => "l"
             };
 
+        public static Age GetByName(
+            string name ) =>
+            name switch {
+                "Adult" => Age.Adult,
+                "Child" => Age.Child,
+                "Baby" => Age.Baby,
+                _ => Age.Undefined
+            };
+        
         public static Age GetAge( string line ) {
             if( line.IsNullOrWhiteSpace() ) {
                 return Age.Undefined;

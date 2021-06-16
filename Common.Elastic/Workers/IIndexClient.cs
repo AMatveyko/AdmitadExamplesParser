@@ -19,5 +19,7 @@ namespace Common.Elastic.Workers
             where T : ProductPart;
 
         List<ProductPart> GetProductsByIds( string[] ids );
+
+        ProductPart GetFirstEnableProductByShopIdAndCategoryId( string shopId, string categoryId );
     }
 }

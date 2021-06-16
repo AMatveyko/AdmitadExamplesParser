@@ -100,9 +100,9 @@ namespace TheStore.Api.Front.Workers
                     }
                     Statistics.Info( $"{proxy?.Url ?? "self"} {url} Error" );
                     Logger.Error( e, $"{url} {attempt} attempt" );
-                    if( e is UnknownImageFormatException ) {
-                        File.WriteAllBytes( $"logs/data/{url.Split('/').ToList().LastOrDefault() ?? "null"}", result );
-                    }
+                    // if( e is UnknownImageFormatException ) {
+                    //     File.WriteAllBytes( $"logs/data/{url.Split('/').ToList().LastOrDefault() ?? "null"}", result );
+                    // }
                 }
             }
             

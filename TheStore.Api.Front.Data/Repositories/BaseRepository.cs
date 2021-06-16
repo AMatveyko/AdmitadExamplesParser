@@ -6,11 +6,11 @@ namespace TheStore.Api.Front.Data.Repositories
 {
     public abstract class BaseRepository
     {
-        internal readonly TheStoreDbContext DB;
+        internal readonly TheStoreDbContext Db;
         
         protected BaseRepository( string connectionString, string version )
         {
-            DB = new TheStoreDbContext( connectionString, version );
+            Db = new TheStoreDbContext( connectionString, version );
         }
         
     }

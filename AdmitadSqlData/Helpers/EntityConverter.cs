@@ -24,6 +24,10 @@ namespace AdmitadSqlData.Helpers
         private static readonly Regex _categoryName = new(@"([^a-zA-zа-яА-Я\d\s])", RegexOptions.Compiled);
         
         #region Convert
+
+        public static AgeGenderForCategoryContainer Convert( ShopCategoryDb categoryDb ) =>
+            new ( categoryDb.CategoryId, categoryDb.AgeId ?? -1, categoryDb.SexId ?? -1 );
+        
         public static ShopCategoryDb Convert(
             int shopId,
             ShopCategory category )

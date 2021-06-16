@@ -3,6 +3,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 using Web.Common.Entities;
@@ -12,6 +13,13 @@ namespace Web.Common.Workers
 {
     public static class WebRequester
     {
+        public static async Task<string> RequestString(
+            string url,
+            ProxyInfo proxyInfo )
+        {
+            var result = await Request( url, proxyInfo );
+            return Encoding.Default.GetString( result );
+        }
         public static async Task<byte[]> Request(
             string url,
             ProxyInfo proxyInfo )

@@ -18,7 +18,6 @@ namespace Common.Entities
         [ JsonProperty( "sizes" ) ] public string[] Sizes { get; set; }
         [ JsonProperty( "enable" ) ] public byte Enable { get; set; }
         [ JsonProperty( "click" ) ] public long Click { get; set; }
-        [ JsonProperty( "url" ) ] public string Url { get; set; }
         [ JsonProperty( "delivery" ) ] public byte Delivery { get; set; }
         [ JsonProperty( "dateUpdate" ) ] public DateTime UpdateDate { get; set; }
         [ JsonProperty( "name" ) ] public string Name { get; set; }

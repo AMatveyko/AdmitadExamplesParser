@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\AdmitadCommon\AdmitadCommon.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
     </ItemGroup>
     
 </Project>

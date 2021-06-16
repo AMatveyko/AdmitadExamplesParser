@@ -10,6 +10,8 @@ using Common.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
+using TheStore.Api.Front.Data.Entities;
+
 namespace AdmitadSqlData.DbContexts
 {
     internal class ShopDbContext : DbContext
@@ -39,6 +41,8 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<UnknownCountry> UnknownCountries { get; set; }
         public DbSet<ShopCategoryDb> ShopCategories { get; set; }
         public DbSet<ParseLog> ParseLogs { get; set; }
+        public DbSet<AgeDb> Ages { get; set; }
+        public DbSet<SexDb> Sex { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

@@ -11,12 +11,15 @@ using Common.Entities;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
-    internal sealed class YooxWorker : BaseShopWorker, IShopWorker {
+    internal sealed class YooxWorker : BaseShopWorker, IShopWorker
+    {
+
+        public static string Name => "234345";
         
         public YooxWorker(
             DbHelper dbHelper )
             : base( dbHelper ) { }
-        
+
         protected override Offer GetTunedOffer(
             Offer offer,
             RawOffer rawOffer )

@@ -38,6 +38,9 @@ namespace AdmitadSqlData.Helpers
         private static bool _unknownBrandsNeedClean = true;
 
 
+        private static readonly Dictionary<int, string> AgeCache = new Dictionary<int, string>();
+        private static readonly Dictionary<int, string> GenderCache = new Dictionary<int, string>();
+        
         public DbHelper( DbSettings settings )
         {
             var connectionString = settings.GetConnectionString();
@@ -49,6 +52,15 @@ namespace AdmitadSqlData.Helpers
                 new TheStoreRepository( connectionString, settings.Version ) );
         }
 
+        public List<AgeGenderForCategoryContainer> GetAgeGenderFromCategories( int shopId ) =>
+            _theStoreRepository.GetShopCategories( shopId ).Select( EntityConverter.Convert ).ToList();
+
+        public string GetAgeName( int id ) =>
+            GetFromCache( id, AgeCache, _theStoreRepository.GetAgeName );
+
+        public string GetSexName( int id ) =>
+            GetFromCache( id, GenderCache, _theStoreRepository.GetSexName );
+        
         public void WriteShopStatistics( ShopProcessingStatistics statistics )
         {
             var container = new DbWorkersContainer(
@@ -344,6 +356,15 @@ namespace AdmitadSqlData.Helpers
             }
 
             return cache[ key ];
+        }
+        
+        private static string GetFromCache( int key, IDictionary<int, string> dictionary, Func<int, string> valueGetter )
+        {
+            if( dictionary.ContainsKey( key ) == false ) {
+                dictionary[ key ] = valueGetter( key );
+            }
+
+            return dictionary[ key ];
         }
 
         #endregion

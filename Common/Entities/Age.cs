@@ -6,6 +6,7 @@ namespace Common.Entities
         Undefined,
         Adult,
         Child,
-        All
+        All,
+        Baby
     }
 }

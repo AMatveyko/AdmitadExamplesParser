@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
+      <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\dbSettings.json">
+        <Link>dbSettings.json</Link>
+      </Content>
+    </ItemGroup>
+
+</Project>

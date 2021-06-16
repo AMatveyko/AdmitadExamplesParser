@@ -13,9 +13,7 @@ namespace TheStore.Api.Front.Data.DbContexts
         private readonly string _connectionString;
         private readonly string _version;
 
-        public TheStoreDbContext(
-            string connectionString,
-            string version )
+        public TheStoreDbContext( string connectionString, string version )
         {
             _connectionString = connectionString;
             _version = version;
@@ -24,6 +22,10 @@ namespace TheStore.Api.Front.Data.DbContexts
         public DbSet<CompareListingDb> CompareListings { get; set; }
         public DbSet<ProxyDb> Proxies { get; set; }
         public DbSet<CoreSettingDb> CoreSettings { get; set; }
+        public DbSet<CategoryShopDb> ShopCategories { get; set; }
+        public DbSet<SexDb> Sex { get; set; }
+        public DbSet<AgeDb> Ages { get; set; }
+        public DbSet<ShopDb> Shops { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {
