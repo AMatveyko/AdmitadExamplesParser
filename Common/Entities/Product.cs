@@ -25,7 +25,6 @@ namespace Common.Entities
         [ JsonProperty( "typePrefix" ) ] public string TypePrefix { get; set; }
         [ JsonProperty( "categoryName" ) ] public string CategoryName { get; set; }
         [ JsonProperty( "description" ) ] public string Description { get; set; }
-        [ JsonProperty( "photos" ) ] public List<string> Photos { get; set; }
         [ JsonProperty( "param" ) ] public string Param { get; set; }
         [ JsonIgnore ] public List<string> Params { get; set; }
         [ JsonProperty( "gender" ) ] public string Gender { get; set; }

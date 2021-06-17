@@ -1,6 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 using Common.Entities;
 
@@ -21,5 +22,7 @@ namespace Common.Elastic.Workers
         List<ProductPart> GetProductsByIds( string[] ids );
 
         ProductPart GetFirstEnableProductByShopIdAndCategoryId( string shopId, string categoryId );
+
+        Task<IProductPhotos> GetProductsPhotoAsync( string id, string index = null );
     }
 }

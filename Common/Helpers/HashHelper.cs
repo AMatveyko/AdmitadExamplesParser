@@ -1,6 +1,5 @@
 ﻿// a.snegovoy@gmail.com
 
-using System;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -8,8 +7,6 @@ namespace Common.Helpers
 {
     public static class HashHelper
     {
-        
-        
         
         public static string GetMd5Hash( params string[] inputs )
         {

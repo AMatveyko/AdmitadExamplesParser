@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Common.Api;
+using Common.Elastic.Workers;
+using Common.Entities;
 using Common.Workers;
 
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +21,7 @@ using Microsoft.OpenApi.Models;
 
 using TheStore.Api.Front.Data.Repositories;
 using TheStore.Api.Front.Entity;
+using TheStore.Api.Front.Workers;
 
 namespace TheStore.Api.Front
 {
@@ -50,6 +54,15 @@ namespace TheStore.Api.Front
             services.AddTransient( r => 
                 new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
             services.AddSingleton<Proxies>();
+            services.AddTransient<ImageWorker>();
+            services.AddSingleton(
+                r => {
+                    //var repository = new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version );
+                    var repository = ( ISettingsRepository )r.GetService( typeof( TheStoreRepository ) );
+                    var builder = new SettingsBuilder( repository );
+                    var elasticSettings = builder.GetSettings().ElasticSearchClientSettings;
+                    return IndexClient.Create( elasticSettings, new BackgroundBaseContext( "1", "1" ) );
+                } );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Common.Api;
 using Common.Entities;
+using Common.Extensions;
 using Common.Settings;
 
 using Nest;
@@ -178,6 +180,23 @@ namespace Common.Elastic.Workers
                 .Size( 1 ) );
             CheckResponse( response );
             return response.Documents.FirstOrDefault();
+        }
+
+        public async Task<IProductPhotos> GetProductsPhotoAsync(
+            string id,
+            string index = null )
+        {
+            return await Task.Run(
+                () => {
+                    var result = index.IsNotNullOrWhiteSpace()
+                        ? _client.Get<ProductPart>(
+                            id,
+                            descriptor => descriptor.Index( index ).Routing( ProductPart.GetRouting( id ) ) )
+                        : _client.Get<ProductPart>(
+                            id,
+                            descriptor => descriptor.Routing( ProductPart.GetRouting( id ) ) );
+                    return (IProductPhotos)result.Source;
+                } );
         }
 
     }

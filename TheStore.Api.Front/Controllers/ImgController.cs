@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Mvc;
 
-using TheStore.Api.Front.Entity;
 using TheStore.Api.Front.Workers;
 
 namespace TheStore.Api.Front.Controllers
@@ -14,15 +13,20 @@ namespace TheStore.Api.Front.Controllers
     public class ImgController : ControllerBase
     {
 
-        private readonly Proxies _proxies;
+        private readonly ImageWorker _worker;
 
-        public ImgController( Proxies proxies ) => _proxies = proxies;
+        public ImgController( ImageWorker worker ) => _worker = worker;
 
         [ HttpGet ]
-        public async Task<IActionResult> Get( string url )
-        {
-            return await ImageWorker.Get( url, _proxies );
-        }
+        [ Route( "GetByUrl" ) ]
+        public async Task<IActionResult> GetByUrl( string url ) =>
+            await _worker.GetByUrl( url );
+
+        [ HttpGet ]
+        [ Route( "GetById" ) ]
+        public async Task<IActionResult> GetById(
+            string productId ) =>
+            await _worker.GetById( productId );
 
     }
 }
