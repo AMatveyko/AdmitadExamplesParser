@@ -156,7 +156,8 @@ namespace Admitad.Converters
                 OriginalCategoryId = offer.CategoryId,
                 OfferIds = offers.Select( o => o.OriginalId ).ToArray(),
                 Vendor = offer.OriginalVendor,
-                Rating = _calculation.Calculate()
+                Rating = _calculation.Calculate(),
+                Type = offer.Type.ToString()
             };
         }
     }

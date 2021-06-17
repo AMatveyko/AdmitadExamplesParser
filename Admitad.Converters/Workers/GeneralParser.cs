@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
@@ -307,7 +308,10 @@ namespace Admitad.Converters.Workers
             rawOffer.UpdateTime = _updateTime;
             rawOffer.ShopNameLatin = _shopNameLatin;
             if( rawOffer.CategoryId != null ) {
-                rawOffer.CategoryPath = _shopData.GetCategoryPath( rawOffer.CategoryId );
+                var categories = _shopData.GetCategories( rawOffer.CategoryId );
+                rawOffer.CategoryPath = string.Join( " \\ ", categories.Select( c => c.Name ) );
+                rawOffer.Categories = categories.Select( c => c.Id ).ToList();
+                //rawOffer.CategoryPath = _shopData.GetBreadCrumbs( rawOffer.CategoryId );
             }
         }
         

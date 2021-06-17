@@ -42,5 +42,6 @@ namespace Common.Entities
         [ JsonProperty( "currency" ) ] public string Currency { get; set; }
         [ JsonProperty( "salesNotes" ) ] public string SalesNotes { get; set; }
         [ JsonProperty( "rating" ) ] public int Rating { get; set; }
+        [ JsonProperty( "type" ) ] public string Type { get; set; }
     }
 }

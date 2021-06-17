@@ -8,7 +8,7 @@ namespace Common.Entities
 {
     [ Serializable ]
     [ XmlRoot( "offer" ) ]
-    public class RawOffer
+    public class RawOffer : RawOfferWithCategoryList
     {
         [ XmlAttribute( "available" ) ] public string AvailableFromXml { get; set; }
         [ XmlAttribute( "deleted" ) ] public bool IsDeleted { get; set; }
@@ -41,6 +41,7 @@ namespace Common.Entities
         [ XmlElement( "Size" ) ] public string Size { get; set; }
         [ XmlAttribute( "group_id" ) ] public string GroupId { get; set; }
         [ XmlIgnore ] public string CategoryPath { get; set; }
+        [ XmlIgnore ] public List<string> Categories { get; set; }
         [ XmlIgnore ] public string ShopName { get; set; }
         [ XmlIgnore ] public DateTime UpdateTime { get; set; }
         [ XmlIgnore ] public string ShopNameLatin { get; set; }

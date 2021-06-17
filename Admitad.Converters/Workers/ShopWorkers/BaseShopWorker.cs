@@ -22,6 +22,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private static readonly string[] RequiredParams = { Constants.Params.ColorName, Constants.Params.SizeName, Constants.Params.MaterialName };
         private const string SkipValue = "none";
         private const string CountryParam = "Страна-изготовитель";
+        private readonly ProductType _type;
         
         protected const string AgeParamName = "возраст";
         protected readonly string[] GenderParamName = { "пол", "gender" };
@@ -31,8 +32,8 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
         private static readonly Regex PricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
-        protected BaseShopWorker( DbHelper dbHelper, Func<RawOffer, int, string> idGetter = null ) =>
-            ( DbHelper, IdGetter ) = ( dbHelper, idGetter ?? ProductIdGetter.FirstImageUrl );
+        protected BaseShopWorker( DbHelper dbHelper, Func<RawOffer, int, string> idGetter = null, ProductType? type = null ) =>
+            ( DbHelper, IdGetter, _type ) = ( dbHelper, idGetter ?? ProductIdGetter.FirstImageUrl, type ?? ProductType.Undefined );
         
         public Offer Convert( RawOffer rawOfer )
         {
@@ -185,6 +186,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             extendedOffer.CountryId = GetCountryId( rawOffer );
             extendedOffer.VendorNameClearly = GetClearlyVendor( rawOffer.Vendor );
             extendedOffer.CategoryId = rawOffer.CategoryId;
+            extendedOffer.Type = _type;
 
             FillParams( extendedOffer, rawOffer );
         }

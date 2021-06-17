@@ -39,6 +39,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 "vassaco" => new VassaCoWorker( dbHelper ),
                 "camper" => new CamperWorker( dbHelper ),
                 "inavokich" => new InavokichWorker( dbHelper ),
+                "dochkisinochki" => new DochkiSinochkiWorker( dbHelper ),
                 _ => new DefaultShopWorker( dbHelper )
             };
         }

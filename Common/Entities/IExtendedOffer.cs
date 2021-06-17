@@ -13,6 +13,7 @@ namespace Common.Entities
         int BrandId { get; set; }
         string VendorNameClearly { get; set; }
         int CountryId { get; set; }
+        ProductType Type { get; set; }
 
         void AddParamIfNeed(
             RawParam raw );

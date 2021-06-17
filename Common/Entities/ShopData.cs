@@ -33,21 +33,38 @@ namespace Common.Entities
             }
         }
 
-        public string GetCategoryPath( string categoryId )
+        public List<ShopCategory> GetCategories( string categoryId )
         {
-            var path = new List<string>();
+            var categories = new List<ShopCategory>();
             var rootId = categoryId;
-            while( rootId != null &&
-                   Categories.ContainsKey( rootId ) ) {
+            while( rootId != null && Categories.ContainsKey( rootId ) ) {
                 var category = Categories[ rootId ];
-                path.Insert( 0, category.Name );
+                categories.Insert( 0, category );
                 rootId = category.ParentId;
                 if( category.Id == category.ParentId ) {
                     CategoryLoop = true;
                     break;
                 }
             }
-            return string.Join( " \\ ", path );
+
+            return categories;
         }
+        
+        // public string GetBreadCrumbs( string categoryId )
+        // {
+        //     var path = new List<string>();
+        //     var rootId = categoryId;
+        //     while( rootId != null &&
+        //            Categories.ContainsKey( rootId ) ) {
+        //         var category = Categories[ rootId ];
+        //         path.Insert( 0, category.Name );
+        //         rootId = category.ParentId;
+        //         if( category.Id == category.ParentId ) {
+        //             CategoryLoop = true;
+        //             break;
+        //         }
+        //     }
+        //     return string.Join( " \\ ", path );
+        // }
     }
 }
