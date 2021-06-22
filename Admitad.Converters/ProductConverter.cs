@@ -126,8 +126,15 @@ namespace Admitad.Converters
         {
             var offer = offers.First();
             var soldOut = offers.All( o => o.SoldOut );
-            _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
             
+            // костыль для перехода на новую схему возраста и пола
+            var gender = offer.Gender switch {
+                Gender.Boy => Gender.Man,
+                _ => offer.Gender
+            };
+            
+            _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
+
             return new Product {
                 Id = offer.ProductId,
                 Url = offer.Url,
@@ -135,7 +142,7 @@ namespace Admitad.Converters
                 Name = offer.Name ?? string.Empty,
                 Description = offer.Description ?? string.Empty,
                 Model = offer.Model ?? string.Empty,
-                Gender = GenderHelper.Convert( offer.Gender ),
+                Gender = GenderHelper.Convert( gender ),
                 Age = AgeHelper.Convert( offer.Age ),
                 ShopId = offer.ShopId.ToString(),
                 Price = offers.Max( o => o.Price ),

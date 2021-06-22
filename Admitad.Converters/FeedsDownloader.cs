@@ -145,7 +145,11 @@ namespace Admitad.Converters
                     out var workTime );
 
                 if( FileChecker.WithAnEnd( info.FilePath ) == false ) {
+                    if( File.Exists( info.FilePath ) ) {
+                        File.Delete( info.FilePath );
+                    }
                     info.Error = DownloadError.Unfinished;
+                    _context.AddMessage( $"{ info.ShopName }: { DownloadError.Unfinished }", true );
                     LogWriter.Log( $"{info.ShopName} ошибка { info.Error }", true );
                     return info;
                 }
