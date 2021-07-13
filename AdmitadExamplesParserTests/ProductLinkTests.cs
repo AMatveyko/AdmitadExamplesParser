@@ -27,8 +27,8 @@ namespace AdmitadExamplesParserTests
         
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
             // ElasticSearchUrl = "http://127.0.0.1:9200",
-            // ElasticSearchUrl = "http://185.221.152.127:9200",
-            ElasticSearchUrl = "http://127.0.0.1:8888",
+            ElasticSearchUrl = "http://185.221.152.127:9200",
+            //ElasticSearchUrl = "http://127.0.0.1:8888",
             DefaultIndex = "products-1",
             FrameSize = 10000
         };
@@ -132,7 +132,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void TagRelinkTest()
         {
-            TagRelinkTest( "427" );
+            TagRelinkTest( "4777" );
         }
 
         private void TagRelinkTest( string tagId )
@@ -164,7 +164,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void RelinkTagsForCategory()
         {
-            var categoryId = 10103000;
+            var categoryId = 41612013;
             var tagsForCategory = _dbHelper.GetTags().Where( t => t.IdCategory == categoryId ).ToList();
             foreach( var tag in tagsForCategory ) {
                 TagRelinkTest( tag.Id );

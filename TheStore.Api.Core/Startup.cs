@@ -46,7 +46,7 @@ namespace TheStore.Api.Core
             services.AddSingleton<PriorityQueue>();
             services.AddSingleton<BackgroundWorks>();
             services.AddTransient( r => 
-                new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
+                new TheStoreRepository( dbSettings ) );
             services.AddScoped( r => new DbHelper( dbSettings ) );
         }
 

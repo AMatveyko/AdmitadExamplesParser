@@ -16,8 +16,8 @@ namespace TheStore.Api.Front.Data.Repositories
 
         private static readonly Dictionary<string, int> Cache = new Dictionary<string, int>();
 
-        public TheStoreRepository( string connectionString, string version )
-            : base( connectionString, version ) { }
+        public TheStoreRepository( DbSettings settings )
+            : base( settings ) { }
 
         public List<ProxyDb> GetProxies()
         {

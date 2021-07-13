@@ -14,6 +14,7 @@ namespace Common.Entities
         string VendorNameClearly { get; set; }
         int CountryId { get; set; }
         ProductType Type { get; set; }
+        public AgeRange AgeRange { get; set; }
 
         void AddParamIfNeed(
             RawParam raw );

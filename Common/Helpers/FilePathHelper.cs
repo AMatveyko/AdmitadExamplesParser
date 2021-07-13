@@ -1,5 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
+using System.IO;
+
 using Common.Entities;
 
 namespace Common.Helpers
@@ -11,7 +13,10 @@ namespace Common.Helpers
                 ? $"{directoryPath}{fileInfo.NameLatin}Changes.xml".Replace( "//", "/" )
                 : $"{directoryPath}{fileInfo.NameLatin}.xml".Replace( "//", "/" );
 
-        public static string CombinePath( string firstPath, string secondPath ) =>
+        public static string CombinePath(
+            string firstPath,
+            string secondPath ) =>
             $"{firstPath}/{secondPath}".Replace( "//", "/");
+            //Path.Combine( firstPath, secondPath );
     }
 }

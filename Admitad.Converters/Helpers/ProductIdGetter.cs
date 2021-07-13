@@ -18,5 +18,8 @@ namespace Admitad.Converters.Helpers
         public static string OfferIdAndShopId( RawOffer offer, int shopId ) =>
             HashHelper.GetMd5Hash( shopId.ToString(), ":", offer.OfferId  );
 
+        public static string FromName( RawOffer offer, int shopId ) =>
+            HashHelper.GetMd5Hash( offer.Name );
+
     }
 }

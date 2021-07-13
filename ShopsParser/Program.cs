@@ -32,12 +32,11 @@ namespace ShopsParser
         private static void ParseCategory(
             int shopId )
         {
-            var dbSettings = SettingsBuilder.GetDbSettings();
-            var repository = new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version );
+            var repository = new TheStoreRepository( SettingsBuilder.GetDbSettings() );
             var shopInfo = repository.GetShopById( shopId );
             var shopCategories = repository.GetShopCategories( shopId );
             var elasticSettings = new SettingsBuilder( repository ).GetSettings().ElasticSearchClientSettings;
-            var elasticClient = IndexClient.Create( elasticSettings, new BackgroundBaseContext( "1", "1" ) );
+            var elasticClient = IndexClient.CreateIndexClient( elasticSettings, new BackgroundBaseContext( "1", "1" ) );
             var categoryAndProduct = shopCategories
                 .Select(
                     c => ( c.CategoryId,

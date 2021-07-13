@@ -49,10 +49,8 @@ namespace TheStore.Api.Front
                             Version = "v1"
                         } );
                 } );
-
-            var dbSettings = SettingsBuilder.GetDbSettings();
             services.AddTransient( r => 
-                new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
+                new TheStoreRepository( SettingsBuilder.GetDbSettings() ) );
             services.AddSingleton<Proxies>();
             services.AddTransient<ImageWorker>();
             services.AddSingleton(
@@ -61,7 +59,7 @@ namespace TheStore.Api.Front
                     var repository = ( ISettingsRepository )r.GetService( typeof( TheStoreRepository ) );
                     var builder = new SettingsBuilder( repository );
                     var elasticSettings = builder.GetSettings().ElasticSearchClientSettings;
-                    return IndexClient.Create( elasticSettings, new BackgroundBaseContext( "1", "1" ) );
+                    return IndexClient.CreateIndexClient( elasticSettings, new BackgroundBaseContext( "1", "1" ) );
                 } );
         }
 

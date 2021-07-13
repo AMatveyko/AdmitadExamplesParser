@@ -37,6 +37,8 @@ namespace Common.Entities
         [ JsonProperty( "soldout" ) ] public byte Soldout { get; set; }
         [ JsonProperty( "rating" ) ] public int Rating { get; set; }
         [ JsonProperty( "type" ) ] public string Type { get; set; }
-        
+        [ JsonProperty( "suitableAgeLong" ) ] public long SuitableAgeLong { get; }
+        [ JsonProperty( "suitableAgeText" ) ] public string SuitableAgeText { get; }
+
     }
 }

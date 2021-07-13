@@ -2,8 +2,6 @@
 
 using System;
 
-using AdmitadCommon.Entities;
-
 using AdmitadSqlData.Entities;
 
 using Common.Entities;
@@ -28,8 +26,8 @@ namespace AdmitadSqlData.DbContexts
         
         public DbSet<Shop> Shops { get; set; }
         public DbSet<CountryDb> Countries { get; set; }
-        public DbSet<CategoryDb> Categories { get; set; }
-        public DbSet<TagDb> Tags { get; set; }
+        public DbSet<Entities.CategoryDb> Categories { get; set; }
+        public DbSet<Entities.TagDb> Tags { get; set; }
         public DbSet<ColorDb> Colors { get; set; }
         public DbSet<SostavDb> Materials { get; set; }
         public DbSet<SizeDb> Sizes { get; set; }

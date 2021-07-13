@@ -54,14 +54,14 @@ namespace AdmitadExamplesParserTests
             var parser = new GeneralParser( downloadInfo, new BackgroundBaseContext( "1", "1" ) );
             var offers = parser.Parse();
             var ids = offers.DeletedOffers.Select( o => o.OfferId.ToLower() ).ToArray();
-            var client = IndexClient.Create( _settings, new BackgroundBaseContext("1","1") );
+            var client = IndexClient.CreateIndexClient( _settings, new BackgroundBaseContext("1","1") );
             var products = client.SearchProductsByOffersIds( ids );
         }
 
         [ Test ]
         public void GetProductsMultiGet()
         {
-            var client = IndexClient.Create( _settings, new BackgroundBaseContext("1","1") );
+            var client = IndexClient.CreateIndexClient( _settings, new BackgroundBaseContext("1","1") );
             var result = client.GetProductsByIds( new []{ "b264ec44406c9457861b314165d6bf52", "7f5edf239c7b7700defb8fcad1408817" } );
         }
 

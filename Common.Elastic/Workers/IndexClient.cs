@@ -6,15 +6,19 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Common.Api;
+using Common.Elastic.Entities;
+using Common.Elastic.Extensions;
 using Common.Entities;
 using Common.Extensions;
 using Common.Settings;
+
+using Elasticsearch.Net;
 
 using Nest;
 
 namespace Common.Elastic.Workers
 {
-    public sealed class IndexClient : IIndexClient
+    public sealed class IndexClient : IIndexClient, IIndexProductWorker
     {
 
         #region Data
@@ -24,10 +28,7 @@ namespace Common.Elastic.Workers
         private readonly ElasticSearchClientSettings _settings;
 
         #endregion
-
-
-
-
+        
         #region Ctors
 
         private IndexClient(
@@ -43,10 +44,7 @@ namespace Common.Elastic.Workers
         }
 
         #endregion
-
-
-
-
+        
         #region Initialization
 
         private void Setup()
@@ -56,14 +54,17 @@ namespace Common.Elastic.Workers
         }
 
         #endregion
-
-
-
-
-        public static IIndexClient Create(
+        
+        public static IIndexClient CreateIndexClient(
             ElasticSearchClientSettings settings,
             BackgroundBaseContext context ) =>
-            new IndexClient( settings, context );
+            Create( settings, context );
+
+
+        public static IIndexProductWorker CreateProductWorker(
+            ElasticSearchClientSettings settings,
+            BackgroundBaseContext context ) =>
+            Create( settings, context );
 
         public List<ProductPart> SearchProductsByOffersIds(
             string[] ids )
@@ -199,5 +200,24 @@ namespace Common.Elastic.Workers
                 } );
         }
 
+        public void RemoveCategory( string productId, string categoryId )
+        {
+            var properties = new SearchProperties {
+                Must = new SearchTerms {
+                    CategoryId = categoryId,
+                    ProductId = productId
+                }
+            };
+            var result = _client.UpdateByQuery<Product>( ubq => ubq.Query( q => q.Bool( b =>  
+                b.FromSearchParameters( properties ) ) )
+                .Script( script => script.RemoveCategoryScript( categoryId ) )
+                .Conflicts( Conflicts.Proceed )
+                .Refresh( true ) );
+            
+            
+        }
+                
+        private static IndexClient Create(  ElasticSearchClientSettings settings, BackgroundBaseContext context  )
+            => new IndexClient( settings, context );
     }
 }

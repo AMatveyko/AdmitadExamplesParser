@@ -25,7 +25,7 @@ namespace TheStore.Api.Core.Sources.Workers
             DbHelper dbHelper )
             : base( context, settings, dbHelper )
         {
-            _client = IndexClient.Create( settings, context );
+            _client = IndexClient.CreateIndexClient( settings, context );
         }
             
         

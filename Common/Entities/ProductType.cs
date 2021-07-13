@@ -16,6 +16,7 @@ namespace Common.Entities
         Bags,
         Textile,
         Furniture,
-        HygieneAndCare
+        HygieneAndCare,
+        Jewelry
     }
 }

@@ -26,6 +26,9 @@ namespace TheStore.Api.Front.Data.DbContexts
         public DbSet<SexDb> Sex { get; set; }
         public DbSet<AgeDb> Ages { get; set; }
         public DbSet<ShopDb> Shops { get; set; }
+        public DbSet<TagDb> Tags { get; set; }
+        public DbSet<OtherTagDb> OtherTags { get; set; }
+        public DbSet<CategoryDb> Categories { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

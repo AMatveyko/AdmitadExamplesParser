@@ -43,6 +43,7 @@ namespace Common.Entities
         public int CountryId { get; set; }
         public ProductType Type { get; set; }
         public string OriginalVendor { get; set; }
+        public AgeRange AgeRange { get; set; }
 
         public void AddParamIfNeed( RawParam raw ) {
             AddParamIfNeed( raw.Name.ToLower(), raw.Value.ToLower(), raw.Unit?.ToLower() );

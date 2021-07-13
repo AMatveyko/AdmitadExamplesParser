@@ -26,8 +26,18 @@ namespace TheStore.Api.Core.Controllers
         [ Route( "Get" ) ]
         public IActionResult Get( string id )
         {
-            var worker = new ProductWorker( _settings.ElasticSearchClientSettings );
-            return worker.Get( id );
+            var worker = new ProductWorker( id, _settings.ElasticSearchClientSettings );
+            return worker.Get();
+        }
+
+        [ HttpGet ]
+        [ Route( "RemoveFromCategory" ) ]
+        public IActionResult RemoveFromCategory(
+            string id,
+            string categoryId )
+        {
+            var worker = new ProductWorker( id, _settings.ElasticSearchClientSettings );
+            return worker.RemoveFromCategory( categoryId );
         }
         
     }

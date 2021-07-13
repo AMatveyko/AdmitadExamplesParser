@@ -43,5 +43,7 @@ namespace Common.Entities
         [ JsonProperty( "salesNotes" ) ] public string SalesNotes { get; set; }
         [ JsonProperty( "rating" ) ] public int Rating { get; set; }
         [ JsonProperty( "type" ) ] public string Type { get; set; }
+        [ JsonProperty( "suitableAgeLong" ) ] public long SuitableAgeLong { get; set; }
+        [ JsonProperty( "suitableAgeText" ) ] public string SuitableAgeText => SuitableAgeLong.ToString();
     }
 }

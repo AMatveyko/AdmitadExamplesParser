@@ -24,6 +24,15 @@ namespace AdmitadExamplesParserTests
 
         private static readonly Regex BadParams = new ( @"[^0-9\w]", RegexOptions.Compiled );
         private static readonly Regex DefineCountry12Storeez = new ( @"Сделано в (?<country>[a-zA-Zа-яА-Я0-9_]+)\.", RegexOptions.Compiled );
+        private static readonly Regex Digits = new ( @"\d+", RegexOptions.Compiled );
+        private static readonly Regex StartRange = new("(рождения|для новорожденных)", RegexOptions.Compiled);
+        private static readonly Regex Month =
+            new( @"(месяца|месяцев|месяц|months|month|мес(\.|\+)?)", RegexOptions.Compiled );
+        private static readonly Regex Years =
+            new( @"(года|год|years|лет|л|г|\+)", RegexOptions.Compiled );
+        private static readonly Regex Split = new( "( от |-)", RegexOptions.Compiled );
+        private static readonly Regex FromYear = new(@"от\s+года", RegexOptions.Compiled);
+        private static readonly Regex ToYear = new(@"до\s+года", RegexOptions.Compiled);
 
         // [ TestCase( "lamoda" ) ]
         // [ TestCase( "adidas" ) ]
@@ -41,8 +50,9 @@ namespace AdmitadExamplesParserTests
         // [ TestCase( "gullivermarket" ) ]
         // [ TestCase( "svmoscow" ) ]
         // [ TestCase( "intimshop" ) ]
-        [ TestCase( "yoins" ) ]
-        [ TestCase( "goldenline" ) ]
+        // [ TestCase( "yoins" ) ]
+        // [ TestCase( "goldenline" ) ]
+        [ TestCase( "dochkisinochki" ) ]
         public void ParsingTest( string shopName )
         {
             DoParsing( shopName );
@@ -96,6 +106,7 @@ namespace AdmitadExamplesParserTests
         {
             public string GendersFromParam { get; set; }
             public string AgeFromParam { get; set; }
+            public string AgeFromParam2 { get; set; }
             public List<string> CategoryPaths { get; set; }
             public List<string> Countries { get; set; }
             public List<string> Sizes { get; set; }
@@ -109,10 +120,8 @@ namespace AdmitadExamplesParserTests
                     ",",
                     offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() == "пол" ) ).Select( p => p.Value )
                         .Distinct() ),
-                AgeFromParam = string.Join(
-                    ",",
-                    offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() == "возраст" ) )
-                        .Select( p => p.Value ).Distinct() ),
+                AgeFromParam = GetUniqueWithoutDigits( offers, "возраст" ),
+                AgeFromParam2 = GetUniqueWithoutDigits( offers, "возраст ребенка" ),
                 Sizes = offers.SelectMany( o => o.Params ).Select( p => $"{p.Name} {p.UnitFromXml} {p.Value}").Distinct().ToList(),
                 CategoryPaths = offers.Select( o => o.CategoryPath ).Distinct().ToList(),
                 Countries = offers.Select( GetCountryGetter( shopName ) ).Distinct().ToList()
@@ -122,6 +131,22 @@ namespace AdmitadExamplesParserTests
 
             return result;
         }
+        
+        private static string GetUniqueWithoutDigits(
+            List<RawOffer> offers, string paramName ) =>
+            string.Join(
+                ",",
+                offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() == paramName ) )
+                    .Select( p => $"{p.UnitFromXml} {p.Value}{( p.Value == "да" ? p.Name : string.Empty)}" )
+                    .Select( p => p.ToLower() )
+                    .Select( p => FromYear.Replace( p, "от 1 года") )
+                    .Select( p => ToYear.Replace( p, "до 1 года") )
+                    .Select( p => StartRange.Replace( p, "0" ) )
+                    .Select( p => Month.Replace( p, "months" ) )
+                    .Select( p => Years.Replace( p, "years" ) )
+                    .Select( p => Split.Split( p ) )
+                    //.Select( p => Digits.Replace( p, "X" ) )
+                    .Distinct() );
 
         private static Func<RawOffer, string> GetCountryGetter(
             string shopName )
