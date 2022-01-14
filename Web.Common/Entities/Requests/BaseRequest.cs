@@ -14,18 +14,19 @@ using RestSharp;
 
 namespace Web.Common.Entities.Requests
 {
-    public abstract class BaseRequest<T>
-    {
-        
-        private readonly string _controller;
-        private readonly string _methodName;
+    public abstract class BaseRequest<T> {
+
+        protected abstract string Controller { get; }
+        protected abstract string MethodName { get; }
+        private readonly RequestSettings _settings;
+
         private List<( string, string)> _parameters;
 
-        private RequestSettings _settings;
-
-        protected BaseRequest( string controller, string methodName, RequestSettings settings )
-        {
-            ( _controller, _methodName, _settings ) = ( controller, methodName, settings );
+        protected BaseRequest(RequestSettings settings, bool withClean) {
+            _settings = settings;
+            if( withClean) {
+                AddParam("clean", "true");
+            }
         }
 
         protected void AddParam( string name, string value )
@@ -42,7 +43,7 @@ namespace Web.Common.Entities.Requests
         public T Execute()
         {
             const string template = "{0}/{1}/{2}";
-            var url = string.Format( template, _settings.Host, _controller, _methodName );
+            var url = string.Format( template, _settings.Host, Controller, MethodName );
             if( _parameters != null &&
                 _parameters.Any() ) {
                 var @params = 

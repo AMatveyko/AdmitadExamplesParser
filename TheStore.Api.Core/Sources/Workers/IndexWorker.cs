@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading;
 
 using Admitad.Converters;
-
+using Admitad.Converters.Workers;
 using AdmitadSqlData.Helpers;
 
 using Common.Api;
@@ -33,8 +33,9 @@ namespace TheStore.Api.Core.Sources.Workers
             ProcessorSettings settings,
             ParallelBackgroundContext context,
             BackgroundWorks works,
-            DbHelper dbHelper )
-            : base( settings.ElasticSearchClientSettings, works, dbHelper )
+            DbHelper dbHelper,
+            ProductRatingCalculation productRatingCalculation)
+            : base( settings.ElasticSearchClientSettings, works, dbHelper, productRatingCalculation )
         {
             _settings = settings;
             _context = context;
@@ -155,8 +156,8 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private ShopHandlerBase GetShopHandler( ProcessShopContext context ) =>
             context.VersionProcessing == 2 && context.DownloadInfo.LastUpdate > default( DateTime )
-                ? new ShopChangesHandler( context, _settings.ElasticSearchClientSettings, Db )
-                : new ShopHandler( context, _settings, Db ); 
+                ? new ShopChangesHandler( context, _settings.ElasticSearchClientSettings, Db, ProductRatingCalculation )
+                : new ShopHandler( context, _settings, Db, ProductRatingCalculation ); 
         
         private void DoLink()
         {
@@ -178,7 +179,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new CountriesLinkContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new CountryWorker( _settings.ElasticSearchClientSettings, Works, Db );
+            var worker = new CountryWorker( _settings.ElasticSearchClientSettings, Works, Db, ProductRatingCalculation );
             Works.AddToQueue( worker.LinkAll, linkContext, QueuePriority.Medium, false );
         }
         
@@ -186,7 +187,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkTagsContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, Works, Db );
+            var worker = new TagsWorker( _settings.ElasticSearchClientSettings, Works, Db, ProductRatingCalculation );
             
             Works.AddToQueue( worker.LinkTags, linkContext, QueuePriority.Medium, false );
         }
@@ -195,7 +196,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkCategoriesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, Works, Db );
+            var worker = new CategoryWorker( _settings.ElasticSearchClientSettings, Works, Db, ProductRatingCalculation );
             
             Works.AddToQueue( worker.LinkCategories, linkContext, QueuePriority.Medium, false );
         }
@@ -204,7 +205,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new UnlinkPropertiesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works, Db );
+            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works, Db, ProductRatingCalculation );
             
             Works.AddToQueue( worker.UnlinkProperties, linkContext, QueuePriority.Medium, false );
         }
@@ -213,7 +214,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             var linkContext = new LinkPropertiesContext( _context.Id );
             _context.AddContext( linkContext );
-            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works, Db );
+            var worker = new PropertiesWorker( _settings.ElasticSearchClientSettings, Works, Db, ProductRatingCalculation );
             
             Works.AddToQueue( worker.LinkProperties, linkContext, QueuePriority.Medium, false );
         }

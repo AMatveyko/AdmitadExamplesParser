@@ -12,6 +12,7 @@ using AdmitadSqlData.Helpers;
 using Common.Api;
 using Common.Entities;
 using Common.Settings;
+using TheStoreRepositoryFromFront = TheStore.Api.Front.Data.Repositories.TheStoreRepository;
 
 namespace TheStore.Api.Core.Sources.Workers
 {
@@ -21,8 +22,8 @@ namespace TheStore.Api.Core.Sources.Workers
         private readonly DateTime _startDate;
         private readonly ElasticSearchClient<IIndexedEntities> _client;
 
-        public ShopHandler( ProcessShopContext context, ProcessorSettings settings, DbHelper dbHelper )
-            :base( context, settings.ElasticSearchClientSettings, dbHelper ) {
+        public ShopHandler( ProcessShopContext context, ProcessorSettings settings, DbHelper dbHelper, ProductRatingCalculation productRatingCalculation )
+            :base( context, settings.ElasticSearchClientSettings, dbHelper, productRatingCalculation ) {
             _startDate = DateTime.Now;
             _client = new ElasticSearchClient<IIndexedEntities>( Settings, context );
         }
@@ -47,15 +48,64 @@ namespace TheStore.Api.Core.Sources.Workers
             AddMessage( $"Disable { result.Pretty } products", result.IsError );
         }
 
-        private void UpdateProducts( IEnumerable<Product> products )
+        private void UpdateProducts( List<Product> products )
         {
-            var iProducts = products.Select( p => ( IProductForIndex ) p ).ToList();
-            _client.BulkAll( iProducts );
+
+            WriteProducts(products);
+            
             SetProgress( 100 );
             Thread.Sleep( 5000 );
-            AddMessage( "Update products complete" );
-            Context.Content = $"{ iProducts.Count } products";
+            AddMessage( "Update all products complete" );
+            Context.Content = $"{ products.Count } products";
         }
 
+        private void WriteProducts(List<Product> products) {
+
+            var productsCategoryMapping = GetProductsWithCategoryMapping(products);
+            var clearedProductList = GetClearedProductList(products, productsCategoryMapping);
+
+            DoWriteProducts(clearedProductList);
+            DoWriteProductsWithCategoryMapping(productsCategoryMapping);
+        }
+
+        private Dictionary<string,int> GetCategoryMappingDictionary() => GetCategoryMapping().ToDictionary(k => k.ShopCategoryId, v => v.LocalCategoryId);
+
+        private void DoWriteProductsWithCategoryMapping(List<Product> products) {
+            if(products.Any()) {
+                var iProducts = products.Select(p => (IProductForIndexWithCategories)p).ToList();
+                _client.BulkAllWithCategories(iProducts);
+                AddMessage($"Update products with categorymapping complete");
+            }
+        }
+
+        private void DoWriteProducts(List<Product> products) {
+            var iProducts = products.Select(p => (IProductForIndex)p).ToList();
+            _client.BulkAllTyped(iProducts);
+            AddMessage($"Update products without categorymapping complete");
+        }
+
+        private List<Product> GetClearedProductList(List<Product> allProducts, List<Product> productsWithCategoryMapping) {
+            var withCategoryMappingIds = productsWithCategoryMapping.Select(p => p.Id).ToHashSet();
+            return allProducts.Where(p => withCategoryMappingIds.Contains(p.Id) == false).ToList();
+        }
+
+        private List<Product> GetProductsWithCategoryMapping(List<Product> products) {
+
+            var maps = GetCategoryMappingDictionary();
+
+            var productsCategoryMapping = new List<Product>();
+
+            foreach(var product in products) {
+                if( maps.ContainsKey(product.OriginalCategoryId) == false) {
+                    continue;
+                }
+
+                product.Categories = new[] { maps[product.OriginalCategoryId].ToString() };
+
+                productsCategoryMapping.Add(product);
+            }
+
+            return productsCategoryMapping;
+        }
     }
 }

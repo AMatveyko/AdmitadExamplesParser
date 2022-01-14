@@ -4,7 +4,7 @@ using System;
 
 namespace Common.Entities
 {
-    public sealed class DownloadInfo
+    public sealed class DownloadInfo : IMinimalDownloadInfo
     {
         //public DownloadInfo( int shopId, string nameLatin, int shopWeight, byte versionProcessing, DateTime lastUpdate )
         public DownloadInfo( XmlFileInfo info )

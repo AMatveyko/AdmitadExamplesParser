@@ -28,6 +28,7 @@ namespace AdmitadSqlData.Helpers
         private readonly CategoryRepository _categoryRepository;
         private readonly TagRepository _tagRepository;
         private readonly TheStoreRepository _theStoreRepository;
+        private readonly CategoryMappingRepository _categoryMappingRepository;
         #endregion
         
         private static readonly ConcurrentDictionary<string, int> ShopIdCache = new();
@@ -44,12 +45,13 @@ namespace AdmitadSqlData.Helpers
         public DbHelper( DbSettings settings )
         {
             var connectionString = settings.GetConnectionString();
-                ( _shopRepository, _countryRepository, _categoryRepository, _tagRepository, _theStoreRepository ) = (
+                ( _shopRepository, _countryRepository, _categoryRepository, _tagRepository, _theStoreRepository, _categoryMappingRepository ) = (
                 new ShopRepository( connectionString, settings.Version ),
                 new CountryRepository( connectionString, settings.Version ),
                 new CategoryRepository( connectionString, settings.Version ),
                 new TagRepository( connectionString, settings.Version ),
-                new TheStoreRepository( connectionString, settings.Version ) );
+                new TheStoreRepository( connectionString, settings.Version ),
+                new CategoryMappingRepository( connectionString, settings.Version ) );
         }
 
         public List<AgeGenderForCategoryContainer> GetAgeGenderFromCategories( int shopId ) =>
@@ -162,7 +164,7 @@ namespace AdmitadSqlData.Helpers
         {
             if( _brandCache == null ) {
                 _brandCache = new();
-                var brands = _theStoreRepository.GetBrands();
+                var brands = GetAllBrands();
 
                 foreach( var brandDb in brands ) {
                     if( _brandCache.ContainsKey( brandDb.ClearlyName ) == false ) {
@@ -179,6 +181,8 @@ namespace AdmitadSqlData.Helpers
             return _brandCache.ContainsKey( clearlyName ) ? _brandCache[ clearlyName ] : Constants.UndefinedBrandId;
         }
         
+        public List<BrandDb> GetAllBrands() => _theStoreRepository.GetBrands();
+
         public List<Tag> GetTags()
         {
             var categories = GetDictionaryCategory();
@@ -286,7 +290,7 @@ namespace AdmitadSqlData.Helpers
             _tagRepository.DeleteWordFromTagSearch( word, categoryId );
         }
 
-
+        public List<CategoryMappingDb> GetCategoryMapping(int shopId) => _categoryMappingRepository.GetCategoryMapping(shopId);
 
 
         #region OriginalCategory

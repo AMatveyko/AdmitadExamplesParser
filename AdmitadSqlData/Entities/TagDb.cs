@@ -25,5 +25,7 @@ namespace AdmitadSqlData.Entities
         public string ExcludePhrase { get; set; }
         [ Column( "name_title" ) ]
         public string NameTitle { get; set; }
+        [Column("search_as_part")]
+        public bool SearchAsPart { get; set; }
     }
 }

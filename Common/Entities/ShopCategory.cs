@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 
 namespace Common.Entities
 {
-    public sealed class ShopCategory
+    public class ShopCategory
     {
         [ XmlAttribute( "id" ) ]
         public string Id { get; set; }

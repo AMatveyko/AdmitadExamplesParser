@@ -13,6 +13,10 @@ namespace Common.Helpers
 
         private static Regex AdultPattern = new Regex( @"взрослый", RegexOptions.Compiled );
         private static Regex ChildPattern = new Regex( @"(детский|детские|детская|малышей)", RegexOptions.Compiled );
+        private static Regex ChildPatternForNameAndDescription =
+            new Regex(
+                @"(детский|детские|детская|малышей|(для )?детей|детям|девочкам|(для )?девочки|(для )?девочек|girl|мальчикам|мальчики|(для )?мальчиков|(для )?мальчика|boy)",
+                RegexOptions.Compiled);
 
         public static string Convert(
             Age age ) =>
@@ -58,5 +62,7 @@ namespace Common.Helpers
 
             return Age.Undefined;
         }
+
+        public static bool IsChildInText(string text) => ChildPatternForNameAndDescription.Match(text).Success;
     }
 }

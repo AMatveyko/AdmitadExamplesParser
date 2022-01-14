@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Admitad.Converters;
-
+using Admitad.Converters.Workers;
 using AdmitadSqlData.Helpers;
 
 using Common.Api;
@@ -22,8 +22,9 @@ namespace TheStore.Api.Core.Sources.Workers
         public ShopChangesHandler(
             ProcessShopContext context,
             ElasticSearchClientSettings settings,
-            DbHelper dbHelper )
-            : base( context, settings, dbHelper )
+            DbHelper dbHelper,
+            ProductRatingCalculation productRatingCalculation)
+            : base( context, settings, dbHelper, productRatingCalculation )
         {
             _client = IndexClient.CreateIndexClient( settings, context );
         }

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Common.Entities
 {
-    public sealed class Product : ProductPart, IProductForIndex
+    public sealed class Product : ProductPart, IProductForIndex, IProductForIndexWithCategories
     {
         [ JsonProperty( "view" ) ] public long View { get; set; }
         [ JsonProperty( "categories" ) ] public string[] Categories { get; set; }
@@ -41,9 +41,14 @@ namespace Common.Entities
         [ JsonProperty( "discount" ) ] public short Discount { get; set; }
         [ JsonProperty( "currency" ) ] public string Currency { get; set; }
         [ JsonProperty( "salesNotes" ) ] public string SalesNotes { get; set; }
-        [ JsonProperty( "rating" ) ] public int Rating { get; set; }
+        [ JsonProperty( "ratingUpdateDate" ) ] public DateTime RatingUpdateDate { get; set; }
+        [ JsonProperty( "rating" ) ] public long Rating { get; set; }
         [ JsonProperty( "type" ) ] public string Type { get; set; }
-        [ JsonProperty( "suitableAgeLong" ) ] public long SuitableAgeLong { get; set; }
-        [ JsonProperty( "suitableAgeText" ) ] public string SuitableAgeText => SuitableAgeLong.ToString();
+        [ JsonProperty( "ageFromTxt" ) ] public string AgeFromTxt { get; set; }
+        [ JsonProperty( "ageFromInt" ) ] public int? AgeFromIntFact { get; set; }
+        [ JsonProperty( "ageToTxt" ) ] public string AgeToTxt { get; set; }
+        [ JsonProperty( "ageToInt" ) ] public int? AgeToIntFact { get; set; }
+        // [ JsonProperty( "suitableAgeLong" ) ] public long SuitableAgeLong { get; set; }
+        // [ JsonProperty( "suitableAgeText" ) ] public string SuitableAgeText => SuitableAgeLong.ToString();
     }
 }

@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
+using Admitad.Converters.Workers;
 using AdmitadCommon;
 using AdmitadCommon.Entities;
 
@@ -16,8 +17,8 @@ namespace TheStore.Api.Core.Sources.Workers
 
         private readonly ProcessorSettings _settings;
 
-        public BrandWorker( ProcessorSettings settings, BackgroundWorks works, DbHelper dbHelper )
-            :base( settings.ElasticSearchClientSettings, works, dbHelper )
+        public BrandWorker( ProcessorSettings settings, BackgroundWorks works, DbHelper dbHelper, ProductRatingCalculation productRatingCalculation )
+            :base( settings.ElasticSearchClientSettings, works, dbHelper, productRatingCalculation )
         {
             _settings = settings;
         }

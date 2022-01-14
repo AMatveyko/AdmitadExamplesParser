@@ -19,6 +19,8 @@ using NUnit.Framework;
 
 using TheStore.Api.Core.Sources.Workers;
 
+using TheStoreRepositoryFromFront = TheStore.Api.Front.Data.Repositories.TheStoreRepository;
+
 namespace AdmitadExamplesParserTests
 {
     public sealed class ProcessingVersion2Tests
@@ -74,12 +76,17 @@ namespace AdmitadExamplesParserTests
         
         [ Test ]
         public void DeleteOffersTest() {
-            var dbHelper = new DbHelper( SettingsBuilder.GetDbSettings() );
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            var dbHelper = new DbHelper( dbSettings );
+            var repository = new TheStoreRepositoryFromFront(dbSettings);
+            var settingsBuilder = new SettingsBuilder(repository);
+            var settings = settingsBuilder.GetSettings();
             var downloadInfo = GetDownloadInfo( dbHelper );
             var handler = new ShopChangesHandler(
-                new ProcessShopContext( "33", 33, downloadInfo, false ),
+                new ProcessShopContext("33", 33, downloadInfo, false),
                 _settings,
-                dbHelper );
+                dbHelper,
+                new ProductRatingCalculation(repository, settings.CtrCalculationType));
             handler.Process();
         }
 

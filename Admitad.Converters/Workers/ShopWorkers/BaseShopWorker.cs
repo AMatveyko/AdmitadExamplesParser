@@ -23,17 +23,22 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private const string SkipValue = "none";
         private const string CountryParam = "Страна-изготовитель";
         private readonly ProductType _type;
-        
+
         protected const string AgeParamName = "возраст";
         protected readonly string[] GenderParamName = { "пол", "gender" };
         protected readonly List<IOfferHandler> Handlers = new ();
         protected readonly DbHelper DbHelper;
         protected readonly Func<RawOffer, int, string> IdGetter;
 
-        private static readonly Regex PricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
+        private static readonly Regex PricePattern = new ( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
-        protected BaseShopWorker( DbHelper dbHelper, Func<RawOffer, int, string> idGetter = null, ProductType? type = null ) =>
-            ( DbHelper, IdGetter, _type ) = ( dbHelper, idGetter ?? ProductIdGetter.FirstImageUrl, type ?? ProductType.Undefined );
+        protected BaseShopWorker(
+            DbHelper dbHelper,
+            Func<RawOffer, int, string> idGetter = null,
+            ProductType? type = null,
+            AgeFromSize ageFromSize = null ) =>
+            ( DbHelper, IdGetter, _type ) = 
+            ( dbHelper, idGetter ?? ProductIdGetter.FirstImageUrl, type ?? ProductType.Undefined );
         
         public Offer Convert( RawOffer rawOfer )
         {
@@ -53,8 +58,10 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
             FillBaseOffer( offer, rawOfer );
             DoFillExtendedOffer( offer, rawOfer );
+
             var tunedOffer = GetTunedOffer( offer, rawOfer );
             var processedOffer = RunOfferHandlers( tunedOffer, rawOfer );
+
             return processedOffer;
         }
 
@@ -178,6 +185,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             } else if( gender != Gender.Undefined &&
                        age == Age.Undefined ) {
                 age = AgeFromGender( gender );
+                
             }
 
             extendedOffer.Age = age;

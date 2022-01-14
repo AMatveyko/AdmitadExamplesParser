@@ -31,5 +31,7 @@ namespace ApiClient
 
         public TopContext RunAndCheckLinkAll() => new LinkAllRequest( _settings ).Execute();
 
+        public Context RunRatingCalculation() => new RatingsCalculationRequest(_settings).Execute();
+
     }
 }

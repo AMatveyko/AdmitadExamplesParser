@@ -12,15 +12,14 @@ namespace ApiClient.Requests
     internal sealed class GetTotalStatisticsRequest : BaseRequest<TotalStatistics>
     {
         
-        private const string Controller = "Index";
-        private const string MethodName = "GetStatistics";
+        protected override string Controller => "Index";
+        protected override string MethodName => "GetStatistics";
 
         public GetTotalStatisticsRequest( RequestSettings settings )
-            : base( Controller, MethodName, settings ) { }
+            : base( settings, false ) { }
         
         public GetTotalStatisticsRequest( DateTime startPoint, RequestSettings settings )
-            : base( Controller, MethodName, settings )
-        {
+            : base( settings, false ) {
             AddParam( nameof( startPoint ), startPoint.ToString( "O" ) );
         }
     }

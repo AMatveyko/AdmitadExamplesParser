@@ -6,13 +6,12 @@ using Admitad.Converters;
 using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities.Statistics;
-
+using AdmitadSqlData.Entities;
 using AdmitadSqlData.Helpers;
 
 using Common.Api;
 using Common.Entities;
 using Common.Settings;
-using Common.Workers;
 
 using NLog;
 
@@ -24,17 +23,21 @@ namespace TheStore.Api.Core.Sources.Workers
 
         protected readonly ProcessShopContext Context;
         protected readonly ElasticSearchClientSettings Settings;
-        private readonly ShopProcessingStatistics _statistics;
         private readonly DbHelper _dbHelper;
+        private readonly ShopProcessingStatistics _statistics;
+        private readonly ProductRatingCalculation _productRatingCalculation;
 
         protected ShopHandlerBase(
             ProcessShopContext context,
             ElasticSearchClientSettings settings,
-            DbHelper dbHelper )
+            DbHelper dbHelper,
+            ProductRatingCalculation productRatingCalculation)
         {
-            ( Context, Settings, _statistics, _dbHelper ) = ( context, settings,
+            ( Context, Settings, _statistics, _dbHelper, _productRatingCalculation ) = 
+                ( context, settings,
                 new ShopProcessingStatistics( context.DownloadInfo, AddMessage, Logger ),
-                dbHelper );
+                dbHelper,
+                productRatingCalculation );
         }
 
         public void Process()
@@ -69,9 +72,8 @@ namespace TheStore.Api.Core.Sources.Workers
 
         protected List<Product> ConvertOffers( IEnumerable<Offer> offers )
         {
-            var calculation = new RatingCalculation( Context.DownloadInfo.ShopWeight );
             var products =
-                new ProductConverter( _dbHelper, calculation ).GetProducts( offers ); 
+                new ProductConverter( _dbHelper, _productRatingCalculation ).GetProducts( offers ); 
             SetProgress( 80 );
             AddMessage( "Convert to products complete" );
             return products;
@@ -113,5 +115,7 @@ namespace TheStore.Api.Core.Sources.Workers
             AddMessage( "Parsing complete" );
             return shopData;
         }
+
+        protected List<CategoryMappingDb> GetCategoryMapping() => _dbHelper.GetCategoryMapping(Context.ShopId);
     }
 }

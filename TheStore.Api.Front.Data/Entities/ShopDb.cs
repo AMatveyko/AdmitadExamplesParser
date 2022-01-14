@@ -28,6 +28,8 @@ namespace TheStore.Api.Front.Data.Entities
         public string PartnerUrl { get; set; }
         [ Column("logo") ]
         public string Logo { get; set; }
+        [Column("ecpc")]
+        public double ECPC { get; set; }
         [ Column("weight") ]
         public int Weight { get; set; }
         [ Column("version_processing") ]

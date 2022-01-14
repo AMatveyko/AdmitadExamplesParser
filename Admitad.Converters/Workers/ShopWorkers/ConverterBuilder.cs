@@ -1,6 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
 using AdmitadSqlData.Helpers;
+using ShopsNames = Common.Constants.ShopsNames;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
@@ -11,36 +12,39 @@ namespace Admitad.Converters.Workers.ShopWorkers
         {
 
             return shopName switch {
-                "yoox" => new YooxWorker( dbHelper ),
-                "lamoda" => new LamodaWorker( dbHelper ),
-                "adidas" => new AdidasWorker( dbHelper ),
-                "asos" => new AsosWorker( dbHelper ),
-                "12storeez" => new TwelveStoreezWorker( dbHelper ),
-                "anabel" => new AnabelWorker( dbHelper ),
-                "vmeha" => new VmehaWorker( dbHelper ),
-                "brandshop" => new BrandshopWorker( dbHelper ),
-                "gretta" => new GrettaWorker( dbHelper ),
-                "goods" => new GoodsWorker( dbHelper ),
-                "gloriajeans" => new GloriaJeansWorker( dbHelper ),
-                "tamaris" => new TamarisWorker( dbHelper ),
-                "Incanto" => new IncantoShopWorker( dbHelper ),
-                "gullivermarket" => new GulliverMarketWorker( dbHelper ),
-                "newchic" => new NewchicWorker( dbHelper ),
-                "belleyou" => new BelleyouWorker( dbHelper ),
-                "intimshop" => new IntimShopWorker( dbHelper ),
-                "svmoscow" => new SvMoscowWorker( dbHelper ),
-                "smartcasual" => new SmartcasualWorker( dbHelper ),
-                "goldenline" => new GoldenLineWorker( dbHelper ),
-                "yoins" => new YoinsWorker( dbHelper ),
-                "vipavenue" => new VipAvenueWorker( dbHelper ),
-                "gerryweber" => new GerryWeberWorker( dbHelper ),
-                "gate31" => new Gate31Worker( dbHelper ),
-                "freeage" => new FreeageWorker( dbHelper ),
-                "vassaco" => new VassaCoWorker( dbHelper ),
-                "camper" => new CamperWorker( dbHelper ),
-                "inavokich" => new InavokichWorker( dbHelper ),
-                "dochkisinochki" => new DochkiSinochkiWorker( dbHelper ),
-                "lassie" => new LassieWorker( dbHelper ),
+                ShopsNames.Yoox => new YooxWorker( dbHelper ),
+                ShopsNames.Lamoda => new LamodaWorker( dbHelper ),
+                ShopsNames.Adidas => new AdidasWorker( dbHelper ),
+                ShopsNames.Asos => new AsosWorker( dbHelper ),
+                ShopsNames.TwelveStoreez => new TwelveStoreezWorker( dbHelper ),
+                ShopsNames.Anabel => new AnabelWorker( dbHelper ),
+                ShopsNames.VMeha => new VmehaWorker( dbHelper ),
+                ShopsNames.BrandShop => new BrandshopWorker( dbHelper ),
+                ShopsNames.Gretta => new GrettaWorker( dbHelper ),
+                ShopsNames.Goods => new GoodsWorker( dbHelper ),
+                ShopsNames.GloriaJeans => new GloriaJeansWorker( dbHelper ),
+                ShopsNames.Tamaris => new TamarisWorker( dbHelper ),
+                ShopsNames.Incanto => new IncantoShopWorker( dbHelper ),
+                ShopsNames.GulliverMarket => new GulliverMarketWorker( dbHelper ),
+                ShopsNames.NewChic => new NewchicWorker( dbHelper ),
+                ShopsNames.BelleYou => new BelleyouWorker( dbHelper ),
+                ShopsNames.IntimShop => new IntimShopWorker( dbHelper ),
+                ShopsNames.SVMoscow => new SvMoscowWorker( dbHelper ),
+                ShopsNames.SmartCasual => new SmartcasualWorker( dbHelper ),
+                ShopsNames.GoldenLine => new GoldenLineWorker( dbHelper ),
+                ShopsNames.Yoins => new YoinsWorker( dbHelper ),
+                ShopsNames.VipAvenue => new VipAvenueWorker( dbHelper ),
+                ShopsNames.GerryWeber => new GerryWeberWorker( dbHelper ),
+                ShopsNames.Gate31 => new Gate31Worker( dbHelper ),
+                ShopsNames.FreeAge => new FreeageWorker( dbHelper ),
+                ShopsNames.VassaCo => new VassaCoWorker( dbHelper ),
+                ShopsNames.Camper => new CamperWorker( dbHelper ),
+                ShopsNames.Inavokich => new InavokichWorker( dbHelper ),
+                ShopsNames.DochkiSinochki => new DochkiSinochkiWorker( dbHelper ),
+                ShopsNames.Lassie => new LassieWorker( dbHelper ),
+                ShopsNames.Shein => new SheinWorker( dbHelper ),
+                ShopsNames.FarFetch => new FarfetchWorker( dbHelper ),
+                ShopsNames.BebaKids => new BebaKidsWorker( dbHelper ),
                 _ => new DefaultShopWorker( dbHelper )
             };
         }

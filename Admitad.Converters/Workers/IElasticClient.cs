@@ -16,6 +16,8 @@ namespace Admitad.Converters.Workers
         void IndexMany( IEnumerable<T> entities );
         void Bulk( IEnumerable<T> entities );
         void BulkAll( IEnumerable<T> entities );
+        void BulkAllTyped(IEnumerable<T> entities);
+        void BulkAllWithCategories(IEnumerable<T> entities);
         UpdateResult UpdateProductsForCategory( Category category );
         UpdateResult UpdateProductsForCategoryNew( Category category );
         long CountProductsForCategory( Category category );

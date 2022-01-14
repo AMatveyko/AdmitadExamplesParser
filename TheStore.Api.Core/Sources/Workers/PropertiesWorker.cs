@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
+using Admitad.Converters.Workers;
 using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
@@ -12,8 +13,8 @@ namespace TheStore.Api.Core.Sources.Workers
     internal sealed class PropertiesWorker : BaseLinkWorker
     {
         public PropertiesWorker(
-            ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper )
-            : base( settings, works, dbHelper ) { }
+            ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper, ProductRatingCalculation productRatingCalculation )
+            : base( settings, works, dbHelper, productRatingCalculation ) { }
 
         public void LinkProperties( LinkPropertiesContext context )
         {

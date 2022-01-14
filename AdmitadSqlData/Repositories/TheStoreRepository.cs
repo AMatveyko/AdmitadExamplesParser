@@ -59,7 +59,7 @@ namespace AdmitadSqlData.Repositories
         public List<BrandDb> GetBrands()
         {
             using var db = GetDb();
-            return db.Brands.Where( b => b.Duplicate == false ).ToList();
+            return db.Brands.Where(b => b.Duplicate == false && b.Enabled).ToList();
         }
 
         public void ClearUnknownBrands()

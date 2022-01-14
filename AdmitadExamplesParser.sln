@@ -1,46 +1,55 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdmitadExamplesParserTests", "AdmitadExamplesParserTests\AdmitadExamplesParserTests.csproj", "{00A0C621-35CE-4EB6-B714-4C7BECB946BE}"
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32002.261
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdmitadExamplesParserTests", "AdmitadExamplesParserTests\AdmitadExamplesParserTests.csproj", "{00A0C621-35CE-4EB6-B714-4C7BECB946BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdmitadSqlData", "AdmitadSqlData\AdmitadSqlData.csproj", "{D4746AEC-FC86-4A3B-90F4-EC6F76BA1BB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdmitadSqlData", "AdmitadSqlData\AdmitadSqlData.csproj", "{D4746AEC-FC86-4A3B-90F4-EC6F76BA1BB8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F5B729B6-FA5B-4D39-9539-DB44C9193BB2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdmitadSqlDataTests", "AdmitadSqlDataTests\AdmitadSqlDataTests.csproj", "{26BDF12F-CD9C-49CA-8B21-0B808AB5C301}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdmitadSqlDataTests", "AdmitadSqlDataTests\AdmitadSqlDataTests.csproj", "{26BDF12F-CD9C-49CA-8B21-0B808AB5C301}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdmitadCommon", "AdmitadCommon\AdmitadCommon.csproj", "{24109060-3CE9-413F-A2AE-971E66D90A16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AdmitadCommon", "AdmitadCommon\AdmitadCommon.csproj", "{24109060-3CE9-413F-A2AE-971E66D90A16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Admitad.Converters", "Admitad.Converters\Admitad.Converters.csproj", "{791C9526-883E-4CC5-8099-9A199832C71E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Admitad.Converters", "Admitad.Converters\Admitad.Converters.csproj", "{791C9526-883E-4CC5-8099-9A199832C71E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilsTests", "UtilsTests\UtilsTests.csproj", "{187F4F39-DFCC-4D05-8EB4-3A0AC7498E19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilsTests", "UtilsTests\UtilsTests.csproj", "{187F4F39-DFCC-4D05-8EB4-3A0AC7498E19}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger", "Messenger\Messenger.csproj", "{6BD2C6E5-EEA9-48F8-9BE0-F04BE3C8E7FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messenger", "Messenger\Messenger.csproj", "{6BD2C6E5-EEA9-48F8-9BE0-F04BE3C8E7FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheStore.Api.Core", "TheStore.Api.Core\TheStore.Api.Core.csproj", "{55BD7501-5E64-4D8A-96DD-4984DA4042C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheStore.Api.Core", "TheStore.Api.Core\TheStore.Api.Core.csproj", "{55BD7501-5E64-4D8A-96DD-4984DA4042C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiClient", "ApiClient\ApiClient.csproj", "{1F4FAEDE-4859-442E-8983-ABAA4AF3E060}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiClient", "ApiClient\ApiClient.csproj", "{1F4FAEDE-4859-442E-8983-ABAA4AF3E060}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheStore.Api.Front", "TheStore.Api.Front\TheStore.Api.Front.csproj", "{8811C9C2-1502-4AE7-9CB4-D21E76D8B06D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheStore.Api.Front", "TheStore.Api.Front\TheStore.Api.Front.csproj", "{8811C9C2-1502-4AE7-9CB4-D21E76D8B06D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TheStore.Api.Front.Data", "TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj", "{86128707-6D53-4AEB-B11A-CF825717642C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheStore.Api.Front.Data", "TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj", "{86128707-6D53-4AEB-B11A-CF825717642C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web.Common", "Web.Common\Web.Common.csproj", "{E4F60DE0-2FD6-4F10-A1C9-A4B334235EF0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web.Common", "Web.Common\Web.Common.csproj", "{E4F60DE0-2FD6-4F10-A1C9-A4B334235EF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerTool", "ServerTool\ServerTool.csproj", "{4AA5E130-E52B-4E57-8D53-B53B18713233}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerTool", "ServerTool\ServerTool.csproj", "{4AA5E130-E52B-4E57-8D53-B53B18713233}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Research", "Research", "{530D4CA8-9D4D-4BF9-8767-747329ECE811}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportFromOld", "ImportFromOld\ImportFromOld.csproj", "{B403C97A-571B-4373-96C1-CF52BCD2937A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportFromOld", "ImportFromOld\ImportFromOld.csproj", "{B403C97A-571B-4373-96C1-CF52BCD2937A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetUserAgents", "GetUserAgents\GetUserAgents.csproj", "{CB0E1593-C9BC-46FC-BA70-95D62246F08B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GetUserAgents", "GetUserAgents\GetUserAgents.csproj", "{CB0E1593-C9BC-46FC-BA70-95D62246F08B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{9B5B0336-B4FA-41D1-83BE-E018EE9A9237}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{9B5B0336-B4FA-41D1-83BE-E018EE9A9237}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Elastic", "Common.Elastic\Common.Elastic.csproj", "{9E3AA0C2-4523-4EF2-97AE-03532AEBC2B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Elastic", "Common.Elastic\Common.Elastic.csproj", "{9E3AA0C2-4523-4EF2-97AE-03532AEBC2B9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShopsParser", "ShopsParser\ShopsParser.csproj", "{3988B890-73F8-46EE-8B2E-7092F2B1F248}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ShopsParser", "ShopsParser\ShopsParser.csproj", "{3988B890-73F8-46EE-8B2E-7092F2B1F248}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkWithTags", "WorkWithTags\WorkWithTags.csproj", "{53AD44CA-7079-4F83-8899-59BA5758D71E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkWithTags", "WorkWithTags\WorkWithTags.csproj", "{53AD44CA-7079-4F83-8899-59BA5758D71E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingCalculator", "RatingCalculator\RatingCalculator.csproj", "{8B8DA6A1-FD3D-479E-BBDC-5E73B3FE33C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RatingCalculatorTests", "RatingCalculatorTests\RatingCalculatorTests.csproj", "{9E9F6067-460B-40A5-8522-80793CE9F93C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CategoryWorks", "CategoryWorks\CategoryWorks.csproj", "{550AAF72-4E09-4A8D-888E-CA3989FCC5A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -124,6 +133,21 @@ Global
 		{53AD44CA-7079-4F83-8899-59BA5758D71E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{53AD44CA-7079-4F83-8899-59BA5758D71E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{53AD44CA-7079-4F83-8899-59BA5758D71E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B8DA6A1-FD3D-479E-BBDC-5E73B3FE33C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B8DA6A1-FD3D-479E-BBDC-5E73B3FE33C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B8DA6A1-FD3D-479E-BBDC-5E73B3FE33C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B8DA6A1-FD3D-479E-BBDC-5E73B3FE33C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E9F6067-460B-40A5-8522-80793CE9F93C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E9F6067-460B-40A5-8522-80793CE9F93C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E9F6067-460B-40A5-8522-80793CE9F93C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E9F6067-460B-40A5-8522-80793CE9F93C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{550AAF72-4E09-4A8D-888E-CA3989FCC5A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{550AAF72-4E09-4A8D-888E-CA3989FCC5A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{550AAF72-4E09-4A8D-888E-CA3989FCC5A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{550AAF72-4E09-4A8D-888E-CA3989FCC5A2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{00A0C621-35CE-4EB6-B714-4C7BECB946BE} = {F5B729B6-FA5B-4D39-9539-DB44C9193BB2}
@@ -133,5 +157,10 @@ Global
 		{CB0E1593-C9BC-46FC-BA70-95D62246F08B} = {530D4CA8-9D4D-4BF9-8767-747329ECE811}
 		{3988B890-73F8-46EE-8B2E-7092F2B1F248} = {530D4CA8-9D4D-4BF9-8767-747329ECE811}
 		{53AD44CA-7079-4F83-8899-59BA5758D71E} = {530D4CA8-9D4D-4BF9-8767-747329ECE811}
+		{9E9F6067-460B-40A5-8522-80793CE9F93C} = {F5B729B6-FA5B-4D39-9539-DB44C9193BB2}
+		{550AAF72-4E09-4A8D-888E-CA3989FCC5A2} = {530D4CA8-9D4D-4BF9-8767-747329ECE811}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8E50CC2E-5D0C-4FF6-87BB-C0FE9D935B9F}
 	EndGlobalSection
 EndGlobal

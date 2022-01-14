@@ -36,7 +36,9 @@ namespace Common.Elastic.Workers
             BackgroundBaseContext context )
         {
             var clientSettings =
-                new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) ).DefaultIndex( settings.DefaultIndex );
+                new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
+                .RequestTimeout(TimeSpan.FromMinutes(20))
+                .DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
             _context = context;
             _settings = settings;
@@ -92,6 +94,45 @@ namespace Common.Elastic.Workers
             return products;
         }
 
+        private List<T> GetItemsByScrolling<T>(
+            string scrollingTime,
+            Func<QueryContainerDescriptor<T>,QueryContainer> query,
+            Func<SourceFilterDescriptor<T>, ISourceFilter> selector = null,
+            int size = 1000 ) where T : class {
+
+            var searchResponce = _client.Search<T>(s => {
+                s.Size(size).Query(query).Scroll(scrollingTime);
+                if( selector != null) {
+                    s.Source(selector);
+                }
+                return s;
+            });
+
+            CheckResponse(searchResponce);
+            
+            var items = new List<T>();
+
+            _context.AddMessage($"Suitable products {searchResponce.Total}");
+
+            // var counts = 0;
+
+            while (searchResponce.Documents.Any()) {
+                // counts++;
+                items.AddRange(searchResponce.Documents);
+                searchResponce = _client.Scroll<T>(scrollingTime, searchResponce.ScrollId);
+                CheckResponse(searchResponce);
+                //  sdfsfsdfsdf
+                // if( counts == 6) {
+                //     break;
+                // }
+            }
+
+            _context.AddMessage($"Received products {items.Count}");
+
+            return items;
+
+        }
+
         public void UpdateProductsAfterDeletingOffers< T >(
             IReadOnlyList<T> products )
             where T : ProductPart
@@ -123,8 +164,7 @@ namespace Common.Elastic.Workers
                 var result = _client.Bulk(
                     b => b.UpdateMany<T, IProductForIndex>(
                         portion,
-                        (
-                            descriptor,
+                        (   descriptor,
                             entity ) => descriptor.Upsert( entity ).DocAsUpsert().Doc( ( IProductForIndex ) entity )
                             .Routing( entity.RoutingId ) ) );
                 position += _settings.FrameSize;
@@ -135,6 +175,48 @@ namespace Common.Elastic.Workers
 
             _context.AddMessage( $"Upsert {products.Count} products" );
         }
+
+        #region UpdateRating
+
+        public List<ProductRatingInfoFromElastic> GetProductsForUpdatingRating() {
+
+            const string fieldName = "ratingUpdateDate";
+
+            var query = new Func<QueryContainerDescriptor<ProductRatingInfoFromElastic>, QueryContainer>(
+                q => q.Bool( b => b.Filter( 
+                    f => f.Exists( fe => fe.Field("categories") ),
+                    f => f.Bool(fb =>
+                                    fb.Should(
+                                        s1 => s1.DateRange(r => r.Field(fieldName).LessThan(DateTime.Today)),
+                                        // s1 => s1.DateRange(r => r.Field(fieldName).LessThan(DateTime.Now)),
+                                        s2 => s2.Bool(b => b.MustNot(mn => mn.Exists(e => e.Field(fieldName))))
+                                )
+                        )
+                    ) )
+            );
+
+            return GetItemsByScrolling("10m",query, i => i.Includes( inc => inc.Fields( new[] { "id", "soldout", "shopId", "rating" })) ,10000);
+
+        }
+
+        public void UpdateProductRating(List<Product> products) {
+
+            var position = 0;
+            while (position < products.Count)
+            {
+                var portion = products.Skip(position).Take( _settings.FrameSize );
+                var result = _client.Bulk(
+                    b => b.UpdateMany<Product, IProductRatingUpdateData>( portion, (selector, item) => selector.Routing(item.RoutingId).Doc((IProductRatingUpdateData)item) ) );
+                position += _settings.FrameSize;
+                if (result.IsValid == false) {
+                    _context.AddMessage($"Update error: {result.DebugInformation}", true);
+                }
+            }
+
+            _context.AddMessage($"Updated {products.Count} products");
+        }
+
+        #endregion
 
         private void CheckResponse(
             IResponse response )
@@ -219,5 +301,6 @@ namespace Common.Elastic.Workers
                 
         private static IndexClient Create(  ElasticSearchClientSettings settings, BackgroundBaseContext context  )
             => new IndexClient( settings, context );
+
     }
 }

@@ -1,3 +1,4 @@
+using Admitad.Converters.Workers;
 using AdmitadCommon.Types;
 
 using AdmitadSqlData.Helpers;
@@ -13,6 +14,8 @@ using Microsoft.OpenApi.Models;
 
 using TheStore.Api.Core.Sources.Workers;
 using TheStore.Api.Front.Data.Repositories;
+
+using TheStoreRepositoryFromFront = TheStore.Api.Front.Data.Repositories.TheStoreRepository;
 
 namespace TheStore.Api.Core
 {
@@ -41,12 +44,13 @@ namespace TheStore.Api.Core
                             Version = "v1"
                         } );
                 } );
-            var settingsBuilder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
-            services.AddTransient( provider => settingsBuilder.GetSettings() );
+            var settingsBuilder = new SettingsBuilder( new DbHelper(dbSettings) );
+            var settings = settingsBuilder.GetSettings();
+            services.AddScoped( provider => settings );
             services.AddSingleton<PriorityQueue>();
             services.AddSingleton<BackgroundWorks>();
-            services.AddTransient( r => 
-                new TheStoreRepository( dbSettings ) );
+            services.AddScoped( r => new TheStoreRepository( dbSettings ) );
+            services.AddSingleton(r => new ProductRatingCalculation(new TheStoreRepositoryFromFront(dbSettings), settings.CtrCalculationType) );
             services.AddScoped( r => new DbHelper( dbSettings ) );
         }
 

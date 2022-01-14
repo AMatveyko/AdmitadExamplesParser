@@ -67,7 +67,8 @@ namespace Common.Workers
                 DuplicateFile = GetString( "DuplicateFile" ),
                 ShowStatistics = GetBool( "ShowStatistics" ),
                 ElasticSearchClientSettings = elasticSearchClientSettings,
-                TelegramSettings = telegramSetting
+                TelegramSettings = telegramSetting,
+                CtrCalculationType = GetString("RatingCalculationType")
             };
             return settings;
         }

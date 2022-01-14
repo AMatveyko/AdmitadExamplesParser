@@ -164,7 +164,7 @@ namespace AdmitadExamplesParserTests
         [ Test ]
         public void RelinkTagsForCategory()
         {
-            var categoryId = 41612013;
+            var categoryId = 31301040;
             var tagsForCategory = _dbHelper.GetTags().Where( t => t.IdCategory == categoryId ).ToList();
             foreach( var tag in tagsForCategory ) {
                 TagRelinkTest( tag.Id );

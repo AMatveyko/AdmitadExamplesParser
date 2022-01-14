@@ -1,5 +1,6 @@
 ﻿// a.snegovoy@gmail.com
 
+using Admitad.Converters.Workers;
 using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
@@ -11,8 +12,8 @@ namespace TheStore.Api.Core.Sources.Workers
 {
     internal sealed class CountryWorker : BaseLinkWorker
     {
-        public CountryWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper )
-            : base( settings, works, dbHelper ) { }
+        public CountryWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper, ProductRatingCalculation productRatingCalculation )
+            : base( settings, works, dbHelper, productRatingCalculation ) { }
 
         public void LinkAll( CountriesLinkContext context )
         {

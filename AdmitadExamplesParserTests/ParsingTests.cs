@@ -2,23 +2,29 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using Admitad.Converters;
 using Admitad.Converters.Workers;
-
+using AdmitadSqlData.Entities;
 using AdmitadSqlData.Helpers;
 
 using Common.Api;
 using Common.Entities;
 using Common.Helpers;
 using Common.Workers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using NUnit.Framework;
 
+//using NUnit.Framework;
+
 namespace AdmitadExamplesParserTests
 {
+    [TestClass]
     public sealed class ParsingTests
     {
 
@@ -34,10 +40,23 @@ namespace AdmitadExamplesParserTests
         private static readonly Regex FromYear = new(@"от\s+года", RegexOptions.Compiled);
         private static readonly Regex ToYear = new(@"до\s+года", RegexOptions.Compiled);
 
+
+        [TestMethod]
+        public void LamodaTest() => ParsingTest("lamoda");
+        [ TestMethod ]
+        public void EccoTest() => ParsingTest("ecco");
+        [TestMethod]
+        public void AsosTest() => ParsingTest("asos");
+        [TestMethod]
+        public void SbermegamarketTest() => ParsingTest("sbermegamarket");
+        [TestMethod]
+        public void MangoTest() => ParsingTest("mango");
+
         // [ TestCase( "lamoda" ) ]
         // [ TestCase( "adidas" ) ]
         // [ TestCase( "asos" ) ]
         // [ TestCase( "yoox" ) ]
+        // [ TestCase( "ecco" ) ]
         // [ TestCase( "12storeez" ) ]
         // [ TestCase( "akusherstvo" ) ]
         // [ TestCase( "amersport" ) ]
@@ -52,13 +71,20 @@ namespace AdmitadExamplesParserTests
         // [ TestCase( "intimshop" ) ]
         // [ TestCase( "yoins" ) ]
         // [ TestCase( "goldenline" ) ]
-        [ TestCase( "dochkisinochki" ) ]
+        // [ TestCase( "dochkisinochki" ) ]
+        // [ TestCase( "bebakids" ) ]
         public void ParsingTest( string shopName )
         {
-            DoParsing( shopName );
+            DoParsing( shopName, "" );
         }
 
-        [ Test ]
+        [TestMethod]
+        public void ParsingFromTestDirectoryTest() {
+            const string testDirectoryPath = @"g:\admitadFeedsTests\";
+            DoParsing("akusherstvo",testDirectoryPath);
+        }
+
+        // [ Test ]
         public void GenderTest()
         {
             var str = "женская одежда\\\\брюки";
@@ -66,14 +92,18 @@ namespace AdmitadExamplesParserTests
         } 
         
         private static void DoParsing(
-            string shopName )
+            string shopName, string directoryPath )
         {
 
             var dbSettings = SettingsBuilder.GetDbSettings();
             var dbHelper = new DbHelper( dbSettings );
-            
+            var newRepository = new TheStore.Api.Front.Data.Repositories.TheStoreRepository(dbSettings);
+            var settingsBuilder = new SettingsBuilder(newRepository);
+            var settings = settingsBuilder.GetSettings();
+
+
             var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
-                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
+                FilePath = string.IsNullOrWhiteSpace(directoryPath) ? $@"g:\admitadFeeds\{ shopName }.xml" : $@"{directoryPath}\{shopName}.xml",
                 ShopName = shopName
             };
             
@@ -94,10 +124,110 @@ namespace AdmitadExamplesParserTests
             var allOffers = offers.Count;
             var emptyParams = offers.Where( o => o.Params.Count == 0 ).ToList();
             var oneParams = offers.Where( o => o.Params.Count == 1 ).ToList();
-            var products = new ProductConverter( dbHelper, new RatingCalculation( 0 ) ).GetProducts( offers );
+            var products = new ProductConverter( dbHelper, new ProductRatingCalculation(newRepository, settings.CtrCalculationType) ).GetProducts( offers );
             var clothesCount = products.Count( p => p.CategoryName.ToLower().Contains( "рюкзаки" ) );
             var sorterProducts = products.OrderBy( p => p.OldPrice ).ToList();
             Console.WriteLine( offers.Count );
+        }
+
+        [TestMethod]
+        public void GetBrandsForElectronic() {
+            const string shopName = "beru";
+            var downloadInfo = new DownloadInfo(new XmlFileInfo("n", shopName, "n", 0, 0, 1, null))
+            {
+                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
+                ShopName = shopName
+            };
+
+            var shopData = GetShopData( shopName );
+            
+            var ids = GetOfferIds();
+            var offers = shopData.NewOffers.Where(o => ids.Contains(o.OfferId));
+            GC.Collect();
+
+            var brandsFromOffers = offers.GroupBy(o => BrandHelper.GetClearlyVendor(o.Vendor)).ToDictionary(k => k.Key, v => v.Count());
+            var brandsTelecs = offers.Where(o => o.CategoryId == "90639").GroupBy(o => BrandHelper.GetClearlyVendor(o.Vendor)).ToDictionary(k => k.Key, v => v.Count());
+
+            var brandsFromDb = GetAllBrands().Select(b => b.ClearlyName).ToHashSet();
+
+            var newBrands = brandsFromOffers.Where(b => brandsFromDb.Contains(b.Key) == false).OrderByDescending(b => b.Value).ToList();
+            var newBrandsTelecs = brandsTelecs.Where(b => brandsFromDb.Contains(b.Key) == false).OrderByDescending(b => b.Value).ToList();
+
+            var formatedBrands = newBrands.Select(b => $"{b.Key,-20} оферов: {b.Value,10}");
+            var formatedBrandsTelecs = newBrandsTelecs.Select(b => $"{b.Key,-20} оферов: {b.Value,10}");
+
+            //File.WriteAllLines(@"o:\\admitad\\workData\\scrollApi\\newBrands.txt",formatedBrands);
+            //File.WriteAllLines(@"o:\\admitad\\workData\\scrollApi\\newBrandsTelecs.txt", formatedBrandsTelecs);
+
+        }
+
+        [ Test ]
+        public void ParseYandexNamesTest()
+        {
+
+            const string shopName = "beru";
+            var shopData = Measured(() => GetShopData( shopName ), "get shopData");
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            var dbHelper = new DbHelper( dbSettings );
+            var newRepository = new TheStore.Api.Front.Data.Repositories.TheStoreRepository(dbSettings);
+            
+            var settingsBuilder = new SettingsBuilder(newRepository);
+            var settings = settingsBuilder.GetSettings();
+            var offers = Measured(() => ConvertOffers( shopData ), "convert offers");
+            var productsConverter = new ProductConverter( dbHelper, new ProductRatingCalculation(newRepository, settings.CtrCalculationType) );
+            var products= Measured(() => productsConverter.GetProducts( offers ), "merge offers in products");
+
+            Measured( () => ParseNames( products ), "parse names" );
+
+            var parameters = products.SelectMany( p => p.Params ).Distinct().ToList();
+
+        }
+
+        private static void ParseNames(IEnumerable<Product> products ) {
+            var postWorker = new YandexMarketPostWorker();
+            foreach( var product in products ) {
+                postWorker.Process(product);
+            }
+        }
+
+        private static void Measured( Action action, string stepName ) {
+            var sw = new Stopwatch();
+            sw.Start();
+            action();
+            sw.Stop();
+            Console.Write($"{stepName}: {sw.ElapsedMilliseconds}");
+
+        }
+        
+        private static T Measured< T >( Func<T> func, string stepName )
+        {
+
+            var sw = new Stopwatch();
+            sw.Start();
+            var result = func();
+            sw.Stop();
+            Console.Write($"{stepName}: {sw.ElapsedMilliseconds}");
+            return result;
+        }
+
+        private IShopDataWithNewOffers GetShopData( string shopName ) {
+            var downloadInfo = new DownloadInfo(new XmlFileInfo("n", shopName, "n", 0, 0, 1, null))
+            {
+                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
+                ShopName = shopName
+            };
+            
+            return ParseFile(downloadInfo, false);
+        }
+        
+        private List<BrandDb> GetAllBrands() {
+            var dbSettings = SettingsBuilder.GetDbSettings();
+            return new DbHelper(dbSettings).GetAllBrands();
+        }
+
+        private HashSet<string> GetOfferIds() {
+            const string filePath = @"o:\\admitad\\workData\\scrollApi\\offerIds.txt";
+            return File.ReadAllLines(filePath).Where(s => string.IsNullOrWhiteSpace(s) == false && string.IsNullOrEmpty(s) == false).ToHashSet();
         }
 
         //Сделано в (?<country>.+)\.
@@ -120,8 +250,11 @@ namespace AdmitadExamplesParserTests
                     ",",
                     offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() == "пол" ) ).Select( p => p.Value )
                         .Distinct() ),
-                AgeFromParam = GetUniqueWithoutDigits( offers, "возраст" ),
-                AgeFromParam2 = GetUniqueWithoutDigits( offers, "возраст ребенка" ),
+                AgeFromParam = 
+                    string.Join( ",", offers.SelectMany( o => o.Params.Where( p => p.Name.ToLower() is "размер" ) ).Select( p => $"{p.UnitFromXml} {p.Value}" ).Distinct() ),
+                AgeFromParam2 = string.Join( ",", offers.SelectMany( o => o.Params.Select( p => p.UnitFromXml ) ).Distinct() ),
+                // AgeFromParam = GetUniqueWithoutDigits( offers, "возраст" ),
+                // AgeFromParam2 = GetUniqueWithoutDigits( offers, "возраст ребенка" ),
                 Sizes = offers.SelectMany( o => o.Params ).Select( p => $"{p.Name} {p.UnitFromXml} {p.Value}").Distinct().ToList(),
                 CategoryPaths = offers.Select( o => o.CategoryPath ).Distinct().ToList(),
                 Countries = offers.Select( GetCountryGetter( shopName ) ).Distinct().ToList()

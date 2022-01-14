@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Common.Helpers;
+using Common.Workers;
 
 using TheStore.Api.Front.Data.Entities;
 using TheStore.Api.Front.Data.Helpers;
@@ -19,11 +21,21 @@ namespace WorkWithTags
         static void Main( string[] args )
         {
             // TypeOne();
-            TypeTwo();
+            // TypeTwo();
             // FixTags();
+            // CloneTags( 20815000, 41715000, ( "кроссовки", "сникерсы" ) );
+            CloneTags( 31301030, 31301040, ( "пуховики", "шубы" ) );
             Console.WriteLine( "Ok!" );
         }
 
+        private static void CloneTags( int from, int to, (string,string)? replace )
+        {
+            var repository = new TagsRepository( SettingsBuilder.GetDbSettings() );
+            var worker = new TagsCloner( repository, "Женские", "для девочек" );
+            var result = worker.CopyTags( from, to, replace );
+            Console.WriteLine( $"Cloned { result }" );
+        }
+        
         private static void TypeTwo()
         {
             const string ToChange = "носки";
@@ -56,7 +68,7 @@ namespace WorkWithTags
         private static string ProcessText( string text, string toChange, string forWhat )
         {
             var newText = text.ToLower().Replace( toChange, forWhat );
-            var upperFirst = char.ToUpper( newText[ 0 ] ) + newText.Substring( 1 );
+            var upperFirst = Helper.ToUpperFirstLetter( newText );
             return upperFirst;
         }
         
@@ -117,9 +129,7 @@ namespace WorkWithTags
                 Menu = otherTag.UnitValue,
                 H1 = title,
                 Title = title,
-                LatinName = string.Join(
-                    string.Empty,
-                    otherTag.UnitValue.ToLower().Select( c => _dictionary.ContainsKey( c ) ? _dictionary[ c ] : "" ) ),
+                LatinName = TransliterationHelper.Translit(otherTag.UnitValue),
                 CategoryId = categoryId,
                 Enabled = true,
                 Important = false,
@@ -184,42 +194,6 @@ namespace WorkWithTags
             "брюки"
         };
         
-        private static Dictionary<char, string> _dictionary = new() {
-            { 'а', "a" },
-            { 'б', "b" },
-            { 'в', "v" },
-            { 'г', "g" },
-            { 'д', "d" },
-            { 'е', "e" },
-            { 'ё', "e" },
-            { 'ж', "zh" },
-            { 'з', "z" },
-            { 'и', "i" },
-            { 'й', "j" },
-            { 'к', "k" },
-            { 'л', "l" },
-            { 'м', "m" },
-            { 'н', "n" },
-            { 'о', "o" },
-            { 'п', "p" },
-            { 'р', "r" },
-            { 'с', "s" },
-            { 'т', "t" },
-            { 'у', "u" },
-            { 'ф', "f" },
-            { 'х', "x" },
-            { 'ц', "c" },
-            { 'ч', "ch" },
-            { 'ш', "sh" },
-            { 'щ', "sh" },
-            { 'ъ', "" },
-            { 'ы', "y" },
-            { 'ь', "" },
-            { 'э', "e" },
-            { 'ю', "yu" },
-            { 'я', "ya" },
-            { ' ', "_" },
-            { '-', "-" }
-        };
+        
     }
 }

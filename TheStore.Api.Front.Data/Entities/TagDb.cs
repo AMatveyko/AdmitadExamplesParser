@@ -1,11 +1,12 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TheStore.Api.Front.Data.Entities
 {
     [ Table( "tag" ) ]
-    public sealed class TagDb
+    public sealed class TagDb : ICloneable
     {
         [ Column( "id" ) ]
         public int Id { get; set; }
@@ -57,5 +58,23 @@ namespace TheStore.Api.Front.Data.Entities
 
         public override int GetHashCode() => LatinName.GetHashCode();
 
+        public object Clone() =>
+            new TagDb {
+                AddDate = int.Parse( DateTime.Now.ToString( "yyyyMMdd" ) ),
+                Name = Name,
+                Exclude = Exclude,
+                Name2 = Name2,
+                Menu = Menu,
+                H1 = H1,
+                Title = Title,
+                LatinName = LatinName,
+                LatinName2 = LatinName2,
+                Sex = Sex,
+                CategoryId = CategoryId,
+                SearchFields = SearchFields,
+                Enabled = Enabled,
+                Important = Important,
+                Specify = Specify
+            };
     }
 }

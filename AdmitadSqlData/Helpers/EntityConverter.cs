@@ -116,15 +116,17 @@ namespace AdmitadSqlData.Helpers
 
         public static Tag Convert( TagDb tagDb, List<Category> children )
         {
-            var tag = new Tag();
-            tag.Id = tagDb.Id.ToString();
-            tag.Fields = SplitComa( tagDb.SearchFields );
-            tag.SearchTerms = CreateTerms( tagDb.Name );
-            tag.Gender = GenderHelper.ConvertFromTag( tagDb.Pol );
-            tag.IdCategory = tagDb.IdCategory;
-            tag.SpecifyWords = CreateTerms( tagDb.SpecifyWords );
-            tag.ExcludePhrase = CreateTerms( tagDb.ExcludePhrase );
-            tag.Title = tagDb.NameTitle;
+            var tag = new Tag {
+                Id = tagDb.Id.ToString(),
+                Fields = SplitComa( tagDb.SearchFields ),
+                SearchTerms = CreateTerms( tagDb.Name ),
+                Gender = GenderHelper.ConvertFromTag( tagDb.Pol ),
+                IdCategory = tagDb.IdCategory,
+                SpecifyWords = CreateTerms( tagDb.SpecifyWords ),
+                ExcludePhrase = CreateTerms( tagDb.ExcludePhrase ),
+                Title = tagDb.NameTitle,
+                SearchAsPart = tagDb.SearchAsPart
+            };
             //var categories = GetCategoryChildren( tagDb.IdCategory, allCategories ).Select( c => c.Id ).ToList();
             var categories = children.Select( c => c.Id ).ToList();
             categories.Add( tag.IdCategory.ToString() );

@@ -10,9 +10,10 @@ namespace Common.Entities
     [ XmlRoot( "offer" ) ]
     public class RawOffer : RawOfferWithCategoryList
     {
-        [ XmlAttribute( "available" ) ] public string AvailableFromXml { get; set; }
+        [ XmlAttribute( "available" ) ] public string AvailableAttribute { get; set; }
+        [ XmlElement( "available" ) ] public string AvailableElement { get; set; }
         [ XmlAttribute( "deleted" ) ] public bool IsDeleted { get; set; }
-        [ XmlIgnore ] public bool Available => AvailableFromXml == "true" || AvailableFromXml == "available for order";
+        [ XmlIgnore ] public bool Available => AvailableAttribute == "true" || AvailableAttribute == "available for order";
         [ XmlAttribute( "id" ) ] public string OfferId { get; set; }
         [ XmlAttribute( "type" ) ] public string Type { get; set; }
         [ XmlElement( "categoryId" ) ] public string CategoryId { get; set; }

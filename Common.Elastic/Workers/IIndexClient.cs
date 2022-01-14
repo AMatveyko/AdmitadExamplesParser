@@ -24,5 +24,7 @@ namespace Common.Elastic.Workers
         ProductPart GetFirstEnableProductByShopIdAndCategoryId( string shopId, string categoryId );
 
         Task<IProductPhotos> GetProductsPhotoAsync( string id, string index = null );
+        List<ProductRatingInfoFromElastic> GetProductsForUpdatingRating();
+        void UpdateProductRating(List<Product> products);
     }
 }

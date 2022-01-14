@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Common.Entities
 {
-    public interface IProductForIndex : IIndexedEntities
+    public interface IProductForIndex : IIndexedEntities, IProductRatingUpdateData
     {
         [ JsonProperty( "originalCategoryId" ) ] public string OriginalCategoryId { get; set; }
         [ JsonProperty ( "url" ) ] public string Url { get; }
@@ -35,10 +35,11 @@ namespace Common.Entities
         [ JsonProperty ( "salesNotes" ) ] public string SalesNotes { get; }
         [ JsonProperty( "offerIds" ) ] public string[] OfferIds { get; }
         [ JsonProperty( "soldout" ) ] public byte Soldout { get; set; }
-        [ JsonProperty( "rating" ) ] public int Rating { get; set; }
         [ JsonProperty( "type" ) ] public string Type { get; set; }
-        [ JsonProperty( "suitableAgeLong" ) ] public long SuitableAgeLong { get; }
-        [ JsonProperty( "suitableAgeText" ) ] public string SuitableAgeText { get; }
+        [ JsonProperty( "ageFromTxt" ) ] public string AgeFromTxt { get; set; }
+        [ JsonProperty( "ageFromInt" ) ] public int? AgeFromIntFact { get; set; }
+        [ JsonProperty( "ageToTxt" ) ] public string AgeToTxt { get; set; }
+        [ JsonProperty( "ageToInt" ) ] public int? AgeToIntFact { get; set; }
 
     }
 }

@@ -26,7 +26,8 @@ namespace Admitad.Converters.Handlers
             offer.Age = properties.Age ?? offer.Age;
             offer.Gender = properties.Gender ?? offer.Gender;
             offer.Type = properties.Type;
-
+            offer.AgeRange ??= properties.AgeRange;
+            
             return offer;
         }
     }

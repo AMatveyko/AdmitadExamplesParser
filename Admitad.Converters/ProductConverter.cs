@@ -2,8 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-
+using Admitad.Converters.Workers;
 using AdmitadSqlData.Helpers;
 
 using Common.Entities;
@@ -18,12 +19,11 @@ namespace Admitad.Converters
     {
 
         private readonly DbHelper _dbHelper;
-        private readonly RatingCalculation _calculation;
+        private readonly ProductRatingCalculation _calculator;
         
-        public ProductConverter( DbHelper dbHelper, RatingCalculation calculation )
-        {
+        public ProductConverter( DbHelper dbHelper, ProductRatingCalculation calculator ) {
             _dbHelper = dbHelper;
-            _calculation = calculation;
+            _calculator = calculator;
         }
         
         public List<Product> GetProducts( IEnumerable<Offer> offers )
@@ -126,16 +126,18 @@ namespace Admitad.Converters
         {
             var offer = offers.First();
             var soldOut = offers.All( o => o.SoldOut );
+            var ageRange = AgeRange.GetMaxRange( offers.Select( o => o.AgeRange ).ToList() );
             
             // костыль для перехода на новую схему возраста и пола
             var gender = offer.Gender switch {
                 Gender.Boy => Gender.Man,
+                Gender.Girl => Gender.Woman,
                 _ => offer.Gender
             };
             
             _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
 
-            return new Product {
+            var product = new Product {
                 Id = offer.ProductId,
                 Url = offer.Url,
                 UpdateDate = updateDate,
@@ -163,9 +165,18 @@ namespace Admitad.Converters
                 OriginalCategoryId = offer.CategoryId,
                 OfferIds = offers.Select( o => o.OriginalId ).ToArray(),
                 Vendor = offer.OriginalVendor,
-                Rating = _calculation.Calculate(),
-                Type = offer.Type.ToString()
+                Type = offer.Type.ToString(),
+                AgeFromIntFact = ( int? ) ageRange?.From,
+                AgeFromTxt = ageRange?.From.ToString( CultureInfo.InvariantCulture ),
+                AgeToIntFact = ( int? ) ageRange?.To,
+                AgeToTxt = ageRange?.To.ToString( CultureInfo.InvariantCulture )
             };
+
+            CalculateAndSetRating(product);
+
+            return product;
         }
+
+        private void CalculateAndSetRating(Product product) => _calculator.SetRating(product, false);
     }
 }

@@ -34,10 +34,11 @@ namespace Admitad.Converters.Workers.ShopWorkers
             new( @"(года|год|years|лет|л|г|\+)", RegexOptions.Compiled );
         private static readonly Regex FromYear = new(@"от\s+года", RegexOptions.Compiled);
         private static readonly Regex ToYear = new(@"до\s+года", RegexOptions.Compiled);
+        private static readonly Regex Coma = new(",", RegexOptions.Compiled);
         private static readonly Regex Remove = new("(от |c |с )", RegexOptions.Compiled);
         private static readonly Regex Split = new("(?: до )|-", RegexOptions.Compiled);
-        
-        
+
+
         public DochkiSinochkiWorker( DbHelper dbHelper, Func<RawOffer, int, string> idGetter = null )
             : base( dbHelper, idGetter )
         {
@@ -58,27 +59,21 @@ namespace Admitad.Converters.Workers.ShopWorkers
                     .Select( p => FromYear.Replace( p, "от 1 года" ) )
                     .Select( p => ToYear.Replace( p, "до 1 года" ) )
                     .Select( p => StartRange.Replace( p, "0" ) )
+                    .Select( p => Coma.Replace( p, "." ) )
                     .Select( p => Month.Replace( p, MonthsConst ) )
                     .Select( p => Years.Replace( p, YearsConst ) )
                     .Select( p => Split.Split( p ) );
             
             var ranges = convertedParams.Select( Convert ).ToList();
 
-            if( ranges.Any() == false ) {
-                return offer;
-            }
-            
-            offer.AgeRange = new AgeRange {
-                From = ranges.Min( r => r.From ),
-                To = ranges.Max( r => r.To )
-            };
+            offer.AgeRange = AgeRange.GetMaxRange( ranges );
             
             return offer;
         }
 
         private static AgeRange Convert( string[] rawRange )
         {
-            var result = new AgeRangeExtended { From = 0, To = 1200 };
+            var result = new AgeRangeExtended { From = AgeRange.Min, To = AgeRange.Max };
             
             var withTo = rawRange.Any() && ( Remove.IsMatch( rawRange[0] ) || rawRange.Length == 2 );
             

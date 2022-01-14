@@ -9,6 +9,7 @@
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\Messenger\Messenger.csproj" />
+      <ProjectReference Include="..\RatingCalculator\RatingCalculator.csproj" />
     </ItemGroup>
 
     <ItemGroup>

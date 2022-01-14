@@ -17,6 +17,7 @@ using NLog;
 
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
 using TheStore.Api.Front.Entity;
@@ -136,6 +137,8 @@ namespace TheStore.Api.Front.Workers
 
         private static bool TryGetFromFs( string path, out byte[] file ) {
             if( File.Exists( path ) ) {
+                // чтобы понимать какие файлы довно не использовались
+                File.SetCreationTimeUtc( path, DateTime.UtcNow );
                 file = File.ReadAllBytes( path );
                 return true;
             }
@@ -182,21 +185,35 @@ namespace TheStore.Api.Front.Workers
         private static async Task<byte[]> DoDownloadImage( string url, ProxyInfo proxyInfo )
         {
             var imageBytes = await WebRequester.Request( url, proxyInfo );
-            return ResizeImage( imageBytes );
+            return ResizeImageIfNeed( imageBytes );
         }
         
-        private static byte[] ResizeImage( byte[] imageByte )
-        {
+        private static byte[] ResizeImageIfNeed( byte[] imageByte ) {
             var image = Image.Load( imageByte );
-            var resizeOptions = new ResizeOptions {
-                Mode = ResizeMode.Crop,
-                Size = new Size( 322, 450 ),
-            };
-            image.Mutate( a => a.Resize( resizeOptions ) );
+            // var resizeOptions = new ResizeOptions {
+            //     Mode = ResizeMode.Crop,
+            //     Size = new Size( 322, 450 ),
+            // };
+            // image.Mutate( a => a.Resize( resizeOptions ) );
+
+            var finalImage = IsNeedResize( image ) ? DoResizeImage( image ) : image;
+            
             using var ms = new MemoryStream();
-            image.Save( ms, new JpegEncoder() );
+            finalImage.Save( ms, new JpegEncoder() );
             return ms.ToArray();
         }
+
+        private static Image<Rgba32> DoResizeImage( Image<Rgba32> image ) {
+            var resizeOptions = new ResizeOptions {
+                // Mode = ResizeMode.Crop,
+                Mode = ResizeMode.Max,
+                Size = new Size( 800, 600 ),
+            };
+            image.Mutate( a => a.Resize( resizeOptions ) );
+            return image;
+        }
+        
+        private static bool IsNeedResize( Image<Rgba32> image ) => image.Width > 800 || image.Height > 600;
         
         #endregion
 

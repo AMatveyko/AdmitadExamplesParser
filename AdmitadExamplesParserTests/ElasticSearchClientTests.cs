@@ -8,11 +8,12 @@ using Common.Api;
 using Common.Entities;
 using Common.Extensions;
 using Common.Settings;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 
 namespace AdmitadExamplesParserTests
 {
+    [TestClass]
     public class ElasticSearchClientTests
     {
         private readonly ElasticSearchClientSettings _settings = new ElasticSearchClientSettings {
@@ -31,6 +32,14 @@ namespace AdmitadExamplesParserTests
             File.WriteAllLines( @"o:\admitad\workData\scrollApi\products-old-1.txt", ids );
         }
         
+        //[Test]
+        [TestMethod]
+        public void WriteOfferIds() {
+            var client = CreateClient("products-1");
+            var ids = client.GetOffersIds();
+            File.WriteAllLines(@"o:\admitad\workData\scrollApi\offerIds.txt", ids);
+        }
+
         [ Test ]
         public void GetCountAllDocuments()
         {

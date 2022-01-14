@@ -8,10 +8,11 @@ using Common.Entities;
 using Common.Settings;
 
 using TheStore.Api.Front.Data.Entities;
+using TheStore.Api.Front.Data.Pub;
 
 namespace TheStore.Api.Front.Data.Repositories
 {
-    public sealed class TheStoreRepository : BaseRepository, ISettingsRepository
+    public sealed class TheStoreRepository : BaseRepository, ISettingsRepository, ITheStoteRepositoryForRatingCalculator
     {
 
         private static readonly Dictionary<string, int> Cache = new Dictionary<string, int>();
@@ -95,5 +96,9 @@ namespace TheStore.Api.Front.Data.Repositories
 
             return Cache[ key ];
         }
+
+        public List<ItemIds> GetCtrs() => Db.ItemCtrs.ToList();
+
+        public List<ShopDb> GetShops() => Db.Shops.ToList();
     }
 }

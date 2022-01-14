@@ -10,14 +10,9 @@ namespace ApiClient.Requests
     internal sealed class LinkAllRequest : BaseRequest<TopContext>
     {
         
-        private const string Controller = "Index";
-        private const string MethodName = "LinkAll";
+        protected override string Controller => "Index";
+        protected override string MethodName => "LinkAll";
 
-        public LinkAllRequest(
-            RequestSettings settings )
-            : base( Controller, MethodName, settings )
-        {
-            AddParam( "clean", "true" );
-        }
+        public LinkAllRequest( RequestSettings settings ) : base( settings, true ) { }
     }
 }

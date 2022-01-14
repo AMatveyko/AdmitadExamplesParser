@@ -45,7 +45,7 @@ namespace Admitad.Converters.Workers
         {
             var clientSettings = new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
                 //.Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
-                .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
+                .RequestTimeout( TimeSpan.FromMinutes( 15 ) ).DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
             _withStatistics = withStatics;
             _frameSize = settings.FrameSize;
@@ -80,9 +80,34 @@ namespace Admitad.Converters.Workers
             
             return ids;
         }
-        
+
+        public List<string> GetOffersIds()
+        {
+
+            const string time = "1m";
+
+            var searchResponse = _client.Search<Product>(s => s
+                .Source(s=> s.Includes( i=> i.Field( p=> p.OfferIds)))
+                //.Size(100000)
+                .Query(q => q.Bool(b=>b.Filter(f=>f.Range(r=>r.Field("categories").GreaterThanOrEquals(90000000000)))))
+                .Scroll(time)
+            );
+
+            var offerIds = new List<string>();
+
+            while (searchResponse.Documents.Any())
+            {
+                offerIds.AddRange(searchResponse.Hits.SelectMany(p => p.Source.OfferIds));
+                Console.WriteLine(offerIds.Count);
+                searchResponse = _client.Scroll<Product>(time, searchResponse.ScrollId);
+            }
+
+            return offerIds;
+
+        }
+
         #endregion
-        
+
         #region Product
 
         public ProductResponse GetProduct( string id )
@@ -126,9 +151,7 @@ namespace Admitad.Converters.Workers
             }
         }
 
-        public void Bulk(
-            IEnumerable<T> entities )
-        {
+        public void Bulk( IEnumerable<T> entities ) {
             MeasureWorkTime( () => DoBulk( entities ) );
         }
 
@@ -146,16 +169,16 @@ namespace Admitad.Converters.Workers
             }
         }
 
-        public void BulkAll(
-            IEnumerable<T> entities )
-        {
-            MeasureWorkTime( () => DoBulkAll( entities ) );
-        }
-        
+        public void BulkAll( IEnumerable<T> entities ) => MeasureWorkTime(() => DoBulkAll(entities));
+        // public void BulkAll(IEnumerable<T> entities) => MeasureWorkTime(() => DoBulkAllTyped(entities));
+
+        public void BulkAllTyped(IEnumerable<T> entities) => MeasureWorkTime(() => DoBulkAllTyped(entities));
+        public void BulkAllWithCategories(IEnumerable<T> entities) => MeasureWorkTime(() => DoBulkAllWithCategories(entities));
+
         #endregion
 
         #region Property
-        
+
         public UpdateResult LinkProductsByProperty( BaseProperty property )
         {
 
@@ -313,7 +336,12 @@ namespace Admitad.Converters.Workers
             BoolQueryDescriptor<Product> descriptor,
             Tag tag )
         {
-            var query = $"( { string.Join( " OR ", tag.SearchTerms ) } )";
+            var searchTerms = tag.SearchAsPart
+                ? tag.SearchTerms.Select(t => t.Replace("\"",string.Empty))
+                    .Select( t => $"*{t}*" )
+                    .ToArray()
+                : tag.SearchTerms;
+            var query = $"( { string.Join( " OR ", searchTerms ) } )";
 
             if( tag.ExcludePhrase.Any() ) {
                 var queryExcludePhrase = string.Join( " AND ", tag.ExcludePhrase.Select( ep => $"NOT {ep}" ) );
@@ -590,6 +618,39 @@ namespace Admitad.Converters.Workers
             }
             _context.AddMessage( $"Update { count } products" );
         }
+
+        public void DoBulkAllWithCategories(IEnumerable<T> entities) =>
+            DoBulkAllTyped(entities, entity => (IProductForIndexWithCategories)entity);
+
+        public void DoBulkAllTyped(IEnumerable<T> entities) =>
+            DoBulkAllTyped(entities, entity => (IProductForIndex)entity );
+
+        private void DoBulkAllTyped<E>(IEnumerable<T> entities, Func<T,E> typecast ) where E : class, IIndexedEntities {
+            var list = entities.ToList();
+            var position = 0;
+            var frameSize = 100000;
+            var count = 0;
+            while (position < list.Count)
+            {
+                var portion = list.Skip(position).Take(frameSize);
+                var result = _client.Bulk(b => b.UpdateMany<T, E>(portion, 
+                    ( descriptor, entity) => descriptor.Upsert(entity).DocAsUpsert().Doc(typecast(entity)).Routing(entity.RoutingId)
+                ));
+                position += frameSize;
+                count += portion.Count();
+                if (result.DebugInformation.Contains("Invalid"))
+                {
+                    _context.AddMessage("Update error!", true);
+                    Logger.Error(result.DebugInformation);
+                }
+
+            }
+            _context.AddMessage($"Updated { count } products");
+        }
+
+        //private IBulkUpdateOperation<T,E> GetBulkDescriptor<E>(BulkUpdateDescriptor<T,E> descriptor, T entity) where E : class, IIndexedEntities {
+        //    return descriptor.Upsert(entity).DocAsUpsert().Doc((E)entity).Routing(entity.RoutingId);
+        //}
 
         public void DoBulkAllForImport(
             IEnumerable<T> entities )

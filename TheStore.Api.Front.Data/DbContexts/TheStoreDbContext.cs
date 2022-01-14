@@ -29,6 +29,8 @@ namespace TheStore.Api.Front.Data.DbContexts
         public DbSet<TagDb> Tags { get; set; }
         public DbSet<OtherTagDb> OtherTags { get; set; }
         public DbSet<CategoryDb> Categories { get; set; }
+        public DbSet<ItemIds> ItemCtrs { get; set; }
+        public DbSet<CategoryMapDb> CategoryMaps { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

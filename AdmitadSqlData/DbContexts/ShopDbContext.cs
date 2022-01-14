@@ -41,6 +41,7 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<ParseLog> ParseLogs { get; set; }
         public DbSet<AgeDb> Ages { get; set; }
         public DbSet<SexDb> Sex { get; set; }
+        public DbSet<CategoryMappingDb> CategoryMapping { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

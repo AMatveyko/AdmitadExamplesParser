@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-
+using Admitad.Converters.OfferFilters;
 using Common.Api;
 using Common.Entities;
 using Common.Helpers;
@@ -64,6 +64,7 @@ namespace Admitad.Converters.Workers
 
         private readonly DateTime _updateTime;
         private readonly string _shopNameLatin;
+        private IAvailabilityChecker _availabilityChecker;
 
         private bool _categoryFilled = false;
 
@@ -73,7 +74,7 @@ namespace Admitad.Converters.Workers
         public GeneralParser(
             //string filePath,
             //string shopNameLatin,
-            DownloadInfo downloadInfo,
+            IMinimalDownloadInfo downloadInfo,
             BackgroundBaseContext context ,
             bool enableExtendedStatistic = false ) : base( ComponentType.GeneralParser, context )
         {
@@ -86,16 +87,19 @@ namespace Admitad.Converters.Workers
             _updateTime = DateTime.Now;
         }
 
-        public ShopData Parse() {
-            MeasureWorkTime( DoParse );
+        public ShopData Parse( bool isOnlyCategories = false) {
+            MeasureWorkTime( () => DoParse(isOnlyCategories) );
             return _shopData;
         }
 
-        private void DoParse()
+        private void DoParse(bool isOnlyCategories)
         {
             TryGetShopData();
-            var formattedLines = Measure( GetFormattedOfferLinesWithProcessFile , out var getLinesTime );
+            SetAvailabilityChecker();
+            var formattedLines = Measure( () => GetFormattedOfferLinesWithProcessFile(isOnlyCategories), out var getLinesTime );
+            
             ParseCategories();
+            
             Measure( () => ParseOffer( formattedLines ), out var serializeTime );
             AddStatistics( formattedLines.Count, getLinesTime, serializeTime );
             _context.AddMessage( $"Offers count {_shopData.NewOffers.Count}" );
@@ -124,14 +128,6 @@ namespace Admitad.Converters.Workers
             AddStatisticLine( $"Find offer entries count: { _offersTagCount }" );
             AddStatisticLine( $"Formatted lines count: { formattedLinesCount }", getLinesTime );
             AddStatisticLine( $"Find products count: { _shopData.NewOffers.Count }", serializeTime);
-            // if( _enableExtendedStatistic ) {
-            //     Measure(
-            //         () =>
-            //             ExtendedStatistics.AddStatisticsForParsing(
-            //                 _shopData, line => AddStatisticLine( line ) ),
-            //         out var extendedStatisticsTime );
-            //     AddStatisticLine( $"Extended statistics execution time ", extendedStatisticsTime );
-            // }
         }
 
         private void TryGetShopData()
@@ -144,32 +140,11 @@ namespace Admitad.Converters.Workers
 
             _shopData.Name = m.Groups[ "shopName" ].Value;
 
-            // oldLogic
-            // var lineNumber = 0;
-            // var func = new Func<string, bool>(
-            //     line => {
-            //         lineNumber++;
-            //         if( lineNumber > FindShopDataDeep ) {
-            //             AddStatisticLine( _filePath );
-            //             AddStatisticLine( "Not found shop info" );
-            //             throw new ArgumentOutOfRangeException( "Not found shop info" );
-            //         }
-            //
-            //         var m = ShopPattern.Match( line );
-            //         if( m.Success ) {
-            //             _shopData.Name = m.Groups[ ShopGroupName ].Value;
-            //             return true;
-            //         }
-            //
-            //         return false;
-            //     });
-            //
-            // ProcessFile( _filePath, func );
-
         }
 
+        private void SetAvailabilityChecker() => _availabilityChecker = AvailabilityCheckersBuilder.GetChecker(_shopData.Name);
+
         private void ParseOffer( List<string> lines ) {
-            //lines.AsParallel().ForAll( ProcessString );
             lines.ForEach( ProcessString );
         }
 
@@ -200,7 +175,7 @@ namespace Admitad.Converters.Workers
 
         }
 
-        private List<string> GetFormattedOfferLinesWithProcessFile() {
+        private List<string> GetFormattedOfferLinesWithProcessFile(bool isOnlyCategoriesNeed) {
             var formattedLines = new List<string>();
             var buffer = new StringBuilder();
             var firstOfferLine = GetFirstOfferLine( _filePath );
@@ -210,6 +185,11 @@ namespace Admitad.Converters.Workers
                 line => {
                     lineNumber++;
                     FillCategoryBuffer( line );
+
+                    if( _categoryFilled && isOnlyCategoriesNeed ) {
+                        return true;
+                    }
+
                     if( lineNumber < firstOfferLine ) {
                         if( StartOffer.Match( line ).Success ) {
                             _offersTagCount++;
@@ -273,15 +253,21 @@ namespace Admitad.Converters.Workers
         private void ProcessString( string line ) {
             Count++;
             var offerRaw = GetOfferRaw( line );
-            if( offerRaw == null ) {
+            if( IsNotAvailableOffer(offerRaw) ) {
                 return;
             }
 
+            AddOfferToData(offerRaw);
+        }
+
+        private bool IsNotAvailableOffer(RawOffer offerRaw) => offerRaw == null || _availabilityChecker.IsOfferAvailable(offerRaw) == false;
+
+        private void AddOfferToData( RawOffer offerRaw) {
             var collector = offerRaw.IsDeleted
                 ? _shopData.DeletedOffers
                 : _shopData.NewOffers;
-            
-            collector.Add( offerRaw );
+
+            collector.Add(offerRaw);
         }
 
         private RawOffer GetOfferRaw(
