@@ -18,7 +18,7 @@ namespace Admitad.Converters.Workers
         private static Regex _tvPattern = new Regex(
             @"(Телевизор\s+)?((?<diagonal>\d+)""\s+)?(Телевизор\s+)?(?<vendor>\S+)\s+(?<model>\S+)(?<params>.*)",
             RegexOptions.Compiled );
-        private static Regex _yearPattern = new Regex( @"((?<year>\d+{4}))", RegexOptions.Compiled );
+        private static Regex _yearPattern = new Regex( @"((?<year>\d{4}))", RegexOptions.Compiled );
         private static Regex _resolutionPattern = new Regex( @"(?<resulotion>\d{2,5}(x|X)\d{2,5})", RegexOptions.Compiled );
         
         public void Process(

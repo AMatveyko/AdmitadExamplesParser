@@ -173,7 +173,11 @@ namespace AdmitadExamplesParserTests
             
             var settingsBuilder = new SettingsBuilder(newRepository);
             var settings = settingsBuilder.GetSettings();
+            var sw = new Stopwatch();
+            sw.Start();
             var offers = Measured(() => ConvertOffers( shopData ), "convert offers");
+            sw.Stop();
+            var sec = sw.ElapsedMilliseconds;
             var productsConverter = new ProductConverter( dbHelper, new ProductRatingCalculation(newRepository, settings.CtrCalculationType) );
             var products= Measured(() => productsConverter.GetProducts( offers ), "merge offers in products");
 
