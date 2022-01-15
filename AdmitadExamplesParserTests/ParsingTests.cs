@@ -161,59 +161,6 @@ namespace AdmitadExamplesParserTests
 
         }
 
-        [ Test ]
-        public void ParseYandexNamesTest()
-        {
-
-            const string shopName = "beru";
-            var shopData = Measured(() => GetShopData( shopName ), "get shopData");
-            var dbSettings = SettingsBuilder.GetDbSettings();
-            var dbHelper = new DbHelper( dbSettings );
-            var newRepository = new TheStore.Api.Front.Data.Repositories.TheStoreRepository(dbSettings);
-            
-            var settingsBuilder = new SettingsBuilder(newRepository);
-            var settings = settingsBuilder.GetSettings();
-            var sw = new Stopwatch();
-            sw.Start();
-            var offers = Measured(() => ConvertOffers( shopData ), "convert offers");
-            sw.Stop();
-            var sec = sw.ElapsedMilliseconds;
-            var productsConverter = new ProductConverter( dbHelper, new ProductRatingCalculation(newRepository, settings.CtrCalculationType) );
-            var products= Measured(() => productsConverter.GetProducts( offers ), "merge offers in products");
-
-            Measured( () => ParseNames( products ), "parse names" );
-
-            var parameters = products.SelectMany( p => p.Params ).Distinct().ToList();
-
-        }
-
-        private static void ParseNames(IEnumerable<Product> products ) {
-            var postWorker = new YandexMarketPostWorker();
-            foreach( var product in products ) {
-                postWorker.Process(product);
-            }
-        }
-
-        private static void Measured( Action action, string stepName ) {
-            var sw = new Stopwatch();
-            sw.Start();
-            action();
-            sw.Stop();
-            Console.Write($"{stepName}: {sw.ElapsedMilliseconds}");
-
-        }
-        
-        private static T Measured< T >( Func<T> func, string stepName )
-        {
-
-            var sw = new Stopwatch();
-            sw.Start();
-            var result = func();
-            sw.Stop();
-            Console.Write($"{stepName}: {sw.ElapsedMilliseconds}");
-            return result;
-        }
-
         private IShopDataWithNewOffers GetShopData( string shopName ) {
             var downloadInfo = new DownloadInfo(new XmlFileInfo("n", shopName, "n", 0, 0, 1, null))
             {
