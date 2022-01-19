@@ -18,7 +18,7 @@ using Nest;
 
 namespace Common.Elastic.Workers
 {
-    public sealed class IndexClient : IIndexClient, IIndexProductWorker
+    public sealed class IndexClient : IIndexClient, IIndexProductWorker, IIndexTagsWorker
     {
 
         #region Data
@@ -64,6 +64,11 @@ namespace Common.Elastic.Workers
 
 
         public static IIndexProductWorker CreateProductWorker(
+            ElasticSearchClientSettings settings,
+            BackgroundBaseContext context ) =>
+            Create( settings, context );
+
+        public static IIndexTagsWorker CreateTagsWorker(
             ElasticSearchClientSettings settings,
             BackgroundBaseContext context ) =>
             Create( settings, context );
@@ -302,5 +307,10 @@ namespace Common.Elastic.Workers
         private static IndexClient Create(  ElasticSearchClientSettings settings, BackgroundBaseContext context  )
             => new IndexClient( settings, context );
 
+        public long GetProductsCountWithTag( string tagId ) {
+            var result = _client.Count<Product>( s => s.Query( q => q.Term( t => t.Field( "tags" ).Value( tagId ) ) ) ).Count;
+            return result;
+        } 
+            
     }
 }

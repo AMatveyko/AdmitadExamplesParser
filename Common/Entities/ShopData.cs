@@ -15,11 +15,10 @@ namespace Common.Entities
         public string Name { get; set; }
         public List<RawOffer> NewOffers { get; } = new List<RawOffer>();
         public List<RawOffer> DeletedOffers { get; } = new List<RawOffer>();
-        //public List<RawOffer> AllOffers => NewOffers.Concat( DeletedOffers ).ToList();
-         
+
         public Dictionary<string, ShopCategory> Categories { get; } = new Dictionary<string, ShopCategory>();
-        public bool CategoryLoop { get; private set; }
-        public int Weight { get; }
+        private bool CategoryLoop { get; set; }
+        private int Weight { get; }
 
         public void AddCategories( IEnumerable<ShopCategory> categories ) {
             foreach( var category in categories ) {
@@ -50,21 +49,5 @@ namespace Common.Entities
             return categories;
         }
         
-        // public string GetBreadCrumbs( string categoryId )
-        // {
-        //     var path = new List<string>();
-        //     var rootId = categoryId;
-        //     while( rootId != null &&
-        //            Categories.ContainsKey( rootId ) ) {
-        //         var category = Categories[ rootId ];
-        //         path.Insert( 0, category.Name );
-        //         rootId = category.ParentId;
-        //         if( category.Id == category.ParentId ) {
-        //             CategoryLoop = true;
-        //             break;
-        //         }
-        //     }
-        //     return string.Join( " \\ ", path );
-        // }
     }
 }

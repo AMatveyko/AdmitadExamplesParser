@@ -20,6 +20,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using NUnit.Framework;
 
+using Assert = NUnit.Framework.Assert;
+
 //using NUnit.Framework;
 
 namespace AdmitadExamplesParserTests
@@ -107,7 +109,7 @@ namespace AdmitadExamplesParserTests
                 ShopName = shopName
             };
             
-            var shopData = ParseFile( downloadInfo, false );
+            var shopData = ParseFile( downloadInfo, false, true );
             var sortedRawOffers = shopData.NewOffers.OrderBy( o => o.OldPrice ).ToList();
             var unique = GetUnique( shopData.NewOffers, shopName );
             var offers = ConvertOffers( shopData );
@@ -139,7 +141,7 @@ namespace AdmitadExamplesParserTests
                 ShopName = shopName
             };
 
-            var shopData = GetShopData( shopName );
+            var shopData = GetShopData( shopName, true );
             
             var ids = GetOfferIds();
             var offers = shopData.NewOffers.Where(o => ids.Contains(o.OfferId));
@@ -161,14 +163,67 @@ namespace AdmitadExamplesParserTests
 
         }
 
-        private IShopDataWithNewOffers GetShopData( string shopName ) {
+        [ Test ]
+        public void NewParserTests()
+        {
+            const string shopName = "beru";
+            //const string shopName = "amersport";
+            //const string shopName = "tsum";
+            //const string shopName = "asos";
+            
+            MeasureAndPrint(() => ParseFileParallel( shopName ), "parallel");
+            // MeasureAndPrint(()=> ParseFile( shopName, true ), "new");
+            // MeasureAndPrint(()=> ParseFile( shopName, false ), "old");
+
+        }
+        
+        private static void MeasureAndPrint( Func<ShopData> func, string name ) {
+            var sw = new Stopwatch();
+            sw.Start();
+            var data = func();
+            sw.Stop();
+            Console.WriteLine( $"count: {data.NewOffers.Count}, nulls:{data.NewOffers.Count(o => o==null)} seconds:{sw.ElapsedMilliseconds/1000}, {name}" );
+            Console.WriteLine($"Max memory usage: {Process.GetCurrentProcess().PeakWorkingSet64}");
+        }
+
+        [ Test ]
+        public static void ReadFileTest() {
+            var file = new StreamReader( @"g:\admitadFeeds\beru.xml" );
+            string line;
+            var sw = new Stopwatch();
+            sw.Start();
+            
+            while( ( line = file.ReadLine() ) != null ) {
+                var i = 10 + 10;
+                var newLine = line + line + i;
+            }
+            file.Close();
+            
+            sw.Stop();
+
+            Console.WriteLine(sw.ElapsedMilliseconds);
+        }
+        
+        private static int GetOfferCount( ShopData data ) => data.NewOffers.Count( o => o == null );
+
+        private static void CompareShopData( ShopData shopData, ShopData secondShopData ) {
+            CompareShopDataCounts( shopData, secondShopData );
+        }
+
+        private static void CompareShopDataCounts( ShopData shopData, ShopData secondShopData ) {
+            Assert.AreEqual( shopData.NewOffers.Count, secondShopData.NewOffers.Count );
+            Assert.AreEqual( shopData.Categories.Count, secondShopData.Categories.Count );
+            Assert.AreEqual(shopData.DeletedOffers.Count, secondShopData.DeletedOffers.Count);
+        }
+        
+        private IShopDataWithNewOffers GetShopData( string shopName, bool isNewParser ) {
             var downloadInfo = new DownloadInfo(new XmlFileInfo("n", shopName, "n", 0, 0, 1, null))
             {
                 FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
                 ShopName = shopName
             };
             
-            return ParseFile(downloadInfo, false);
+            return ParseFile(downloadInfo, false, isNewParser);
         }
         
         private List<BrandDb> GetAllBrands() {
@@ -273,15 +328,45 @@ namespace AdmitadExamplesParserTests
             var converter = new OfferConverter( shopData,  dbHelper, new BackgroundBaseContext("1", "name" ) );
             return converter.GetCleanOffers();
         }
+
+        private static ShopData ParseFile( string shopName, bool isNewParser ) {
+            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
+                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
+                ShopName = shopName
+            };
+            return ParseFile( downloadInfo, false, isNewParser );
+        }
+
+        private static ShopData ParseFileParallel( string shopName ) {
+            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
+                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
+                ShopName = shopName
+            };
+            var context = new BackgroundBaseContext( "1", "name" );
+            var parser = GetParallelParser( downloadInfo, context );
+            var result = parser.Parse();
+            Console.WriteLine( $"Misses: {((ParallelFeedParser)parser).Misses}" );
+            return result;
+        }
         
-        private static IShopDataWithNewOffers ParseFile( DownloadInfo fileInfo, bool enableExtendedStat ) {
-            var parser = new GeneralParser(
-                //fileInfo.FilePath,
-                //fileInfo.ShopName,
-                fileInfo,
-                new BackgroundBaseContext("1", "name" ),
-                enableExtendedStat );
+        private static ShopData ParseFile( DownloadInfo fileInfo, bool enableExtendedStat, bool isNewParser ) {
+            var context = new BackgroundBaseContext( "1", "name" );
+            var parser = isNewParser
+                ? GetFeedParser( fileInfo, context )
+                : GetGeneralParser( fileInfo,context,enableExtendedStat );
             return parser.Parse();
         }
+        
+        private static IFeedParser GetFeedParser( DownloadInfo fileInfo, BackgroundBaseContext context ) =>
+            new FeedParser( fileInfo, context );
+
+        private static IFeedParser GetGeneralParser(
+            DownloadInfo fileInfo,
+            BackgroundBaseContext context,
+            bool enableExtendedStat ) =>
+            new GeneralParser( fileInfo, context, enableExtendedStat );
+
+        private static IFeedParser GetParallelParser( DownloadInfo fileInfo, BackgroundBaseContext context ) =>
+            new ParallelFeedParser( fileInfo, context );
     }
 }

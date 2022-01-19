@@ -611,12 +611,12 @@ namespace Admitad.Converters.Workers
                 position += frameSize;
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {
-                    _context.AddMessage( "Update error!", true );
+                    Context.AddMessage( "Update error!", true );
                     Logger.Error( result.DebugInformation );
                 }
                 
             }
-            _context.AddMessage( $"Update { count } products" );
+            Context.AddMessage( $"Update { count } products" );
         }
 
         public void DoBulkAllWithCategories(IEnumerable<T> entities) =>
@@ -640,12 +640,12 @@ namespace Admitad.Converters.Workers
                 count += portion.Count();
                 if (result.DebugInformation.Contains("Invalid"))
                 {
-                    _context.AddMessage("Update error!", true);
+                    Context.AddMessage("Update error!", true);
                     Logger.Error(result.DebugInformation);
                 }
 
             }
-            _context.AddMessage($"Updated { count } products");
+            Context.AddMessage($"Updated { count } products");
         }
 
         //private IBulkUpdateOperation<T,E> GetBulkDescriptor<E>(BulkUpdateDescriptor<T,E> descriptor, T entity) where E : class, IIndexedEntities {
@@ -667,12 +667,12 @@ namespace Admitad.Converters.Workers
                 position += frameSize;
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {
-                    _context.AddMessage( "Update error!", true );
+                    Context.AddMessage( "Update error!", true );
                     Logger.Error( result.DebugInformation );
                 }
                 
             }
-            _context.AddMessage( $"Update { count } products" );
+            Context.AddMessage( $"Update { count } products" );
         }
         
         // public void DoBulkAllOld(

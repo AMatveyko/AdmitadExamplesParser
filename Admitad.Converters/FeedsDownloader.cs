@@ -51,7 +51,7 @@ namespace Admitad.Converters
 
         private List<DownloadInfo> DoDownload( IReadOnlyCollection<XmlFileInfo> files, string filePath )
         {
-            _context.TotalActions = files.Count;
+            Context.TotalActions = files.Count;
             var downloadInfos = files.AsParallel().Select( f => DownloadFile( f, filePath ) ).ToList();
             var withErrors = downloadInfos.Where( i => i.HasError ).ToList();
             if( withErrors.Any() ) {
@@ -60,7 +60,7 @@ namespace Admitad.Converters
             
             var fileCount = Directory.GetFiles( filePath ).Length;
             LogWriter.Log( $"{fileCount} удалось скачать из {files.Count}", true );
-            _context.AddMessage( $"Всего {downloadInfos.Count} c ошибками {withErrors.Count}" );
+            Context.AddMessage( $"Всего {downloadInfos.Count} c ошибками {withErrors.Count}" );
             return downloadInfos;
         }
         
@@ -149,7 +149,7 @@ namespace Admitad.Converters
                         File.Delete( info.FilePath );
                     }
                     info.Error = DownloadError.Unfinished;
-                    _context.AddMessage( $"{ info.ShopName }: { DownloadError.Unfinished }", true );
+                    Context.AddMessage( $"{ info.ShopName }: { DownloadError.Unfinished }", true );
                     LogWriter.Log( $"{info.ShopName} ошибка { info.Error }", true );
                     return info;
                 }
@@ -165,13 +165,13 @@ namespace Admitad.Converters
                     info.Error == DownloadError.UnknownError
                         ? e.Message
                         : info.Error.ToString();
-                _context.AddMessage( $"{ info.ShopName }: { errorMessage }", true );
+                Context.AddMessage( $"{ info.ShopName }: { errorMessage }", true );
                 LogWriter.Log( $"{info.ShopName} ошибка { errorMessage }", true );
             }
 
             if( info.HasError == false ) {
-                _context.AddMessage( $"скачали { info.ShopName }" );
-                _context.CalculatePercent();
+                Context.AddMessage( $"скачали { info.ShopName }" );
+                Context.CalculatePercent();
                 
                 FileDownloaded?.Invoke( this, new DownloadEventArgs( info ) );
                 

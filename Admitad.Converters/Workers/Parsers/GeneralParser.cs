@@ -14,7 +14,7 @@ using Common.Helpers;
 
 namespace Admitad.Converters.Workers
 {
-    public sealed class GeneralParser : BaseComponent
+    public sealed class GeneralParser : BaseComponent, IFeedParser
     {
 
 
@@ -102,7 +102,7 @@ namespace Admitad.Converters.Workers
             
             Measure( () => ParseOffer( formattedLines ), out var serializeTime );
             AddStatistics( formattedLines.Count, getLinesTime, serializeTime );
-            _context.AddMessage( $"Offers count {_shopData.NewOffers.Count}" );
+            Context.AddMessage( $"Offers count {_shopData.NewOffers.Count}" );
             
         }
 
