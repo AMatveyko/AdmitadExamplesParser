@@ -125,7 +125,8 @@ namespace AdmitadSqlData.Helpers
                 SpecifyWords = CreateTerms( tagDb.SpecifyWords ),
                 ExcludePhrase = CreateTerms( tagDb.ExcludePhrase ),
                 Title = tagDb.NameTitle,
-                SearchAsPart = tagDb.SearchAsPart
+                SearchAsPart = tagDb.SearchAsPart,
+                AddDate =tagDb.AddDate
             };
             //var categories = GetCategoryChildren( tagDb.IdCategory, allCategories ).Select( c => c.Id ).ToList();
             var categories = children.Select( c => c.Id ).ToList();

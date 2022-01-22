@@ -17,5 +17,6 @@ namespace Common.Entities
         public string[] Categories { get; set; }
         public bool SearchAsPart { get; set; }
         public bool IsSearchTermsEmpty() => SearchTerms == null || SearchTerms.Any() == false;
+        public int AddDate { get; set; }
     }
 }

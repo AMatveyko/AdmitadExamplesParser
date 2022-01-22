@@ -24,7 +24,8 @@ namespace WorkWithTags
             // TypeTwo();
             // FixTags();
             // CloneTags( 20815000, 41715000, ( "кроссовки", "сникерсы" ) );
-            CloneTags( 31301030, 31301040, ( "пуховики", "шубы" ) );
+            // CloneTags( 31301030, 31301040, ( "пуховики", "шубы" ) );
+            TagsStatistics.GetStatistics();
             Console.WriteLine( "Ok!" );
         }
 

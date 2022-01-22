@@ -7,6 +7,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
+      <ProjectReference Include="..\Common.Elastic\Common.Elastic.csproj" />
       <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
     </ItemGroup>
 

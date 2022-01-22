@@ -27,5 +27,9 @@ namespace AdmitadSqlData.Entities
         public string NameTitle { get; set; }
         [Column("search_as_part")]
         public bool SearchAsPart { get; set; }
+        [Column("only_sort")]
+        public bool SortOnly { get; set; }
+        [Column("date_add")]
+        public int AddDate { get; set; }
     }
 }
