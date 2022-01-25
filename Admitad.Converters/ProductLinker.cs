@@ -174,18 +174,18 @@ namespace Admitad.Converters
                 return;
             }
 
-            var linkResult = _elasticClient.UpdateProductsForTag( tag );
+            var linkResult = UpdateProductsForTagAndSaveCount( tag );
             Context.Messages.Add( $"Привязвали { linkResult.Pretty } товаров" );
             Context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
         }
-        
+
         public ( string, UpdateResult, long ) LinkTag( Tag tag )
         {
             if( tag.IsSearchTermsEmpty() ) {
                 Context.CalculatePercent();
                 return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
             }
-            var result = Measure( () => _elasticClient.UpdateProductsForTag( tag ), out var time );
+            var result = Measure( () => UpdateProductsForTagAndSaveCount( tag ), out var time );
             Context.CalculatePercent();
             
             if( result.IsError ) {
@@ -316,6 +316,23 @@ namespace Admitad.Converters
         
         #endregion
 
+        private UpdateResult UpdateProductsForTagAndSaveCount( Tag tag ) {
+            
+            var result = DoUpdateProductsForTag( tag );
+
+            SaveProductCountForTag( tag );
+            
+            return result;
+        }
+
+        private void SaveProductCountForTag( Tag tag )
+        {
+            var count = (int)_elasticClient.CountProductsWithTag( tag.Id );
+            _dbHelper.SetProductCountForTag( tag.Id, count );
+        }
+        
+        private UpdateResult DoUpdateProductsForTag( Tag tag ) => _elasticClient.UpdateProductsForTag( tag );
+        
         private static void Log( string entity, string id, string count, string time ) =>
             LogWriter.Log( $"{entity}: {id}, count: { count }, time: {time}:" );
 

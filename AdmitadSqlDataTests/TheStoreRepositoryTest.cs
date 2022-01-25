@@ -62,13 +62,6 @@ namespace AdmitadSqlDataTests
         }
 
         [ Test ]
-        public void UpdateTag()
-        {
-            var helper = GetDbHelper();
-            helper.UpdateTags();
-        }
-
-        [ Test ]
         public void SaveCountries()
         {
             var helper = GetDbHelper();

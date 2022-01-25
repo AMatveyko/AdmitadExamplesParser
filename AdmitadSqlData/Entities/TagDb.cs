@@ -31,5 +31,7 @@ namespace AdmitadSqlData.Entities
         public bool CustomSort { get; set; }
         [Column("date_add")]
         public int AddDate { get; set; }
+        [Column("cnt")]
+        public int NumberProducts { get; set; }
     }
 }

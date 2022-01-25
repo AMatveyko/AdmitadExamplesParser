@@ -17,22 +17,13 @@ namespace AdmitadSqlData.Repositories
             return db.Tags.Where( t => t.Enabled && t.Name != null && t.Name != "" ).ToList();
         }
 
-        public void AddDescriptionField()
-        {
-            const string description = nameof(description);
-            using var db = GetDb();
-            var tags = db.Tags.ToList();
-            foreach( var tag in tags ) {
-                if( tag.SearchFields.Contains( description ) ) {
-                    continue;
-                }
-
-                tag.SearchFields = $"{tag.SearchFields},{description}";
-            }
-
+        public void SetProductCountForTag( string tagId, int count ) {
+            var db = GetDb();
+            var tag = db.Tags.First( t => t.Id.ToString() == tagId );
+            tag.NumberProducts = count;
             db.SaveChanges();
         }
-
+        
         public void DeleteWordFromTagSearch(
             string word,
             int categoryId )

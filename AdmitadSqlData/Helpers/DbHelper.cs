@@ -278,11 +278,6 @@ namespace AdmitadSqlData.Helpers
 
         public List<SizeProperty> GetSizes() => _theStoreRepository.GetSizes().Select( EntityConverter.Convert ).ToList();
 
-        public void UpdateTags()
-        {
-            _tagRepository.AddDescriptionField();
-        }
-
         public void DeleteWordFromTag(
             string word,
             int categoryId )
@@ -290,6 +285,11 @@ namespace AdmitadSqlData.Helpers
             _tagRepository.DeleteWordFromTagSearch( word, categoryId );
         }
 
+        public void SetProductCountForTag(
+            string tagId,
+            int count ) =>
+            _tagRepository.SetProductCountForTag( tagId, count );
+        
         public List<CategoryMappingDb> GetCategoryMapping(int shopId) => _categoryMappingRepository.GetCategoryMapping(shopId);
 
 
