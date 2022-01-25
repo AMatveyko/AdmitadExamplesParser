@@ -51,6 +51,7 @@ namespace Common
             public const string FarFetch = "farfetch";
             public const string BebaKids = "bebakids";
             public const string Ecco = "ecco";
+            public const string Akusherstvo = "akusherstvo";
         }
     }
 }

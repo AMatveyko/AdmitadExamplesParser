@@ -45,6 +45,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
                 ShopsNames.Shein => new SheinWorker( dbHelper ),
                 ShopsNames.FarFetch => new FarfetchWorker( dbHelper ),
                 ShopsNames.BebaKids => new BebaKidsWorker( dbHelper ),
+                ShopsNames.Akusherstvo => new AkusherstvoWorker( dbHelper ),
                 _ => new DefaultShopWorker( dbHelper )
             };
         }
