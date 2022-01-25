@@ -21,6 +21,10 @@ namespace Common.Elastic.Helpers
             if( terms == null ) {
                 return list;
             }
+
+            if( terms.TagId.IsNotNullOrWhiteSpace() ) {
+                list.Add( GetTerm( p => p.Tags, terms.TagId ));
+            }
             
             if( terms.CategoryId.IsNotNullOrWhiteSpace() ) {
                 list.Add( GetTerm( p => p.Categories, terms.CategoryId ) );

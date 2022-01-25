@@ -287,17 +287,37 @@ namespace Common.Elastic.Workers
                 } );
         }
 
-        public void RemoveCategory( string productId, string categoryId )
+        public void RemoveTag( string productId, string tagId )
         {
+
+            var properties = new SearchProperties {
+                Must = new SearchTerms {
+                    TagId = tagId,
+                    ProductId = productId
+                }
+            };
+
+            var result =
+                _client.UpdateByQuery<Product>(
+                ubq => ubq.Query( q => q.Bool( b =>
+                   b.FromSearchParameters( properties ) ) )
+                    .Script( script => script.RemoveTag( tagId ) )
+                    .Conflicts( Conflicts.Proceed )
+                    .Refresh() );
+        } 
+        
+        public void RemoveCategory( string productId, string categoryId ) {
+            
             var properties = new SearchProperties {
                 Must = new SearchTerms {
                     CategoryId = categoryId,
                     ProductId = productId
                 }
             };
-            var result = _client.UpdateByQuery<Product>( ubq => ubq.Query( q => q.Bool( b =>  
+            var result = 
+                _client.UpdateByQuery<Product>( ubq => ubq.Query( q => q.Bool( b =>  
                 b.FromSearchParameters( properties ) ) )
-                .Script( script => script.RemoveCategoryScript( categoryId ) )
+                .Script( script => script.RemoveCategory( categoryId ) )
                 .Conflicts( Conflicts.Proceed )
                 .Refresh( true ) );
             

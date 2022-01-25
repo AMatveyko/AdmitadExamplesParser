@@ -5,6 +5,7 @@ using AdmitadCommon.Entities;
 using Common.Settings;
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 using TheStore.Api.Core.Sources.Workers;
 
@@ -26,7 +27,7 @@ namespace TheStore.Api.Core.Controllers
         [ Route( "Get" ) ]
         public IActionResult Get( string id )
         {
-            var worker = new ProductWorker( id, _settings.ElasticSearchClientSettings );
+            var worker = GetWorker( id );
             return worker.Get();
         }
 
@@ -36,8 +37,21 @@ namespace TheStore.Api.Core.Controllers
             string id,
             string categoryId )
         {
-            var worker = new ProductWorker( id, _settings.ElasticSearchClientSettings );
+            var worker = GetWorker( id );
             return worker.RemoveFromCategory( categoryId );
+        }
+
+        [ HttpGet ]
+        [ Route( "RemoveFromTag" ) ]
+        public IActionResult RemoveFromTag( string id, string tagId )
+        {
+            var worker = GetWorker( id );
+            return worker.RemoveFromTag( tagId );
+        }
+        
+        private ProductWorker GetWorker(string id) {
+            var productId = Sources.Helpers.UrlHelper.GetProductIdFromUrl( id );
+            return new ProductWorker( productId, _settings.ElasticSearchClientSettings );
         }
         
     }

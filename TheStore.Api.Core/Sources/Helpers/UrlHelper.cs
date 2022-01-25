@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 using NLog;
 
@@ -16,6 +17,10 @@ namespace TheStore.Api.Core.Sources.Helpers
     internal sealed class UrlHelper
     {
 
+        private static Regex _productCartUrlPattern = new Regex(
+            @"https:\/\/(?<domain>(\w|\.)+)\/p\/(?<productId>([a-z]|\d)+)(\/)?",
+            RegexOptions.Compiled );
+        
         private const string OldSite = "https://thestore.ru/";
         private const string NewSite = "https://thestore.matveyko.su/";
         private const string UrlTemplate = "{0}{1}";
@@ -36,6 +41,11 @@ namespace TheStore.Api.Core.Sources.Helpers
                 } ).Concat( _notSuitable );
         }
 
+        public static string GetProductIdFromUrl( string data ) {
+            var m = _productCartUrlPattern.Match( data );
+            return m.Success ? m.Groups["productId"].Value : data;
+        }
+        
         public List<UrlInfo> GetInfos()
         {
             

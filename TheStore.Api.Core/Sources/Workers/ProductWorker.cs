@@ -34,13 +34,19 @@ namespace TheStore.Api.Core.Sources.Workers
             return new JsonResult( product );
         }
 
-        public IActionResult RemoveFromCategory( string categoryId )
-        {
+        public IActionResult RemoveFromTag( string tagId ) {
+            var client = CreateProductWorker( "removeFromTag:product" );
+            return Execute( () => client.RemoveTag( _productId, tagId ) );
+        }
+        
+        public IActionResult RemoveFromCategory( string categoryId ) {
+            var client = CreateProductWorker( "removeFromCategory:product" );
+            return Execute( () => client.RemoveCategory( _productId, categoryId ) );
+        }
+
+        private IActionResult Execute( Action action ) {
             try {
-                var client = IndexClient.CreateProductWorker(
-                    _settings,
-                    new BackgroundBaseContext( _productId, "removeFromCategory:product" ) );
-                client.RemoveCategory( _productId, categoryId );
+                action();
                 return new OkResult();
             }
             catch( Exception e ) {
@@ -49,5 +55,8 @@ namespace TheStore.Api.Core.Sources.Workers
                 };
             }
         }
+        
+        private IIndexProductWorker CreateProductWorker( string contextName ) =>
+            IndexClient.CreateProductWorker( _settings, new BackgroundBaseContext( _productId, contextName ) ); 
     }
 }
