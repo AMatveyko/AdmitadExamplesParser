@@ -12,8 +12,6 @@ using Messenger;
 
 using NUnit.Framework;
 
-using TheStore.Api.Core.Sources.Entities;
-using TheStore.Api.Core.Sources.Workers;
 using TheStore.Api.Front.Data.Repositories;
 
 using Web.Common.Helpers;

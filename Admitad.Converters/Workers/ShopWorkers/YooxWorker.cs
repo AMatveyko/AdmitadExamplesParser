@@ -10,8 +10,6 @@ using AdmitadSqlData.Helpers;
 
 using Common.Entities;
 
-using SixLabors.ImageSharp;
-
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal sealed class YooxWorker : BaseShopWorker, IShopWorker

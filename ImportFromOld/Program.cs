@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 using Admitad.Converters.Workers;
 
-using AdmitadCommon.Entities;
-
 using Common.Api;
 using Common.Entities;
 using Common.Settings;
