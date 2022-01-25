@@ -14,7 +14,7 @@ namespace AdmitadSqlData.Repositories
         public List<TagDb> GetTags()
         {
             using var db = GetDb();
-            return db.Tags.Where( t => t.Enabled && t.SortOnly == false ).ToList();
+            return db.Tags.Where( t => t.Enabled && t.Name != null && t.Name != "" ).ToList();
         }
 
         public void AddDescriptionField()
