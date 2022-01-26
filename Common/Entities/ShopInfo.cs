@@ -1,15 +1,16 @@
 ﻿// a.snegovoy@gmail.com
 
 using System;
+using System.Collections.Generic;
 
 namespace Common.Entities
 {
-    public sealed class XmlFileInfo
+    public sealed class ShopInfo
     {
-        public XmlFileInfo(
+        public ShopInfo(
             string name,
             string nameLatin,
-            string xmlFeed,
+            List<FeedInfo> feeds,
             int shopId,
             int weight,
             byte versionProcessing,
@@ -17,7 +18,7 @@ namespace Common.Entities
         {
             Name = name;
             NameLatin = nameLatin;
-            XmlFeed = xmlFeed;
+            Feeds = feeds;
             ShopId = shopId;
             Weight = weight;
             VersionProcessing = versionProcessing;
@@ -26,7 +27,7 @@ namespace Common.Entities
         
         public string Name { get; }
         public string NameLatin { get; }
-        public string XmlFeed { get; }
+        public List<FeedInfo> Feeds { get; }
         public int ShopId { get; }
         public int Weight { get; }
         public byte VersionProcessing { get; set; }

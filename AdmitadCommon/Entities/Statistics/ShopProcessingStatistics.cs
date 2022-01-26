@@ -14,10 +14,10 @@ namespace AdmitadCommon.Entities.Statistics
 
         private readonly Action<string, bool> _addMessage;
         private readonly Logger _logger;
-        private readonly DownloadInfo _info;
+        private readonly DownloadsInfo _info;
 
         public ShopProcessingStatistics(
-            DownloadInfo info,
+            DownloadsInfo info,
             Action<string, bool> messageAdder,
             Logger logger )
         {
@@ -30,7 +30,7 @@ namespace AdmitadCommon.Entities.Statistics
 
         public DateTime StartDownloadFeed => _info.StartTime;
         public int ShopId => _info.ShopId;
-        public long FileSize => _info.FileSize;
+        public long FileSize => _info.FeedsInfos.Sum( f => f.FileSize );
         public int OfferCount => _shopData?.NewOffers?.Count ?? 0;
         public int SoldOutOfferCount => _product?.SoldoutCount ?? 0;
         public int CategoryCount => _shopData?.Categories?.Count ?? 0;

@@ -50,12 +50,12 @@ namespace AdmitadSqlData.Helpers
             return _categoryName.Replace( data ?? string.Empty, string.Empty );
         }
 
-        public static XmlFileInfo Convert(
+        public static ShopInfo Convert(
             Shop shop ) =>
             new (
                 shop.Name,
                 shop.NameLatin,
-                shop.XmlFeed,
+                shop.ShopFeeds.Select( f => new FeedInfo( f.Id.ToString(), f.Url)).ToList(),
                 shop.Id,
                 shop.Weight,
                 shop.VersionProcessing,

@@ -122,13 +122,16 @@ namespace CategoryWorks
             };
 
         private static void FillCache() {
-            var downloadInfo = new ReducedDownloadInfo {
+            var downloadInfo = new ReducedDownloadsInfo {
                 NameLatin = "beru",
                 ShopWeight = 10,
-                FilePath = "g:\\admitadFeeds\\beru.xml"
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!
+                //FilePath = "g:\\admitadFeeds\\beru.xml"
             };
 
-            var parser = new GeneralParser(downloadInfo, new Common.Api.BackgroundBaseContext("", ""));
+            var info = new ParsingInfo( "g:\\admitadFeeds\\beru.xml", 10, "beru" );
+            
+            var parser = new GeneralParser(info, new Common.Api.BackgroundBaseContext("", ""));
             var shopInfo = parser.Parse(true);
 
             _categoriesById = shopInfo.Categories;

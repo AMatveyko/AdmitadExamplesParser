@@ -25,10 +25,10 @@ namespace Admitad.Converters.Workers
         public int Misses { get; set; }
 
         public ParallelFeedParser(
-            IMinimalDownloadInfo downloadInfo,
+            ParsingInfo info,
             BackgroundBaseContext context,
-            int threadCount = 24 )
-            : base( downloadInfo, context ) =>
+            int threadCount = 8 )
+            : base( info, context ) =>
             _threadCount = threadCount;
 
         protected override void PrepareOffers( bool isOnlyCategories ) {

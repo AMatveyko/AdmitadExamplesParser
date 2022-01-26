@@ -6,15 +6,15 @@ namespace Common.Api
 {
     public sealed class ProcessShopContext : BackgroundBaseContext
     {
-        public ProcessShopContext( string id, int shopId, DownloadInfo downloadInfo, bool needSoldOut )
-            : base( GetCollectedId( nameof(ProcessShopContext), id ), downloadInfo.ShopName ) {
+        public ProcessShopContext( string id, int shopId, DownloadsInfo downloadsInfo, bool needSoldOut )
+            : base( GetCollectedId( nameof(ProcessShopContext), id ), downloadsInfo.ShopName ) {
             ShopId = shopId;
-            DownloadInfo = downloadInfo;
+            DownloadsInfo = downloadsInfo;
             NeedSoldOut = needSoldOut;
         }
         public int ShopId { get; }
         public bool NeedSoldOut { get; }
-        public DownloadInfo DownloadInfo { get; }
-        public int VersionProcessing => DownloadInfo.VersionProcessing;
+        public DownloadsInfo DownloadsInfo { get; }
+        public int VersionProcessing => DownloadsInfo.VersionProcessing;
     }
 }

@@ -30,7 +30,7 @@ namespace Admitad.Converters
         {
             var groupedOffers = offers.GroupBy( o => o.ProductId ).ToList();
             var products =
-                groupedOffers.Select( g => CollectProduct( g.ToList() ) );
+                groupedOffers.AsParallel().Select( g => CollectProduct( g.ToList() ) );
             var filteredProducts = FilterBrokenProducts( products ).ToList();
 
             return filteredProducts;

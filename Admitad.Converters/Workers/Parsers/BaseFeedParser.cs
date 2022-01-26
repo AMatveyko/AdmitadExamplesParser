@@ -41,7 +41,7 @@ namespace Admitad.Converters.Workers
         #region Regex
         
         private static readonly Regex ShopNameFromFilePath = new Regex(
-            @"\\(?<shopName>\w+)\.xml",
+            @"\\(?<shopName>\w+)_(\d+)\.xml",
             RegexOptions.Compiled );
         private static readonly Regex StartOffer = new( @"<offer[^s]", RegexOptions.Compiled );
         private static readonly Regex EndOffer = new( @"<\/offer>|deleted=""true"" id="".*""\/>", RegexOptions.Compiled );
@@ -54,11 +54,11 @@ namespace Admitad.Converters.Workers
         #endregion
 
         protected BaseFeedParser(
-            IMinimalDownloadInfo downloadInfo,
+            ParsingInfo info,
             BackgroundBaseContext context )
             : base( ComponentType.GeneralParser, context ) =>
             ( FilePath, ShopData, _shopNameLatin, _updateTime ) =
-            ( downloadInfo.FilePath, new ShopData( downloadInfo.ShopWeight ), downloadInfo.NameLatin, DateTime.Now );
+            ( info.FilePath, new ShopData( info.ShopWeight ), info.ShopName, DateTime.Now );
 
         public ShopData Parse( bool isOnlyCategories = false ) {
             MeasureWorkTime( () => DoParse( isOnlyCategories ) );
@@ -235,7 +235,6 @@ namespace Admitad.Converters.Workers
             }
             file.Close();
             sw.Stop();
-            Console.WriteLine($"Processing file time {sw.ElapsedMilliseconds}");
         }
         
         private void SetAvailabilityChecker() => _availabilityChecker = AvailabilityCheckersBuilder.GetChecker(ShopData.Name);

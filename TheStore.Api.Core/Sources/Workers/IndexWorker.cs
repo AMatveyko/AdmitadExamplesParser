@@ -66,7 +66,7 @@ namespace TheStore.Api.Core.Sources.Workers
 
             var file = DoDownloadIfNeed( context, xmlInfo );
             context.SetProgress( 30, 100 );
-            if( file.HasError ) {
+            if( file.HasErrors ) {
                 
                 context.Finish();
                 context.IsError = true;
@@ -106,13 +106,13 @@ namespace TheStore.Api.Core.Sources.Workers
             Db.SaveUnknownCountries();
         }
         
-        private void DownloadAll( List<XmlFileInfo> infos )
+        private void DownloadAll( List<ShopInfo> infos )
         {
             var downloadContext = new BackgroundBaseContext( "Download:All", "download" );
             downloadContext.Prepare();
             _context.AddContext( downloadContext );
             
-            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, Db, downloadContext );
+            var downloader = new FeedsDownloader( _settings.AttemptsToDownload, downloadContext );
 
             downloader.FileDownloaded += HandleDownloadEvent;
             
@@ -137,7 +137,7 @@ namespace TheStore.Api.Core.Sources.Workers
             }
         }
         
-        private void DoIndexShop( int shopId, DownloadInfo fileInfo, string type, bool needSoldOut )
+        private void DoIndexShop( int shopId, DownloadsInfo fileInfo, string type, bool needSoldOut )
         {
             var processShopContext = new ProcessShopContext(
                 $"{shopId}:{type}",
@@ -155,7 +155,7 @@ namespace TheStore.Api.Core.Sources.Workers
         }
 
         private ShopHandlerBase GetShopHandler( ProcessShopContext context ) =>
-            context.VersionProcessing == 2 && context.DownloadInfo.LastUpdate > default( DateTime )
+            context.VersionProcessing == 2 && context.DownloadsInfo.LastUpdate > default( DateTime )
                 ? new ShopChangesHandler( context, _settings.ElasticSearchClientSettings, Db, ProductRatingCalculation )
                 : new ShopHandler( context, _settings, Db, ProductRatingCalculation ); 
         
@@ -219,32 +219,46 @@ namespace TheStore.Api.Core.Sources.Workers
             Works.AddToQueue( worker.LinkProperties, linkContext, QueuePriority.Medium, false );
         }
 
-        private DownloadInfo DoDownloadIfNeed( IndexShopContext context, XmlFileInfo xmlInfo )
+        private DownloadsInfo DoDownloadIfNeed( IndexShopContext context, ShopInfo shopInfo )
         {
-            var filePath = FilePathHelper.GetFilePath( _settings.DirectoryPath, xmlInfo );
-            if( context.DownloadFresh ||
-                File.Exists( filePath ) == false ) {
-                var downloadContext = new BackgroundBaseContext($"Download:{xmlInfo.Name}", "download");
+            if( context.DownloadFresh || shopInfo.Feeds.Any( f => IsFileNotExist(f ,shopInfo)) ) {
+                var downloadContext = new BackgroundBaseContext($"Download:{shopInfo.Name}", "download");
                 downloadContext.Prepare();
                 downloadContext.Start();
                 
                 context.Contexts.Add( downloadContext );
                 
-                var downloader = new FeedsDownloader( _settings.AttemptsToDownload, Db, downloadContext );
-                var file = downloader.Download( _settings.DirectoryPath, xmlInfo );
+                var downloader = new FeedsDownloader( _settings.AttemptsToDownload, downloadContext );
+                var file = downloader.Download( _settings.DirectoryPath, shopInfo );
 
                 downloadContext.Content = "Все скачали";
                 downloadContext.Finish();
 
                 return file;
             }
-
-            return new DownloadInfo( xmlInfo ) {
-                ShopName = xmlInfo.NameLatin,
-                FilePath = filePath
-            };
+            
+            return GetDownloadsInfo( shopInfo );
         }
 
+        private DownloadsInfo GetDownloadsInfo( ShopInfo shopInfo ) {
+            
+            var downloadsInfo = new DownloadsInfo( shopInfo ) {
+                ShopName = shopInfo.NameLatin
+            };
+            
+            foreach( var feed in downloadsInfo.FeedsInfos ) {
+                feed.Error = DownloadError.Ok;
+                feed.FilePath = FilePathHelper.GetFilePath( _settings.DirectoryPath, feed.Id, shopInfo );
+            }
+
+            return downloadsInfo;
+        }
+
+        private bool IsFileNotExist( FeedInfo feed, ShopInfo shopInfo ) {
+            var filePath = FilePathHelper.GetFilePath( _settings.DirectoryPath, feed.Id, shopInfo );
+            return File.Exists( filePath ) == false;
+        }
+        
         private void LogResult()
         {
             var result = JsonConvert.SerializeObject( _context );

@@ -5,6 +5,7 @@ using System;
 using AdmitadSqlData.Entities;
 
 using Common.Entities;
+using Common.SqlData.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +43,7 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<AgeDb> Ages { get; set; }
         public DbSet<SexDb> Sex { get; set; }
         public DbSet<CategoryMappingDb> CategoryMapping { get; set; }
+        public DbSet<ShopFeedDb> ShopFeeds { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

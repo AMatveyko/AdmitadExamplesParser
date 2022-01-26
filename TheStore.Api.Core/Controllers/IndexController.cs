@@ -74,7 +74,7 @@ namespace TheStore.Api.Core.Controllers
         public IActionResult IndexShop(
             int id,
             bool downloadFresh = false,
-            bool needLink = true,
+            bool needLink = false,
             bool needSoldOut = true,
             bool clean = true )
         {
@@ -83,7 +83,7 @@ namespace TheStore.Api.Core.Controllers
             return _works.AddToQueue( worker.Index, context, QueuePriority.Parallel, clean );
         }
 
-        [ HttpGet ]
+        [ HttpGet ] 
         [ Route( "IndexAllShops" ) ]
         public IActionResult IndexAllShops( bool clean = true )
         {

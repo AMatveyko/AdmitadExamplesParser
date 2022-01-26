@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using Admitad.Converters;
+using Admitad.Converters.Entities;
 using Admitad.Converters.Workers;
 using AdmitadSqlData.Entities;
 using AdmitadSqlData.Helpers;
@@ -19,8 +20,6 @@ using Common.Workers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using NUnit.Framework;
-
-using Assert = NUnit.Framework.Assert;
 
 //using NUnit.Framework;
 
@@ -75,15 +74,9 @@ namespace AdmitadExamplesParserTests
         // [ TestCase( "goldenline" ) ]
         // [ TestCase( "dochkisinochki" ) ]
         // [ TestCase( "bebakids" ) ]
-        public void ParsingTest( string shopName )
-        {
-            DoParsing( shopName, "" );
-        }
-
-        [TestMethod]
-        public void ParsingFromTestDirectoryTest() {
-            const string testDirectoryPath = @"g:\admitadFeedsTests\";
-            DoParsing("akusherstvo",testDirectoryPath);
+        [TestCase("beru")]
+        public void ParsingTest( string shopName ) {
+            DoParsing( shopName );
         }
 
         // [ Test ]
@@ -93,8 +86,7 @@ namespace AdmitadExamplesParserTests
             var gender = GenderHelper.GetGender( new[] {str} );
         } 
         
-        private static void DoParsing(
-            string shopName, string directoryPath )
+        private static void DoParsing( string shopName )
         {
 
             var dbSettings = SettingsBuilder.GetDbSettings();
@@ -103,13 +95,11 @@ namespace AdmitadExamplesParserTests
             var settingsBuilder = new SettingsBuilder(newRepository);
             var settings = settingsBuilder.GetSettings();
 
+            var downloadInfo = GetDownloadInfo( shopName, dbHelper );
 
-            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
-                FilePath = string.IsNullOrWhiteSpace(directoryPath) ? $@"g:\admitadFeeds\{ shopName }.xml" : $@"{directoryPath}\{shopName}.xml",
-                ShopName = shopName
-            };
+
+            var shopData = ParseFiles( downloadInfo );
             
-            var shopData = ParseFile( downloadInfo, false, true );
             var sortedRawOffers = shopData.NewOffers.OrderBy( o => o.OldPrice ).ToList();
             var unique = GetUnique( shopData.NewOffers, shopName );
             var offers = ConvertOffers( shopData );
@@ -132,70 +122,43 @@ namespace AdmitadExamplesParserTests
             Console.WriteLine( offers.Count );
         }
 
-        [TestMethod]
-        public void GetBrandsForElectronic() {
-            const string shopName = "beru";
-            var downloadInfo = new DownloadInfo(new XmlFileInfo("n", shopName, "n", 0, 0, 1, null))
-            {
-                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
-                ShopName = shopName
-            };
-
-            var shopData = GetShopData( shopName, true );
-            
-            var ids = GetOfferIds();
-            var offers = shopData.NewOffers.Where(o => ids.Contains(o.OfferId));
-            GC.Collect();
-
-            var brandsFromOffers = offers.GroupBy(o => BrandHelper.GetClearlyVendor(o.Vendor)).ToDictionary(k => k.Key, v => v.Count());
-            var brandsTelecs = offers.Where(o => o.CategoryId == "90639").GroupBy(o => BrandHelper.GetClearlyVendor(o.Vendor)).ToDictionary(k => k.Key, v => v.Count());
-
-            var brandsFromDb = GetAllBrands().Select(b => b.ClearlyName).ToHashSet();
-
-            var newBrands = brandsFromOffers.Where(b => brandsFromDb.Contains(b.Key) == false).OrderByDescending(b => b.Value).ToList();
-            var newBrandsTelecs = brandsTelecs.Where(b => brandsFromDb.Contains(b.Key) == false).OrderByDescending(b => b.Value).ToList();
-
-            var formatedBrands = newBrands.Select(b => $"{b.Key,-20} оферов: {b.Value,10}");
-            var formatedBrandsTelecs = newBrandsTelecs.Select(b => $"{b.Key,-20} оферов: {b.Value,10}");
-
-            //File.WriteAllLines(@"o:\\admitad\\workData\\scrollApi\\newBrands.txt",formatedBrands);
-            //File.WriteAllLines(@"o:\\admitad\\workData\\scrollApi\\newBrandsTelecs.txt", formatedBrandsTelecs);
-
-        }
-
-        [ Test ]
-        public void NewParserTests()
+        private static ShopData ParseFiles( IMinimalDownloadsInfo downloadsInfo )
         {
-            const string shopName = "beru";
-            //const string shopName = "amersport";
-            //const string shopName = "tsum";
-            //const string shopName = "asos";
-            
-            MeasureAndPrint(() => ParseFileParallel( shopName ), "parallel");
-            // MeasureAndPrint(()=> ParseFile( shopName, true ), "new");
-            // MeasureAndPrint(()=> ParseFile( shopName, false ), "old");
-
+            var processor = new ParsingProcessor( downloadsInfo, ParserType.NewParallel, new BackgroundBaseContext("","") );
+            return processor.GetShopData();
         }
         
-        private static void MeasureAndPrint( Func<ShopData> func, string name ) {
-            var sw = new Stopwatch();
-            sw.Start();
-            var data = func();
-            sw.Stop();
-            Console.WriteLine( $"count: {data.NewOffers.Count}, nulls:{data.NewOffers.Count(o => o==null)} seconds:{sw.ElapsedMilliseconds/1000}, {name}" );
-            Console.WriteLine($"Max memory usage: {Process.GetCurrentProcess().PeakWorkingSet64}");
-        }
+        private static IMinimalDownloadsInfo GetDownloadInfo( string shopName, DbHelper dbHelper ) {
+            
+            var shopID = dbHelper.GetShopId( shopName );
+            var shopInfo = dbHelper.GetShop( shopID );
 
+            foreach( var feed in shopInfo.Feeds ) {
+                feed.FilePath = FilePathHelper.GetFilePath( "g:\\admitadFeeds\\", feed.Id.ToString(), shopInfo );
+            }
+            
+            return new DownloadsInfo( new ShopInfo( "n", shopInfo.NameLatin, shopInfo.Feeds, shopInfo.ShopId, shopInfo.Weight, shopInfo.VersionProcessing, null ) ) {
+                ShopName = shopName
+            };
+        }
+        
         [ Test ]
         public static void ReadFileTest() {
-            var file = new StreamReader( @"g:\admitadFeeds\beru.xml" );
+            var file = new StreamReader( @"g:\admitadFeeds\beru_2.xml" );
             string line;
             var sw = new Stopwatch();
+
+            var offerPattern = new Regex( "<offer available", RegexOptions.Compiled );
+            
+            var offerCount = 0;
             sw.Start();
             
             while( ( line = file.ReadLine() ) != null ) {
                 var i = 10 + 10;
-                var newLine = line + line + i;
+                if( offerPattern.Match( line ).Success ) {
+                    offerCount++;
+                }
+                //var newLine = line + line + i;
             }
             file.Close();
             
@@ -203,37 +166,10 @@ namespace AdmitadExamplesParserTests
 
             Console.WriteLine(sw.ElapsedMilliseconds);
         }
-        
-        private static int GetOfferCount( ShopData data ) => data.NewOffers.Count( o => o == null );
 
-        private static void CompareShopData( ShopData shopData, ShopData secondShopData ) {
-            CompareShopDataCounts( shopData, secondShopData );
-        }
-
-        private static void CompareShopDataCounts( ShopData shopData, ShopData secondShopData ) {
-            Assert.AreEqual( shopData.NewOffers.Count, secondShopData.NewOffers.Count );
-            Assert.AreEqual( shopData.Categories.Count, secondShopData.Categories.Count );
-            Assert.AreEqual(shopData.DeletedOffers.Count, secondShopData.DeletedOffers.Count);
-        }
-        
-        private IShopDataWithNewOffers GetShopData( string shopName, bool isNewParser ) {
-            var downloadInfo = new DownloadInfo(new XmlFileInfo("n", shopName, "n", 0, 0, 1, null))
-            {
-                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
-                ShopName = shopName
-            };
-            
-            return ParseFile(downloadInfo, false, isNewParser);
-        }
-        
         private List<BrandDb> GetAllBrands() {
             var dbSettings = SettingsBuilder.GetDbSettings();
             return new DbHelper(dbSettings).GetAllBrands();
-        }
-
-        private HashSet<string> GetOfferIds() {
-            const string filePath = @"o:\\admitad\\workData\\scrollApi\\offerIds.txt";
-            return File.ReadAllLines(filePath).Where(s => string.IsNullOrWhiteSpace(s) == false && string.IsNullOrEmpty(s) == false).ToHashSet();
         }
 
         //Сделано в (?<country>.+)\.
@@ -328,45 +264,6 @@ namespace AdmitadExamplesParserTests
             var converter = new OfferConverter( shopData,  dbHelper, new BackgroundBaseContext("1", "name" ) );
             return converter.GetCleanOffers();
         }
-
-        private static ShopData ParseFile( string shopName, bool isNewParser ) {
-            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
-                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
-                ShopName = shopName
-            };
-            return ParseFile( downloadInfo, false, isNewParser );
-        }
-
-        private static ShopData ParseFileParallel( string shopName ) {
-            var downloadInfo = new DownloadInfo( new XmlFileInfo( "n", shopName, "n", 0, 0, 1, null ) ) {
-                FilePath = $@"g:\admitadFeeds\{ shopName }.xml",
-                ShopName = shopName
-            };
-            var context = new BackgroundBaseContext( "1", "name" );
-            var parser = GetParallelParser( downloadInfo, context );
-            var result = parser.Parse();
-            Console.WriteLine( $"Misses: {((ParallelFeedParser)parser).Misses}" );
-            return result;
-        }
         
-        private static ShopData ParseFile( DownloadInfo fileInfo, bool enableExtendedStat, bool isNewParser ) {
-            var context = new BackgroundBaseContext( "1", "name" );
-            var parser = isNewParser
-                ? GetFeedParser( fileInfo, context )
-                : GetGeneralParser( fileInfo,context,enableExtendedStat );
-            return parser.Parse();
-        }
-        
-        private static IFeedParser GetFeedParser( DownloadInfo fileInfo, BackgroundBaseContext context ) =>
-            new FeedParser( fileInfo, context );
-
-        private static IFeedParser GetGeneralParser(
-            DownloadInfo fileInfo,
-            BackgroundBaseContext context,
-            bool enableExtendedStat ) =>
-            new GeneralParser( fileInfo, context, enableExtendedStat );
-
-        private static IFeedParser GetParallelParser( DownloadInfo fileInfo, BackgroundBaseContext context ) =>
-            new ParallelFeedParser( fileInfo, context );
     }
 }

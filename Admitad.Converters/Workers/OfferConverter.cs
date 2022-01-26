@@ -29,7 +29,7 @@ namespace Admitad.Converters.Workers
 
         private List<Offer> DoGetCleanOffers()
         {
-            var offers = FilterOffers( _offers ).Select( _worker.Convert ).ToList();
+            var offers = FilterOffers( _offers ).AsParallel().Select( _worker.Convert ).ToList();
             Context.AddMessage( "Offers clean" );
             return offers;
         }

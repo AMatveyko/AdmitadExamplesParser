@@ -48,6 +48,11 @@ namespace Common.Entities
 
             return categories;
         }
+
+        public void InsertOffers( ShopData shopData ) {
+            NewOffers.AddRange( shopData.NewOffers);
+            DeletedOffers.AddRange( shopData.DeletedOffers);
+        }
         
     }
 }

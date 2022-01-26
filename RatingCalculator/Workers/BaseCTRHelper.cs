@@ -14,6 +14,8 @@ namespace RatingCalculator.Workers
 
         private DateTime _lastInitialize;
 
+        private readonly object _lockFlag = new();
+
         private const int CacheLifeTime = 6;
 
         protected BaseCTRHelper(ICtrRepository repository) => (Repository) = (repository);
@@ -24,12 +26,14 @@ namespace RatingCalculator.Workers
         }
 
         protected void WorkWithCache() {
-            if (_lastInitialize < DateTime.Now.AddHours(-CacheLifeTime)) {
-                DetermineCauseCacheRenew();
-                var newEntries = Initialize();
-                _context.AddMessage($"{newEntries} new entries in the cache.");
+            lock( _lockFlag ) {
+                if (_lastInitialize < DateTime.Now.AddHours(-CacheLifeTime)) {
+                    DetermineCauseCacheRenew();
+                    var newEntries = Initialize();
+                    _context.AddMessage($"{newEntries} new entries in the cache.");
+                }
+                _lastInitialize = DateTime.Now;
             }
-            _lastInitialize = DateTime.Now;
         }
 
         protected abstract int Initialize();

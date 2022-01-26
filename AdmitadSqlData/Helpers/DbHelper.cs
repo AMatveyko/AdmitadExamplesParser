@@ -34,8 +34,8 @@ namespace AdmitadSqlData.Helpers
         private static readonly ConcurrentDictionary<string, int> ShopIdCache = new();
         private static Dictionary<int, string[]> _countriesCache;
         private static Dictionary<string, string> _brandCache;
-        private static readonly Dictionary<string, UnknownBrands> UnknownBrands = new();
-        private static readonly Dictionary<string, int> UnknownCountries = new();
+        private static readonly ConcurrentDictionary<string, UnknownBrands> UnknownBrands = new();
+        private static readonly ConcurrentDictionary<string, int> UnknownCountries = new();
         private static bool _unknownBrandsNeedClean = true;
 
 
@@ -193,10 +193,10 @@ namespace AdmitadSqlData.Helpers
                 .ToList();
         }
 
-        public List<XmlFileInfo> GetEnableShops() =>
+        public List<ShopInfo> GetEnableShops() =>
             _shopRepository.GetEnableShops().Select( EntityConverter.Convert ).ToList();
 
-        public XmlFileInfo GetShop( int id ) {
+        public ShopInfo GetShop( int id ) {
             var shop = _shopRepository.GetShop( id );
             return EntityConverter.Convert( shop );
         }
@@ -291,6 +291,10 @@ namespace AdmitadSqlData.Helpers
             _tagRepository.SetProductCountForTag( tagId, count );
         
         public List<CategoryMappingDb> GetCategoryMapping(int shopId) => _categoryMappingRepository.GetCategoryMapping(shopId);
+
+        public void AddDescriptionFieldIntagIfNeed(
+            HashSet<int> tagIds ) =>
+            _tagRepository.UpdateTagFields( tagIds );
 
 
         #region OriginalCategory

@@ -1,6 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using AdmitadSqlData.Entities;
@@ -40,6 +41,25 @@ namespace AdmitadSqlData.Repositories
             }
 
             db.SaveChanges();
+        }
+
+        public void UpdateTagFields( HashSet<int> idsSet )
+        {
+            var db = GetDb();
+            var tags = db.Tags.Where( t => idsSet.Contains( t.Id ) ).ToList();
+            var neededTags = tags.Where( t => t.SearchFields.Contains( "description" ) == false )
+                .Where( nt => nt.SearchFields == "name,model,typeprefix,categoryName,param").ToList();
+            foreach( var tagDb in neededTags ) {
+                tagDb.SearchFields = "name,model,typeprefix,categoryName,param,description";
+            }
+
+            db.SaveChanges();
+
+            var lines = neededTags.Select( t => $"{t.Id}:{t.NameTitle}" );
+
+            File.WriteAllLines(@"g:\admitadFeedsTests\changedTags.txt", lines);
+            
+
         }
     }
 }

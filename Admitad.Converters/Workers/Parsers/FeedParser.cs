@@ -14,9 +14,9 @@ namespace Admitad.Converters.Workers
     public sealed class FeedParser : BaseFeedParser
     {
         public FeedParser(
-            IMinimalDownloadInfo downloadInfo,
+            ParsingInfo info,
             BackgroundBaseContext context )
-            : base( downloadInfo, context ) { }
+            : base( info, context ) { }
 
         protected override void PrepareOffers( bool isOnlyCategories ) {
 

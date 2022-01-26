@@ -21,10 +21,15 @@ namespace WorkWithTags
             var tagsIds = db.GetTags().Select( t => t.Id );
             var indexSettings = new SettingsBuilder( db ).GetSettings().ElasticSearchClientSettings;
             var index = IndexClient.CreateTagsWorker( indexSettings, new BackgroundBaseContext( "", "" ) );
-            var tasks = tagsIds.Select( t => Task.Factory.StartNew( () => index.GetProductsCountWithTag( t ) ) )
+            var tagsTasks = tagsIds.Select( t => ( t, Task.Factory.StartNew( () => index.GetProductsCountWithTag( t ) ) ) )
                 .ToArray();
-            Task.WaitAll( tasks );
-            var result = tasks.Select( t => t.Result ).ToList();
+            Task.WaitAll( tagsTasks.Select( t => t.Item2 ).ToArray() );
+            var result = tagsTasks.Select( t => ( t.t, t.Item2.Result ) ).ToList();
+            var emptyTags = result.Where( t => t.Result == 0 ).ToList();
+
+
+            var emptyIds = emptyTags.Select( t => int.Parse( t.Item1 ) ).ToHashSet();
+            db.AddDescriptionFieldIntagIfNeed( emptyIds );
         }
     }
 }

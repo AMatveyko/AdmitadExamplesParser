@@ -7,11 +7,11 @@ namespace Common.Entities
     public sealed class DownloadEventArgs : EventArgs 
     {
         public DownloadEventArgs(
-            DownloadInfo info )
+            DownloadsInfo info )
         {
             Info = info;
         }
         
-        public DownloadInfo Info { get; }
+        public DownloadsInfo Info { get; }
     }
 }

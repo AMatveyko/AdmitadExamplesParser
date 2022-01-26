@@ -1,8 +1,10 @@
 ﻿// a.snegovoy@gmail.com
 
 using System.Collections.Generic;
+using System.Linq;
 
 using Admitad.Converters;
+using Admitad.Converters.Entities;
 using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities.Statistics;
@@ -35,7 +37,7 @@ namespace TheStore.Api.Core.Sources.Workers
         {
             ( Context, Settings, _statistics, _dbHelper, _productRatingCalculation ) = 
                 ( context, settings,
-                new ShopProcessingStatistics( context.DownloadInfo, AddMessage, Logger ),
+                new ShopProcessingStatistics( context.DownloadsInfo, AddMessage, Logger ),
                 dbHelper,
                 productRatingCalculation );
         }
@@ -105,17 +107,19 @@ namespace TheStore.Api.Core.Sources.Workers
             _statistics.SetProductsStatistics( (int)count, (int)soldOut );
         }
 
-        private ShopData ParseShop()
-        {
-            var parser = new GeneralParser(
-                Context.DownloadInfo,
-                Context );
-            var shopData = parser.Parse();
+        private ShopData ParseShop() {
+            
+            var processor = new ParsingProcessor( Context.DownloadsInfo, ParserType.NewParallel, Context );
+            // var processor = new ParsingProcessor( Context.DownloadsInfo, ParserType.Old, Context );
+            var shopData = processor.GetShopData();
+            
             SetProgress( 20 );
             AddMessage( "Parsing complete" );
             return shopData;
         }
 
+        private 
+        
         protected List<CategoryMappingDb> GetCategoryMapping() => _dbHelper.GetCategoryMapping(Context.ShopId);
     }
 }

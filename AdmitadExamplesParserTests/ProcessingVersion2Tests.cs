@@ -1,6 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Admitad.Converters;
@@ -44,7 +45,6 @@ namespace AdmitadExamplesParserTests
             shopInfo.VersionProcessing = 2;
             var downloader = new FeedsDownloader(
                 3,
-                new DbHelper( dbSettings ),
                 new BackgroundBaseContext( "-", "name" ) );
             var info =downloader.Download( "tests", shopInfo );
         }
@@ -53,7 +53,11 @@ namespace AdmitadExamplesParserTests
         public void ParseOffers()
         {
             var downloadInfo = GetDownloadInfo();
-            var parser = new GeneralParser( downloadInfo, new BackgroundBaseContext( "1", "1" ) );
+            var parsingInfo = new ParsingInfo(
+                downloadInfo.Files.First().FilePath,
+                downloadInfo.ShopWeight,
+                downloadInfo.NameLatin );
+            var parser = new GeneralParser( parsingInfo, new BackgroundBaseContext( "1", "1" ) );
             var offers = parser.Parse();
             var ids = offers.DeletedOffers.Select( o => o.OfferId.ToLower() ).ToArray();
             var client = IndexClient.CreateIndexClient( _settings, new BackgroundBaseContext("1","1") );
@@ -90,17 +94,23 @@ namespace AdmitadExamplesParserTests
             handler.Process();
         }
 
-        private static DownloadInfo GetDownloadInfo( DbHelper dbHelper = null )
+        private static DownloadsInfo GetDownloadInfo( DbHelper dbHelper = null )
         {
             //var lastUpdate =   : dbHelper.GetShop( 33 );
+
+            var feeds = new List<FeedInfo> {
+                new FeedInfo( "1", "" ) {
+                    FilePath = @"o:\AdmitadExamplesParser\AdmitadExamplesParserTests\lamoda.xml",
+                    Error = DownloadError.Ok
+                }
+            };
+            
             var xmlInfo = dbHelper == null
-                ? new XmlFileInfo( "Lamoda", "lamoda", "", 33, 10, 2, DateTime.Now )
+                ? new ShopInfo( "Lamoda", "lamoda", feeds, 33, 10, 2, DateTime.Now )
                 : dbHelper.GetShop( 33 );
-            var downloadInfo = new DownloadInfo( xmlInfo );
+            var downloadInfo = new DownloadsInfo( xmlInfo );
             downloadInfo.StartTime = DateTime.Parse( "08-Jun-21 3:20:05" );
-            downloadInfo.Error = DownloadError.Ok;
             downloadInfo.DownloadTime = 1189;
-            downloadInfo.FilePath = @"o:\AdmitadExamplesParser\AdmitadExamplesParserTests\lamoda.xml";
             return downloadInfo;
         }
 

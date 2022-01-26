@@ -6,6 +6,7 @@ namespace Common.Entities
 {
     public enum DownloadError
     {
+        NoAction,
         Ok,
         [ Description("Many requests")]
         ManyRequests,
