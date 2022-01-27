@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Common.Entities;
+using Common.Entities.Rating;
 using Common.Settings;
 
 using TheStore.Api.Front.Data.Entities;
@@ -97,7 +98,8 @@ namespace TheStore.Api.Front.Data.Repositories
             return Cache[ key ];
         }
 
-        public List<ItemIds> GetCtrs() => Db.ItemCtrs.ToList();
+        public List<ItemCtrInfo> GetCtrs() => Db.ItemCtrs
+            .Select( i => new ItemCtrInfo( i.Id, i.ProductId, i.Views, i.Clicks )).ToList();
 
         public List<ShopDb> GetShops() => Db.Shops.ToList();
     }

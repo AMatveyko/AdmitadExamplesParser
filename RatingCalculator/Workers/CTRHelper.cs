@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Common.Entities.Rating;
+
 using TheStore.Api.Front.Data.Entities;
 using TheStore.Api.Front.Data.Pub;
 
@@ -13,7 +16,7 @@ namespace RatingCalculator.Workers
         private const decimal _bustCTR = 2m;
         // private const int _bustViews = -1;
         private const int _ctrCorrector = 1000;
-        private Dictionary<string, ItemIds> _cache;
+        private Dictionary<string, ItemCtrInfo> _cache;
         private decimal _averageCtr;
 
         public CTRHelper(ICtrRepository repository) : base(repository) { }

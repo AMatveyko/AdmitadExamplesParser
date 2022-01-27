@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace TheStore.Api.Front.Data.Entities
 {
     [Table("item_ids")]
-    public sealed class ItemIds {
+    public sealed class ItemIdsDb {
         [Column("id_hash")]
         public string ProductId { get; set; }
         [Column("views")]

@@ -18,8 +18,6 @@ namespace TheStore.Api.Front.Data.Entities
         public string Url { get; set; }
         [ Column("description") ]
         public string Description { get; set; }
-        [ Column("xml_feed") ]
-        public string XmlFeed { get; set; }
         [ Column("date_update") ]
         public DateTime DateUpdate { get; set; }
         [ Column("enabled") ]

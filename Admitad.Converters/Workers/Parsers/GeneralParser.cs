@@ -66,7 +66,7 @@ namespace Admitad.Converters.Workers
         private readonly string _shopNameLatin;
         private IAvailabilityChecker _availabilityChecker;
 
-        private bool _categoryFilled = false;
+        private bool _categoryFilled;
 
         private List<BrokenLine> BrokenLinesList => new();
         private static int Count { get; set; }

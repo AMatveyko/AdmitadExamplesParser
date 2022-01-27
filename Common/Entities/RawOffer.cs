@@ -41,6 +41,7 @@ namespace Common.Entities
         [ XmlElement( "Color" ) ] public string Colors { get; set; }
         [ XmlElement( "Size" ) ] public string Size { get; set; }
         [ XmlAttribute( "group_id" ) ] public string GroupId { get; set; }
+        [XmlAttribute("shopId")] public string ShopId { get; set; }
         [ XmlIgnore ] public string CategoryPath { get; set; }
         [ XmlIgnore ] public List<string> Categories { get; set; }
         [ XmlIgnore ] public string ShopName { get; set; }

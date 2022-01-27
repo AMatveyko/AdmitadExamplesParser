@@ -124,6 +124,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             offer.Delivery = rawOffer.IsDelivered ?? false;
             offer.SalesNotes = rawOffer.SalesNotes;
             offer.OriginalVendor = rawOffer.Vendor;
+            offer.SellerId = rawOffer.ShopId;
         }
 
         

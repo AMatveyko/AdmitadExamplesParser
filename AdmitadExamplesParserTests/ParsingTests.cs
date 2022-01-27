@@ -59,7 +59,6 @@ namespace AdmitadExamplesParserTests
         // [ TestCase( "yoox" ) ]
         // [ TestCase( "ecco" ) ]
         // [ TestCase( "12storeez" ) ]
-        // [ TestCase( "akusherstvo" ) ]
         // [ TestCase( "amersport" ) ]
         // [ TestCase( "anabel" ) ]
         // [ TestCase( "brandshop" ) ]
@@ -74,7 +73,9 @@ namespace AdmitadExamplesParserTests
         // [ TestCase( "goldenline" ) ]
         // [ TestCase( "dochkisinochki" ) ]
         // [ TestCase( "bebakids" ) ]
+        [TestCase("aliexpress")]
         [TestCase("beru")]
+        [ TestCase( "akusherstvo" ) ]
         public void ParsingTest( string shopName ) {
             DoParsing( shopName );
         }
@@ -103,6 +104,63 @@ namespace AdmitadExamplesParserTests
             var sortedRawOffers = shopData.NewOffers.OrderBy( o => o.OldPrice ).ToList();
             var unique = GetUnique( shopData.NewOffers, shopName );
             var offers = ConvertOffers( shopData );
+
+            var categories = new List<int> {
+                6,
+                9,
+                27,
+                28,
+                40,
+                91,
+                102,
+                109,
+                132,
+                133,
+                150,
+                171,
+                174,
+                180,
+                181,
+                190,
+                193,
+                210,
+                222,
+                234,
+                238,
+                253,
+                280,
+                295,
+                329,
+                334,
+                346,
+                367,
+                368,
+                369,
+                385,
+                541,
+                547,
+                553,
+                557,
+                559,
+                565,
+                572,
+                577,
+                597,
+                620,
+                626,
+                632,
+                633,
+                635,
+                637,
+                640,
+                642,
+                643,
+                648,
+                653
+            };
+
+            var sdfasdfsd = offers.Where( o => categories.Contains( int.Parse( o.CategoryId ) ) ).ToList();
+            
             var years = offers.SelectMany( o => o.Params ).Where( p => p.Unit.ToLower() == "Years" )
                 .SelectMany( p => p.Values ).ToList();
             var sortedOffers = offers.OrderBy( o => o.OldPrice ).ToList();

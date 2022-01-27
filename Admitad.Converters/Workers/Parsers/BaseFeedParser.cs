@@ -69,9 +69,7 @@ namespace Admitad.Converters.Workers
             Initialize();
             
             PrepareOffers(isOnlyCategories);
-            
-            ParseCategoriesAndFlushCategoriesCache();
-            
+
             Context.AddMessage( $"Offers count {ShopData.NewOffers.Count}" );
         }
         
@@ -145,6 +143,7 @@ namespace Admitad.Converters.Workers
             var m = EndCategory.Match( line );
             if( m.Success ) {
                 _categoryFilled = true;
+                ParseCategoriesAndFlushCategoriesCache();
             }
 
         }

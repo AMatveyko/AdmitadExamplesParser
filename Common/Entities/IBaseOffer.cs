@@ -29,5 +29,6 @@ namespace Common.Entities
         //List<string> AllParams { get; set; }
         string SalesNotes { get; set; }
         string OriginalVendor { get; set; }
+        string SellerId { get; set; }
     }
 }

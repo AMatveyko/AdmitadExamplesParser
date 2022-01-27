@@ -20,6 +20,8 @@ namespace Admitad.Converters
 
         private readonly DbHelper _dbHelper;
         private readonly ProductRatingCalculation _calculator;
+
+        private readonly object _lockFlag = new();
         
         public ProductConverter( DbHelper dbHelper, ProductRatingCalculation calculator ) {
             _dbHelper = dbHelper;
@@ -134,9 +136,11 @@ namespace Admitad.Converters
                 Gender.Girl => Gender.Woman,
                 _ => offer.Gender
             };
-            
-            _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
 
+
+            RememberVendorIfUnknown( offer );
+
+            
             var product = new Product {
                 Id = offer.ProductId,
                 Url = offer.Url,
@@ -177,6 +181,12 @@ namespace Admitad.Converters
             return product;
         }
 
+        private void RememberVendorIfUnknown( Offer offer ) {
+            lock( _lockFlag ) {
+                _dbHelper.RememberVendorIfUnknown( offer.VendorNameClearly, offer.OriginalVendor );
+            }
+        }
+        
         private void CalculateAndSetRating(Product product) => _calculator.SetRating(product, false);
     }
 }

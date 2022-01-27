@@ -8,6 +8,9 @@
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ReadFileTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.GetShopsTest&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::9E9F6067-460B-40A5-8522-80793CE9F93C::net5.0::RatingCalculatorTests.ShopsHelperTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::9E9F6067-460B-40A5-8522-80793CE9F93C::net5.0::RatingCalculatorTests.RatingTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::9E9F6067-460B-40A5-8522-80793CE9F93C::net5.0::RatingCalculatorTests.RatingConverterTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	

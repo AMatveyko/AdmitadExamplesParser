@@ -44,6 +44,8 @@ namespace Common.Entities
         public ProductType Type { get; set; }
         public string OriginalVendor { get; set; }
         public AgeRange AgeRange { get; set; }
+        //ид продавца для алиэкспресса
+        public string SellerId { get; set; }
 
         public void AddParamIfNeed( RawParam raw ) {
             AddParamIfNeed( raw.Name.ToLower(), raw.Value.ToLower(), raw.Unit?.ToLower() );
