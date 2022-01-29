@@ -11,6 +11,7 @@ namespace Common.Settings
         public bool ShowStatistics { get; set; }
         public ElasticSearchClientSettings ElasticSearchClientSettings { get; set; }
         public TelegramSettings TelegramSettings { get; set; }
+        public AdmitadApiSettings AdmitadSettings { get; set; }
         public string CtrCalculationType { get; set; }
     }
 }
