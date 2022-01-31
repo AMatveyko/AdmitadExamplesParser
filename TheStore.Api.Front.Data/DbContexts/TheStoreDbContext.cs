@@ -2,6 +2,8 @@
 
 using System;
 
+using Common.SqlData.Entities;
+
 using Microsoft.EntityFrameworkCore;
 
 using TheStore.Api.Front.Data.Entities;
@@ -31,6 +33,7 @@ namespace TheStore.Api.Front.Data.DbContexts
         public DbSet<CategoryDb> Categories { get; set; }
         public DbSet<ItemIdsDb> ItemCtrs { get; set; }
         public DbSet<CategoryMapDb> CategoryMaps { get; set; }
+        public DbSet<UrlStatisticsDb> UrlStatistics { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

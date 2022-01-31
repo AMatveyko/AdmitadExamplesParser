@@ -3,6 +3,8 @@ using AdmitadCommon.Types;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Elastic.Workers;
 using Common.Workers;
 
 using Microsoft.AspNetCore.Builder;
@@ -52,6 +54,10 @@ namespace TheStore.Api.Core
             services.AddScoped( r => new TheStoreRepository( dbSettings ) );
             services.AddSingleton(r => new ProductRatingCalculation(new TheStoreRepositoryFromFront(dbSettings), settings.CtrCalculationType) );
             services.AddScoped( r => new DbHelper( dbSettings ) );
+            services.AddScoped(
+                r => new UrlStatisticsIndexClient(
+                    settings.ElasticSearchClientSettings,
+                    new BackgroundBaseContext( "urlStatistics", "createOrUpdate" ) ) );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

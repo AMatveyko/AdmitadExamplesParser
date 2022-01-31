@@ -1,16 +1,12 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=00A0C621_002D35CE_002D4EB6_002DB714_002D4C7BECB946BE_002Ff_003AProductLinkTests_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\asneg\AppData\Local\JetBrains\Rider2021.3\resharper-host\temp\Rider\vAny\CoverageData\_AdmitadExamplesParser.1924554317\Snapshot\snapshot.utdcvr</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=a76c5264_002D543d_002D47d5_002D8909_002D7eb1b83fad92/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="ParsingTest(&amp;quot;yoox&amp;quot;)" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Solution /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d3874ab5_002D6b64_002D4f94_002Dbb89_002Dd1d2cd8a957e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="ManyUpdatesTest" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;MSTest::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.GetBrandsForElectronic&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParseYandexNamesTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.NewParserTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ReadFileTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::26BDF12F-CD9C-49CA-8B21-0B808AB5C301::net5.0::AdmitadSqlDataTests.TheStoreRepositoryTest.GetShopsTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::00A0C621-35CE-4EB6-B714-4C7BECB946BE::net5.0::AdmitadExamplesParserTests.ParsingTests.ParsingTest&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;MSTest::9E9F6067-460B-40A5-8522-80793CE9F93C::net5.0::RatingCalculatorTests.ShopsHelperTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;MSTest::9E9F6067-460B-40A5-8522-80793CE9F93C::net5.0::RatingCalculatorTests.RatingTests&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;MSTest::9E9F6067-460B-40A5-8522-80793CE9F93C::net5.0::RatingCalculatorTests.RatingConverterTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::B4C206E6-02D5-47AF-B136-914BAF8B2DFB::net5.0::UrlStatisticsTests.UrlStatisticsWorkerTests.ManyUpdatesTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
