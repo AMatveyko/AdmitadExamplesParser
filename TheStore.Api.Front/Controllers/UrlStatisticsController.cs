@@ -29,18 +29,23 @@ namespace TheStore.Api.Front.Controllers
 
         public UrlStatisticsController( UrlStatisticsControllerRequirements requirements) =>
             ( _indexClient, _isDebug ) = ( requirements.IndexClient, requirements.IsDebug );
-        
+
         [ HttpGet ]
         [ Route( "Update" ) ]
-        public IActionResult Update( string url, string botType, short? errorCode, string referer )
+        public IActionResult Update(
+            string url,
+            string botType,
+            short? errorCode,
+            string referer ) =>
+            ErrorHandling( () => DoUpdate( url, botType, errorCode, referer ) );
+
+        private List<string> DoUpdate( string url, string botType, short? errorCode, string referer )
         {
             DebugIfNeed( url, botType, errorCode, referer );
             DetermineUrl( url );
             var determinedBotType = DetermineBotType( botType );
             var parameters = new UrlStatisticsParameters( url, determinedBotType, errorCode, referer );
-            var result = GetWorker().Update( parameters );
-
-            return new ObjectResult( result );
+            return GetWorker().Update( parameters );
         }
 
         [ HttpPost ]
@@ -98,7 +103,23 @@ namespace TheStore.Api.Front.Controllers
                 return;
             }
 
-            throw new ArgumentException( $"{url}  not url" );
+            throw new ArgumentException( $"{url} not url" );
+        }
+
+        private IActionResult ErrorHandling( Func<object> action ) {
+            try {
+                return new ObjectResult( new {
+                    IsError = false,
+                    Result = action()
+                });
+            }
+            catch( Exception e ) {
+                return new ObjectResult(
+                    new {
+                        IsError = true,
+                        Error = e.Message
+                    } );
+            }
         }
     }
 }
