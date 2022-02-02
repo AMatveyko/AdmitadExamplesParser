@@ -39,8 +39,9 @@ namespace TheStore.Api.Front.Controllers
             string referer ) =>
             ErrorHandling( () => DoUpdate( url, botType, errorCode, referer ) );
 
-        private List<string> DoUpdate( string url, string botType, short? errorCode, string referer )
+        private List<string> DoUpdate( string rawUrl, string botType, short? errorCode, string referer )
         {
+            var url = rawUrl.ToLower();
             DebugIfNeed( url, botType, errorCode, referer );
             DetermineUrl( url );
             var determinedBotType = DetermineBotType( botType );
