@@ -6,6 +6,7 @@ namespace Common.Entities
     {
         Yandex,
         Google,
-        NotBot
+        Other,
+        User
     }
 }

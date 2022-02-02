@@ -64,10 +64,16 @@ namespace TheStore.Api.Front
                 } );
             services.AddScoped(
                 r => {
-                    var settings = (ProcessorSettings)r.GetService( typeof( ProcessorSettings ) );
-                    return new UrlStatisticsIndexClient(
-                        settings.ElasticSearchClientSettings,
-                        new BackgroundBaseContext( "urlStatistics", "createOrUpdate" ) );
+                    var repository = ( ISettingsRepository )r.GetService( typeof( TheStoreRepository ) );
+                    var builder = new SettingsBuilder( repository );
+                    var settings = builder.GetSettings();
+
+                    return new UrlStatisticsControllerRequirements() {
+                        IndexClient = new UrlStatisticsIndexClient(
+                            settings.ElasticSearchClientSettings,
+                            new BackgroundBaseContext( "urlStatistics", "createOrUpdate" ) ),
+                        IsDebug = settings.UrlStatisticsDebuggingEnable 
+                    };
                 } );
         }
 

@@ -75,7 +75,8 @@ namespace Common.Workers
                 ElasticSearchClientSettings = elasticSearchClientSettings,
                 TelegramSettings = telegramSetting,
                 AdmitadSettings = admitadSettings,
-                CtrCalculationType = GetString("RatingCalculationType")
+                CtrCalculationType = GetString("RatingCalculationType"),
+                UrlStatisticsDebuggingEnable = GetBool("UrlStatisticsDebuggingEnable")
             };
             return settings;
         }

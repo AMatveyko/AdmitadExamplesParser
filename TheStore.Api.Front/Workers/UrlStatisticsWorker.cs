@@ -78,7 +78,9 @@ namespace TheStore.Api.Front.Workers
                 case BotType.Google:
                     SetGoogle( entry, parameters.ErrorCode );
                     break;
-                case BotType.NotBot:
+                case BotType.Other:
+                    break;
+                case BotType.User:
                     SetNonSearchBot( entry, parameters.ErrorCode );
                     SetIndexInfo( entry, parameters.Referer );
                     break;
