@@ -9,6 +9,8 @@ using Common.Elastic.Workers;
 using Common.Entities;
 using Common.Helpers;
 
+using NLog;
+
 using TheStore.Api.Front.Entity;
 
 namespace TheStore.Api.Front.Workers
@@ -21,7 +23,6 @@ namespace TheStore.Api.Front.Workers
         private const string Google = "google";
         
         private const int DaysPassed = 30;
-        private const int Size = 5;
 
         private const string YandexVisitField = "dateLastShowYandex";
         private const string GoogleVisitField = "dateLastShowGoogle";
@@ -32,11 +33,23 @@ namespace TheStore.Api.Front.Workers
             RegexOptions.Compiled);
         
         
+        private static readonly Logger ErrorLogger = LogManager.GetLogger( "UrlStatisticsInternalErrorsLogger" );
+        
         private readonly UrlStatisticsIndexClient _client;
 
         public UrlStatisticsWorker( UrlStatisticsIndexClient client ) => _client = client;
 
         public void Update( UrlStatisticsParameters parameters )
+        {
+            try {
+                DoUpdate( parameters);
+            }
+            catch( Exception e ) {
+                ErrorLogger.Info( e.Message );
+            }
+        }
+
+        private void DoUpdate( UrlStatisticsParameters parameters )
         {
             var entry = GetEntry( parameters.Url );
             if( entry == null ) {
@@ -46,20 +59,20 @@ namespace TheStore.Api.Front.Workers
                 UpdateEntry( entry, parameters );
             }
         }
-
+        
         public void AddUrls( List<string> urls )
         {
             var entries = urls.Select( u => new UrlStatisticEntry( u ) ).ToList();
             _client.Insert( entries );
         }
 
-        public List<UrlStatisticEntry> GetUrls( BotType botType, string url )
+        public List<UrlStatisticEntry> GetUrls( BotType botType, string url, short urlNumber )
         {
             var (domain, vertical) = GetDomainAndVerticalFromUrl( url );
             var fieldName = GetFieldName( botType );
             var dateThreshold = GetDateThreshold();
 
-            return _client.GetUrlsInfos( domain, vertical, fieldName, dateThreshold, Size );
+            return _client.GetUrlsInfos( domain, vertical, fieldName, dateThreshold, urlNumber );
         }
 
         private void CreateAndInsert( UrlStatisticsParameters parameters )

@@ -27,12 +27,12 @@ namespace TheStore.Api.Front.Workers
         public List<string> Update( UrlStatisticsParameters parameters )
         {
             RunUpdateVisitUrl( parameters );
-            return GetUrls( parameters.BotType, parameters.Url );
+            return GetUrls( parameters.BotType, parameters.Url, parameters.UrlNumber );
         }
 
-        private List<string> GetUrls( BotType botType, string url )
+        private List<string> GetUrls( BotType botType, string url, short urlNumber )
         {
-            var urls = _worker.GetUrls( botType, url );
+            var urls = _worker.GetUrls( botType, url, urlNumber );
             foreach( var entry in urls ) {
                 SetShownDate( entry, botType );
                 RunUpdateShowUrl( entry );

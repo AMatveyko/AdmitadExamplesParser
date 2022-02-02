@@ -36,16 +36,17 @@ namespace TheStore.Api.Front.Controllers
             string url,
             string botType,
             short? errorCode,
-            string referer ) =>
-            ErrorHandling( () => DoUpdate( url, botType, errorCode, referer ) );
+            string referer,
+            short urlNumber = 5 ) =>
+            ErrorHandling( () => DoUpdate( url, botType, errorCode, urlNumber, referer ) );
 
-        private List<string> DoUpdate( string rawUrl, string botType, short? errorCode, string referer )
+        private List<string> DoUpdate( string rawUrl, string botType, short? errorCode, short urlNumber, string referer )
         {
             var url = rawUrl.ToLower();
             DebugIfNeed( url, botType, errorCode, referer );
             DetermineUrl( url );
             var determinedBotType = DetermineBotType( botType );
-            var parameters = new UrlStatisticsParameters( url, determinedBotType, errorCode, referer );
+            var parameters = new UrlStatisticsParameters( url, determinedBotType, errorCode, urlNumber, referer );
             return GetWorker().Update( parameters );
         }
 
