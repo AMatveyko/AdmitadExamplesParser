@@ -28,12 +28,6 @@
         <Link>NLog.config</Link>
       </None>
     </ItemGroup>
-
-    <ItemGroup>
-        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-            <_Parameter1>UrlStatisticsTests</_Parameter1>
-        </AssemblyAttribute>
-    </ItemGroup>
     
     <ItemGroup>
       <Content Include="..\dbSettings.json">

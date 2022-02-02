@@ -5,6 +5,7 @@ namespace Common.Entities
     public enum BotType
     {
         Yandex,
-        Google
+        Google,
+        NotBot
     }
 }

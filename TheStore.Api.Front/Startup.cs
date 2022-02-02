@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Common.Api;
 using Common.Elastic.Workers;
 using Common.Entities;
+using Common.Settings;
 using Common.Workers;
 
 using Microsoft.AspNetCore.Builder;
@@ -52,13 +53,21 @@ namespace TheStore.Api.Front
                 new TheStoreRepository( SettingsBuilder.GetDbSettings() ) );
             services.AddSingleton<Proxies>();
             services.AddTransient<ImageWorker>();
-            services.AddSingleton(
-                r => {
-                    //var repository = new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version );
+            services.AddSingleton( r => {
                     var repository = ( ISettingsRepository )r.GetService( typeof( TheStoreRepository ) );
                     var builder = new SettingsBuilder( repository );
-                    var elasticSettings = builder.GetSettings().ElasticSearchClientSettings;
-                    return IndexClient.CreateIndexClient( elasticSettings, new BackgroundBaseContext( "1", "1" ) );
+                    return builder.GetSettings();
+                } );
+            services.AddSingleton( r => {
+                    var settings = (ProcessorSettings)r.GetService( typeof( ProcessorSettings ) );
+                    return IndexClient.CreateIndexClient( settings.ElasticSearchClientSettings, new BackgroundBaseContext( "1", "1" ) );
+                } );
+            services.AddScoped(
+                r => {
+                    var settings = (ProcessorSettings)r.GetService( typeof( ProcessorSettings ) );
+                    return new UrlStatisticsIndexClient(
+                        settings.ElasticSearchClientSettings,
+                        new BackgroundBaseContext( "urlStatistics", "createOrUpdate" ) );
                 } );
         }
 

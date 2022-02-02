@@ -14,9 +14,10 @@ using Common.Workers;
 
 using NUnit.Framework;
 
-using TheStore.Api.Core.Sources.Workers;
 using TheStore.Api.Front.Data.Helpers;
 using TheStore.Api.Front.Data.Repositories;
+using TheStore.Api.Front.Entity;
+using TheStore.Api.Front.Workers;
 
 namespace UrlStatisticsTests
 {
@@ -83,7 +84,7 @@ namespace UrlStatisticsTests
         {
             var worker = GetWorker();
             for( var i = 0; i < count; i++ ) {
-                worker.Update( url, botType, null );
+                worker.Update( new UrlStatisticsParameters( url, botType, null, null ) );
             }
         }
 

@@ -9,16 +9,17 @@ using Common.Entities;
 
 using Microsoft.AspNetCore.Mvc;
 
-using TheStore.Api.Core.Sources.Workers;
+using TheStore.Api.Front.Entity;
+using TheStore.Api.Front.Workers;
 
-namespace TheStore.Api.Core.Controllers
+namespace TheStore.Api.Front.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public sealed class UrlStatisticsController : ControllerBase
     {
 
-        private static readonly Regex UrlPattern = new ( @"^https:\/\/.*", RegexOptions.Compiled );
+        private static readonly Regex UrlPattern = new Regex( @"^https:\/\/.*", RegexOptions.Compiled );
         private readonly UrlStatisticsIndexClient _indexClient;
 
         public UrlStatisticsController(
@@ -27,11 +28,14 @@ namespace TheStore.Api.Core.Controllers
         
         [ HttpGet ]
         [ Route( "Update" ) ]
-        public void Update( string url, string botType, short? errorCode )
+        public IActionResult Update( string url, string botType, short? errorCode, string referer )
         {
             DetermineUrl( url );
             var determinedBotType = DetermineBotType( botType );
-            GetWorker( false ).Update( url,determinedBotType, errorCode );
+            var parameters = new UrlStatisticsParameters( url, determinedBotType, errorCode, referer );
+            var result = GetWorker().Update( parameters );
+
+            return new ObjectResult( result );
         }
 
         [ HttpPost ]
@@ -42,7 +46,7 @@ namespace TheStore.Api.Core.Controllers
         [ Route( "AddUrls" ) ]
         public void AddUrls( List<string> urls ) {
             DetermineUrls( urls );
-            GetWorker(false).AddUrls( urls );
+            GetWorker().AddUrls( urls );
         }
             
 
@@ -51,11 +55,12 @@ namespace TheStore.Api.Core.Controllers
             typeName.ToLower() switch {
                 "yandex" => BotType.Yandex,
                 "google" => BotType.Google,
+                "notbot" => BotType.NotBot,
                 _ => throw new ArgumentException( "bot type notfound" )
             };
         
-        private IUrlStatisticsWorker GetWorker( bool withQueues ) =>
-            withQueues ? new UrlStatisticsWithQueues( _indexClient ) : new UrlStatisticsWorker( _indexClient );
+        private IUrlStatisticsWorker GetWorker() =>
+            new UrlStatisticsWithQueues( _indexClient );
 
         private static void DetermineUrls( List<string> urls ) {
             foreach( var url in urls ) {

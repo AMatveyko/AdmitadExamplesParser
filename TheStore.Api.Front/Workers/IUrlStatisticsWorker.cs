@@ -2,13 +2,13 @@
 
 using System.Collections.Generic;
 
-using Common.Entities;
+using TheStore.Api.Front.Entity;
 
-namespace TheStore.Api.Core.Sources.Workers
+namespace TheStore.Api.Front.Workers
 {
     internal interface IUrlStatisticsWorker
     {
-        public void Update( string url, BotType botType, short? errorCode );
+        public List<string> Update( UrlStatisticsParameters parameters );
         public void AddUrls( List<string> urls );
     }
 }
