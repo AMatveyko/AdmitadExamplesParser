@@ -35,21 +35,21 @@ namespace TheStore.Api.Front.Workers
             var urls = _worker.GetUrls( botType, url, urlNumber );
             foreach( var entry in urls ) {
                 SetShownDate( entry, botType );
-                RunUpdateShowUrl( entry );
+                RunUpdateEntry( entry );
             }
             return urls.Select( u => u.Url ).ToList();
         }
 
-        private void RunUpdateShowUrl( UrlStatisticEntry entry ) {
+        private void RunUpdateEntry( UrlStatisticEntry entry ) {
             RunInTask( () => DoRunUpdate( entry.Id, () => _worker.UpdateEntry( entry )));
         }
         
         private void RunUpdateVisitUrl( UrlStatisticsParameters parameters )
         {
-            var id = HashHelper.GetMd5Hash( parameters.Url );
+            var id = GetId(parameters.Url);
             RunInTask( () => DoRunUpdate( id, () => _worker.Update( parameters ) ) );
         }
-        
+
         private static void DoRunUpdate( string id, Action action )
         {
             lock( LockFlag ) {
@@ -85,6 +85,12 @@ namespace TheStore.Api.Front.Workers
         }
 
         public void AddUrls( List<string> urls ) => _worker.AddUrls( urls );
+        public void SaveCheckingResult(List<UrlIndexInfo> infos) {
+            var entries = infos.Select(r => GetIndexCheckedEntry(r.Url, r.IsIndexed));
+            foreach (var entry in entries) {
+                RunUpdateEntry(entry);
+            }
+        }
 
         private static void RunInTask(
             Action action ) =>
@@ -105,6 +111,14 @@ namespace TheStore.Api.Front.Workers
                     return;
             }
         }
+
+        private static UrlStatisticEntry GetIndexCheckedEntry(string url, bool isIndexed) =>
+            new UrlStatisticEntry(url) {
+                DateLastIndexCheckYandex = DateTime.Now,
+                IndexedYandex = isIndexed
+            };
+        
+        private static string GetId(string url) => HashHelper.GetMd5Hash(url);
         
     }
 }

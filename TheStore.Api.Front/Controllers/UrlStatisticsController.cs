@@ -60,8 +60,13 @@ namespace TheStore.Api.Front.Controllers
             DetermineUrls( urls );
             GetWorker().AddUrls( urls );
         }
-            
 
+        [HttpPost]
+        [Route("SaveCheckingResult")]
+        public void SaveCheckingResult(List<UrlIndexInfo> infos) {
+            GetWorker().SaveCheckingResult(infos);
+        }
+        
         private static BotType DetermineBotType(
             string typeName ) =>
             typeName.ToLower() switch {

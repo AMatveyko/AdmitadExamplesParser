@@ -84,7 +84,7 @@ namespace UrlStatisticsTests
         {
             var worker = GetWorker();
             for( var i = 0; i < count; i++ ) {
-                worker.Update( new UrlStatisticsParameters( url, botType, null, null ) );
+                worker.Update( new UrlStatisticsParameters( url, botType, null, 5, null ) );
             }
         }
 

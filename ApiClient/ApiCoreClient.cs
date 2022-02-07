@@ -1,22 +1,22 @@
 ﻿// a.snegovoy@gmail.com
 
 using System;
-
+using System.Collections.Generic;
 using AdmitadCommon.Entities.Statistics;
 
 using ApiClient.Requests;
 using ApiClient.Responces;
-
+using Common.Entities;
 using Web.Common.Entities;
 
 namespace ApiClient
 {
-    internal class ApiClient
+    internal class ApiCoreClient
     {
 
         private readonly RequestSettings _settings;
 
-        public ApiClient(
+        public ApiCoreClient(
             RequestSettings settings ) =>
             _settings = settings;
         
@@ -32,6 +32,8 @@ namespace ApiClient
         public TopContext RunAndCheckLinkAll() => new LinkAllRequest( _settings ).Execute();
 
         public Context RunRatingCalculation() => new RatingsCalculationRequest(_settings).Execute();
+        
+        public List<UrlIndexInfo> GetValidatesUrls() => new GetValidatesUrls(_settings).Execute();
 
     }
 }

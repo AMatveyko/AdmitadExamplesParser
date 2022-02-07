@@ -49,7 +49,7 @@ namespace ApiClient
 
         private static void DoWork( string[] args ) {
             
-            var apiClient = new ApiClient( new RequestSettings( "http://localhost:8080", ErrorLogger ) );
+            var apiClient = new ApiCoreClient( new RequestSettings( "http://localhost:8080", ErrorLogger ) );
 
             // SendMessage("test");
 
@@ -64,9 +64,9 @@ namespace ApiClient
             FlushListingCash();
 
         }
-        
-        private static void RunIndexOrLinking(string[] args, ApiClient apiClient) {
-            var statBefore = apiClient.GetTotalStatistics();
+
+        private static void RunIndexOrLinking(string[] args, ApiCoreClient apiCoreClient) {
+            var statBefore = apiCoreClient.GetTotalStatistics();
             var report = new Report
             {
                 TotalBefore = statBefore.Products,
@@ -74,14 +74,14 @@ namespace ApiClient
             };
 
             Func<TopContext> func = args.Length == 0 || args[0] == "index"
-                ? apiClient.RunAndCheckIndex
-                : apiClient.RunAndCheckLinkAll;
+                ? apiCoreClient.RunAndCheckIndex
+                : apiCoreClient.RunAndCheckLinkAll;
 
             RunAndCheck(func, SaveLastTopContext);
 
             if (args.Length == 0 || args[0] == "index")
             {
-                IndexWork(report, apiClient);
+                IndexWork(report, apiCoreClient);
             }
             else
             {
@@ -108,8 +108,8 @@ namespace ApiClient
         
         private static void SaveLastTopContext( TopContext context ) => _lastResult = context;
 
-        private static void RunRatingCalculation(ApiClient apiClient) {
-            RunAndCheck(apiClient.RunRatingCalculation, CheckRatingCalculationResult);
+        private static void RunRatingCalculation(ApiCoreClient apiCoreClient) {
+            RunAndCheck(apiCoreClient.RunRatingCalculation, CheckRatingCalculationResult);
             SendMessage(CompileRatingCalculationMessage());
         }
 
@@ -136,20 +136,20 @@ namespace ApiClient
             command.ExecuteScalar();
         }
         
-        private static void IndexWork( Report report, ApiClient apiClient )
+        private static void IndexWork( Report report, ApiCoreClient apiCoreClient )
         {
             IndexLogger.Info( JsonConvert.SerializeObject( _lastResult ) );
             
             report.IsError = _lastResult.IsError || _lastResult.Contexts.Any( c => c.IsError );
 
 
-            var statAfter = apiClient.GetTotalStatistics( _lastResult.StartDate );
+            var statAfter = apiCoreClient.GetTotalStatistics( _lastResult.StartDate );
 
             report.TotalAfter = statAfter.Products;
             report.SoldOutAfter = statAfter.SoldOut;
             report.ProductsForDisable = statAfter.CountForSoldOut;
             
-            var shopStats = apiClient.GetShopStatistics();
+            var shopStats = apiCoreClient.GetShopStatistics();
             StatisticsLogger.Info( JsonConvert.SerializeObject( shopStats ) );
             
             report.TotalShops = shopStats.TotalEnabledShops;

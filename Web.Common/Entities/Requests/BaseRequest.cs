@@ -21,6 +21,7 @@ namespace Web.Common.Entities.Requests
         private readonly RequestSettings _settings;
 
         private List<( string, string)> _parameters;
+        private object _content;
 
         protected BaseRequest(RequestSettings settings, bool withClean) {
             _settings = settings;
@@ -29,6 +30,8 @@ namespace Web.Common.Entities.Requests
             }
         }
 
+        protected void AddContent(object content) => _content = content;
+        
         protected void AddParam( string name, string value )
         {
             if( string.IsNullOrWhiteSpace( name ) ||
@@ -67,19 +70,29 @@ namespace Web.Common.Entities.Requests
             }
             catch( Exception e ) {
                 _settings.Logger?.Error( e );
-                throw new Exception( "Исключение!" );
+                throw new Exception( "Исключение!" );   
             }
         }
         
         private static T GetContent( string content ) =>
             JsonConvert.DeserializeObject<T>( content );
         
-        private static IRestResponse GetResponse( Uri uri )
+        private IRestResponse GetResponse( Uri uri )
         {
             var client = new RestClient( $"{uri.Scheme}://{uri.Host}:{uri.Port}" );
             var request = new RestRequest( uri.PathAndQuery, DataFormat.Json);
-            return client.Get(request);
+            return _content == null ? Get(client, request) : GetPost(client, request);
         }
+
+        private IRestResponse GetPost(IRestClient client, IRestRequest request) {
+            var body = JsonConvert.SerializeObject(_content);
+            request.AddJsonBody(body);
+            request.Method = Method.POST;
+            return client.Post(request);
+        }
+
+        private static IRestResponse Get(IRestClient client, IRestRequest request) =>
+            client.Get(request);
 
     }
 }

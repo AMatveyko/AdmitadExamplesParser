@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 using Common.Elastic.Workers;
 using Common.Entities;
 using Common.Helpers;
-
+using Microsoft.AspNetCore.SignalR.Protocol;
 using NLog;
 
 using TheStore.Api.Front.Entity;
@@ -159,7 +159,7 @@ namespace TheStore.Api.Front.Workers
             UpdateEntry( entry );
         }
 
-        public void UpdateEntry( UrlStatisticEntry entry ) => _client.Update( entry );
+        public void UpdateEntry(UrlStatisticEntry entry) => _client.Update(entry);
         
         private UrlStatisticEntry GetEntry( string url )
         {
