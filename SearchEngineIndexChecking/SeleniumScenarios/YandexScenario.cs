@@ -6,13 +6,18 @@ namespace SearchEngineIndexChecking.SeleniumScenarios
     internal sealed class YandexScenario : ISeleniumScenario
     {
 
-        private const string StartPage = "https://yandex.ru/";
-        // private const string StartPage = "https://ya.ru";
+        // private const string StartPage = "https://yandex.ru/";
+        private const string StartPage = "https://ya.ru";
         private const string QueryStringSelector = "[name = 'text']";
-        private const string SearchButtonPath =
-            "//div[@class='search2__button']//button[@class='button mini-suggest__button button_theme_search button_size_search i-bem button_js_inited']";
         // private const string SearchButtonPath =
-        //     "//div[@class='search2__button']//button[@class='button mini-suggest__button button_theme_search button_size_search-large i-bem button_js_inited']";
+        //     "//div[@class='search2__button']//button[@class='button mini-suggest__button button_theme_search button_size_search i-bem button_js_inited']";
+        private const string SearchButtonPath =
+            "//div[@class='search2__button']//button[@class='button mini-suggest__button button_theme_search button_size_search-large i-bem button_js_inited']";
+
+        private const string SearchButtonPathSecond =
+            "//div[@class='search2__button']//button[@class='websearch-button mini-suggest__button']";
+
+        private const string SearchUrl = "https://yandex.ru/search/";
         
         
         // 
@@ -36,13 +41,14 @@ namespace SearchEngineIndexChecking.SeleniumScenarios
                 return $"error:{ e.Message }";
             }
         }
-        
+
         private string DoGetInfo(string url) {
-            
-            _browser.Navigate().GoToUrl( StartPage );
+            if( IsFirstStart() ) {
+                _browser.Navigate().GoToUrl(StartPage);
+            }
 
             SetQuery(url);
-            Search();
+            // Search();
             
             if (IsCaptcha()) {
                 
@@ -53,13 +59,18 @@ namespace SearchEngineIndexChecking.SeleniumScenarios
 
             return _browser.PageSource;
         }
-        
+
+        private bool IsFirstStart() => _browser.Url.Contains(SearchUrl) == false;
+
         private void SetQuery(string url) {
             var searchText = _browser.FindElement(By.CssSelector( QueryStringSelector ));
-            // searchText.SendKeys($"site:{url}");
-            // searchText.SendKeys(url);
+            searchText.Clear();
             searchText.SendKeys($"url:{url}");
-            // searchText.SendKeys(Keys.Enter);
+            ClickEnter( searchText );
+        }
+
+        private void ClickEnter(IWebElement element) {
+            element.SendKeys(Keys.Enter);
         }
         
         private void Search() {

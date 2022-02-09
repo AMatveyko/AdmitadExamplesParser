@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using AdmitadSqlData.Helpers;
 using CheckIndexTool.Responses;
 using CheckIndexTool.workers;
 using Common.Api;
@@ -26,30 +27,55 @@ namespace CheckIndexTool
         }
 
         private static void Start(int urlNumber, int amountWorkers) {
+
+
+            var infos = Measure(() => GetInfos(urlNumber, amountWorkers), out var seconds);
+            var infosWithoutErrors = infos.Where(i => i.Error == null).ToList();
+
+            SaveResult(infosWithoutErrors);
+            
+            WriteStatistics(seconds, infos, amountWorkers);
+            
+        }
+
+        private static List<UrlIndexInfo> GetInfos(int urlNumber, int amountWorkers) {
             var dbSettings = SettingsBuilder.GetDbSettings();
             var repository = new TheStoreRepository(dbSettings);
             var settings = new SettingsBuilder(repository).GetSettings();
             var client = new UrlStatisticsIndexClient(settings.ElasticSearchClientSettings, new BackgroundBaseContext("",""));
             var worker = new CheckIndexWorker(client);
-            var infos = worker.CheckUrls(urlNumber > 0 ? urlNumber : 1000, amountWorkers > 0 ? amountWorkers : 5);
-
-            var infosWithoutErrors = infos.Where(i => i.Error == null).ToList();
-            var infosWithErrors = infos.Where(i => i.Error != null).Select( i => $"{i.Url}: {i.Error}");
-            
-            File.AppendAllLines(@"o:\admitad\logs\indexChecker\errors.txt", infosWithErrors );
-            
-            SaveResult(infosWithoutErrors);
-            
+            return worker.CheckUrls(urlNumber > 0 ? urlNumber : 1000, amountWorkers > 0 ? amountWorkers : 5);
         }
 
+        private static void WriteStatistics(int seconds, List<UrlIndexInfo> infos, int amountWorkers) {
+            var infosWithErrors = infos.Where(i => i.Error != null).Select( i => $"{DateTime.Now} {i.Url}: {i.Error}").ToList();
+            
+            File.AppendAllLines(@"C:\indexChecker\errors.txt", infosWithErrors );
+
+            var stats = $"{DateTime.Now}, {seconds} sec, total {infos.Count}, errors {infosWithErrors.Count}, workers {amountWorkers}";
+            File.AppendAllLines(@"C:\indexChecker\statistics.txt", new []{ stats } );
+        }
+        
         private static void SaveResult(List<UrlIndexInfo> results) {
             var request = new SaveCheckingResultRequest("https://thestore.ru", results);
             var result = request.Execute();
         }
+        
+        // private static void SendMessage( string message )
+        // {
+        //     var builder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
+        //     var settings = builder.GetMessengerSettings();
+        //     var messenger = new Messenger.Messenger( settings );
+        //     messenger.Send( message );
+        // }
 
-        private static void HideThisProcess() {
-            var currentProcess = Process.GetCurrentProcess();
-            currentProcess.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        private static T Measure<T>(Func<T> func, out int seconds) {
+            var sw = new Stopwatch();
+            sw.Start();
+            var result = func();
+            sw.Stop();
+            seconds = (int)(sw.ElapsedMilliseconds / 1000);
+            return result;
         }
     }
 }

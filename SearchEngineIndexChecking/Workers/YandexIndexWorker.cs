@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,7 +75,7 @@ namespace SearchEngineIndexChecking.Workers
         private void DoCheckUrl(string url) {
             var browser = GetBrowserFromPool();
             while (browser == null ) {
-                Thread.Sleep(100);
+                Thread.Sleep(10);
                 browser = GetBrowserFromPool();
             }
 
@@ -113,20 +111,12 @@ namespace SearchEngineIndexChecking.Workers
 
         private void Finish() {
             CloseAllBrowsers();
-            KillAllFireFox();
         }
 
         private void CloseAllBrowsers() {
             var tasks = _browsers.Select(b => Task.Factory.StartNew(b.Quit)).ToArray();
             Task.WaitAll(tasks);
         }
-        
-        private static void KillAllFireFox() {
-            var localByName = Process.GetProcessesByName("firefox");
-            foreach(var p in localByName)
-            {
-                p.Kill();
-            }
-        }
+
     }
 }
