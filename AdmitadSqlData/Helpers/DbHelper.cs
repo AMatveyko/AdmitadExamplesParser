@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using AdmitadCommon.Entities.Statistics;
@@ -347,7 +348,17 @@ namespace AdmitadSqlData.Helpers
                 FillSynonyms( synonyms, country.Name );
                 FillSynonyms( synonyms, country.Synonym );
                 FillSynonyms( synonyms, country.LatinName );
-                _countriesCache[ country.Id ] = synonyms.ToArray();
+                try {
+                    _countriesCache[country.Id] = synonyms.ToArray();
+                }
+                catch (Exception e) {
+
+                    var cache = _countriesCache.Select(i => $"{i.Key}: {string.Join(",", i.Value)}").ToList();
+                    cache.Insert(1, $"ID: {country.Id}");
+                    File.WriteAllLines(@"o:\admitad\logs\api.core\", cache);
+                    
+                    throw e;
+                }
             }
         }
 

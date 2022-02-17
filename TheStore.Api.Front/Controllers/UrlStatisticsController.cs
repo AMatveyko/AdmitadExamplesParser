@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 
 using Common.Elastic.Workers;
 using Common.Entities;
-using Common.Helpers;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -76,9 +75,6 @@ namespace TheStore.Api.Front.Controllers
                 "user" => BotType.User,
                 _ => throw new ArgumentException( "bot type notfound" )
             };
-
-        // private static BotType DetermineBotType( string typeName ) =>
-        //     EnumHelper<BotType>.GetValueByName( typeName.ToLower() );
 
         private IUrlStatisticsWorker GetWorker() =>
             new UrlStatisticsWithQueues( _indexClient );

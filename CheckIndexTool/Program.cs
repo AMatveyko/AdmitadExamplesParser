@@ -60,14 +60,6 @@ namespace CheckIndexTool
             var request = new SaveCheckingResultRequest("https://thestore.ru", results);
             var result = request.Execute();
         }
-        
-        // private static void SendMessage( string message )
-        // {
-        //     var builder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
-        //     var settings = builder.GetMessengerSettings();
-        //     var messenger = new Messenger.Messenger( settings );
-        //     messenger.Send( message );
-        // }
 
         private static T Measure<T>(Func<T> func, out int seconds) {
             var sw = new Stopwatch();

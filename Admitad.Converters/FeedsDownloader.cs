@@ -53,7 +53,7 @@ namespace Admitad.Converters
         private List<DownloadsInfo> DoDownload( IReadOnlyCollection<ShopInfo> files, string directoryPath )
         {
             Context.TotalActions = files.Sum( f => f.Feeds.Count );
-            var downloadInfos = files.AsParallel().Select( f => DownloadFeeds( f, directoryPath ) ).ToList();
+            var downloadInfos = files.AsParallel().WithDegreeOfParallelism(6).Select( f => DownloadFeeds( f, directoryPath ) ).ToList();
             var withErrors = downloadInfos.Where( i => i.HasErrors ).ToList();
             if( withErrors.Any() ) {
                 TryAgainIfNeed( withErrors );
@@ -78,7 +78,7 @@ namespace Admitad.Converters
 
             for( var i = 1; i <= _numberAttempts; i++ ) {
                 LogWriter.Log( $"{i}/{_numberAttempts} попытка докачать фиды открытых магазинов.", true );
-                var downloaded = needDownload.AsParallel().Select( DoDownloadFiles ).ToList();
+                var downloaded = needDownload.AsParallel().WithDegreeOfParallelism(6).Select( DoDownloadFiles ).ToList();
                 needDownload = GetNeedDownload( downloaded );
                 if( needDownload.Any() == false ) {
                     LogWriter.Log( "All have finished.", false );
