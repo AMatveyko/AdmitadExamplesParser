@@ -14,20 +14,24 @@ using RestSharp;
 
 namespace Web.Common.Entities.Requests
 {
-    public abstract class BaseRequest<T>
-    {
-        
-        private readonly string _controller;
-        private readonly string _methodName;
+    public abstract class BaseRequest<T> {
+
+        protected abstract string Controller { get; }
+        protected abstract string MethodName { get; }
+        private readonly RequestSettings _settings;
+
         private List<( string, string)> _parameters;
+        private object _content;
 
-        private RequestSettings _settings;
-
-        protected BaseRequest( string controller, string methodName, RequestSettings settings )
-        {
-            ( _controller, _methodName, _settings ) = ( controller, methodName, settings );
+        protected BaseRequest(RequestSettings settings, bool withClean) {
+            _settings = settings;
+            if( withClean) {
+                AddParam("clean", "true");
+            }
         }
 
+        protected void AddContent(object content) => _content = content;
+        
         protected void AddParam( string name, string value )
         {
             if( string.IsNullOrWhiteSpace( name ) ||
@@ -42,7 +46,7 @@ namespace Web.Common.Entities.Requests
         public T Execute()
         {
             const string template = "{0}/{1}/{2}";
-            var url = string.Format( template, _settings.Host, _controller, _methodName );
+            var url = string.Format( template, _settings.Host, Controller, MethodName );
             if( _parameters != null &&
                 _parameters.Any() ) {
                 var @params = 
@@ -66,19 +70,29 @@ namespace Web.Common.Entities.Requests
             }
             catch( Exception e ) {
                 _settings.Logger?.Error( e );
-                throw new Exception( "Исключение!" );
+                throw new Exception( $"Исключение: {e.Message}" );   
             }
         }
         
         private static T GetContent( string content ) =>
             JsonConvert.DeserializeObject<T>( content );
         
-        private static IRestResponse GetResponse( Uri uri )
+        private IRestResponse GetResponse( Uri uri )
         {
             var client = new RestClient( $"{uri.Scheme}://{uri.Host}:{uri.Port}" );
             var request = new RestRequest( uri.PathAndQuery, DataFormat.Json);
-            return client.Get(request);
+            return _content == null ? Get(client, request) : GetPost(client, request);
         }
+
+        private IRestResponse GetPost(IRestClient client, IRestRequest request) {
+            var body = JsonConvert.SerializeObject(_content);
+            request.AddJsonBody(body);
+            request.Method = Method.POST;
+            return client.Post(request);
+        }
+
+        private static IRestResponse Get(IRestClient client, IRestRequest request) =>
+            client.Get(request);
 
     }
 }

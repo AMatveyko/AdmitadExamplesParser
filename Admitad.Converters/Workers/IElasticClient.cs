@@ -3,9 +3,11 @@
 using System;
 using System.Collections.Generic;
 
-using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Responses;
+
+using Common;
+using Common.Entities;
+using Common.Entities.Responses;
 
 namespace Admitad.Converters.Workers
 {
@@ -14,6 +16,8 @@ namespace Admitad.Converters.Workers
         void IndexMany( IEnumerable<T> entities );
         void Bulk( IEnumerable<T> entities );
         void BulkAll( IEnumerable<T> entities );
+        void BulkAllTyped(IEnumerable<T> entities);
+        void BulkAllWithCategories(IEnumerable<T> entities);
         UpdateResult UpdateProductsForCategory( Category category );
         UpdateResult UpdateProductsForCategoryNew( Category category );
         long CountProductsForCategory( Category category );
@@ -31,7 +35,7 @@ namespace Admitad.Converters.Workers
             BaseProperty property );
         long CountProductsWithTag( string tagId );
         long CountProductsForTag( Tag tag );
-        void BulkLinkedData( List<LinkedData> data );
+        // void BulkLinkedData( List<LinkedData> data );
         UpdateResult DisableOldProducts( DateTime indexTime, string shopId );
         UpdateResult UnlinkProductsByProperty( BaseProperty property );
         public long GetCountAllDocuments();

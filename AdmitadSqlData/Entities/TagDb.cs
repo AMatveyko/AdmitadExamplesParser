@@ -25,5 +25,13 @@ namespace AdmitadSqlData.Entities
         public string ExcludePhrase { get; set; }
         [ Column( "name_title" ) ]
         public string NameTitle { get; set; }
+        [Column("search_as_part")]
+        public bool SearchAsPart { get; set; }
+        [Column("custom_sort")]
+        public bool CustomSort { get; set; }
+        [Column("date_add")]
+        public int AddDate { get; set; }
+        [Column("cnt")]
+        public int NumberProducts { get; set; }
     }
 }

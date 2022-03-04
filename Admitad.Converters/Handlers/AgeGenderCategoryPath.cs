@@ -4,6 +4,8 @@ using System;
 
 using AdmitadCommon.Entities;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Handlers
 {
     internal sealed class AgeGenderCategoryPath : IOfferHandler

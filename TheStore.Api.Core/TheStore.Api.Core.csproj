@@ -12,6 +12,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Admitad.Converters\Admitad.Converters.csproj" />
       <ProjectReference Include="..\AdmitadSqlData\AdmitadSqlData.csproj" />
+      <ProjectReference Include="..\Common.Elastic\Common.Elastic.csproj" />
       <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
       <ProjectReference Include="..\Web.Common\Web.Common.csproj" />
     </ItemGroup>
@@ -27,7 +28,7 @@
         <Link>NLog.config</Link>
       </None>
     </ItemGroup>
-
+    
     <ItemGroup>
       <Content Include="..\dbSettings.json">
         <Link>dbSettings.json</Link>

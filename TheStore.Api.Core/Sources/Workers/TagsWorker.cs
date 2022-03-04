@@ -2,12 +2,12 @@
 
 using System;
 using System.Linq;
-
+using Admitad.Converters.Workers;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers
@@ -15,8 +15,8 @@ namespace TheStore.Api.Core.Sources.Workers
     internal sealed class TagsWorker : BaseLinkWorker
     {
 
-        public TagsWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper ) 
-            :base( settings, works, dbHelper ) { }
+        public TagsWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper dbHelper, ProductRatingCalculation productRatingCalculation ) 
+            :base( settings, works, dbHelper, productRatingCalculation ) { }
 
         public void RelinkTag( RelinkTagContext context )
         {

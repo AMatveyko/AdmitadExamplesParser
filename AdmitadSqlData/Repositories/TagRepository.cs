@@ -1,6 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 using AdmitadSqlData.Entities;
@@ -14,25 +15,16 @@ namespace AdmitadSqlData.Repositories
         public List<TagDb> GetTags()
         {
             using var db = GetDb();
-            return db.Tags.Where( t => t.Enabled ).ToList();
+            return db.Tags.Where( t => t.Enabled && t.Name != null && t.Name != "" ).ToList();
         }
 
-        public void AddDescriptionField()
-        {
-            const string description = nameof(description);
-            using var db = GetDb();
-            var tags = db.Tags.ToList();
-            foreach( var tag in tags ) {
-                if( tag.SearchFields.Contains( description ) ) {
-                    continue;
-                }
-
-                tag.SearchFields = $"{tag.SearchFields},{description}";
-            }
-
+        public void SetProductCountForTag( string tagId, int count ) {
+            var db = GetDb();
+            var tag = db.Tags.First( t => t.Id.ToString() == tagId );
+            tag.NumberProducts = count;
             db.SaveChanges();
         }
-
+        
         public void DeleteWordFromTagSearch(
             string word,
             int categoryId )
@@ -49,6 +41,25 @@ namespace AdmitadSqlData.Repositories
             }
 
             db.SaveChanges();
+        }
+
+        public void UpdateTagFields( HashSet<int> idsSet )
+        {
+            var db = GetDb();
+            var tags = db.Tags.Where( t => idsSet.Contains( t.Id ) ).ToList();
+            var neededTags = tags.Where( t => t.SearchFields.Contains( "description" ) == false )
+                .Where( nt => nt.SearchFields == "name,model,typeprefix,categoryName,param").ToList();
+            foreach( var tagDb in neededTags ) {
+                tagDb.SearchFields = "name,model,typeprefix,categoryName,param,description";
+            }
+
+            db.SaveChanges();
+
+            var lines = neededTags.Select( t => $"{t.Id}:{t.NameTitle}" );
+
+            File.WriteAllLines(@"g:\admitadFeedsTests\changedTags.txt", lines);
+            
+
         }
     }
 }

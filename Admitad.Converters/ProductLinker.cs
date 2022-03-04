@@ -8,12 +8,13 @@ using Admitad.Converters.Workers;
 
 using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Helpers;
 
+using Common;
+using Common.Api;
 using Common.Entities;
+using Common.Helpers;
 using Common.Settings;
 
 namespace Admitad.Converters
@@ -47,7 +48,7 @@ namespace Admitad.Converters
 
         private void DoCategoryLink( IEnumerable<Category> categories )
         {
-            _context.TotalActions = categories.Count();
+            Context.TotalActions = categories.Count();
             var results = categories.Select( LinkCategory ).OrderByDescending( c => c.Item2.Updated );
             foreach( var (id, count, time) in results ) {
                 Log( "category", id, count.Pretty, time.ToString() );
@@ -59,27 +60,27 @@ namespace Admitad.Converters
             var before = ( int ) _elasticClient.CountProductsWithCategory( category.Id );
             var unlinkResult = _elasticClient.UnlinkCategory( category );
             
-            _context.AddMessage( $"Отвязали { unlinkResult.Pretty } товаров" );
-            _context.TotalActions = 2;
-            _context.CalculatePercent();
+            Context.AddMessage( $"Отвязали { unlinkResult.Pretty } товаров" );
+            Context.TotalActions = 2;
+            Context.CalculatePercent();
 
             if( category.IsTermsEmpty() ) {
-                _context.CalculatePercent();
-                _context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}";
+                Context.CalculatePercent();
+                Context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}";
                 _dbHelper.UpdateProductsByCategory( category, before, 0 );
                 return;
             }
             
             var linkResult = LinkCategory( category );
-            _context.AddMessage( $"Привязвали { linkResult.Item2.Pretty } товаров" );
-            _context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Item2.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult.Item2 ) }%";
+            Context.AddMessage( $"Привязвали { linkResult.Item2.Pretty } товаров" );
+            Context.Content = $"{category.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Item2.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult.Item2 ) }%";
             _dbHelper.UpdateProductsByCategory( category, before, (int)linkResult.Item2.Updated );
         }
         
         public ( string, UpdateResult, long ) LinkCategory( Category category )
         {
             if( category.IsTermsEmpty() ) {
-                _context.CalculatePercent();
+                Context.CalculatePercent();
                 return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
             }
             var before = ( int ) _elasticClient.CountProductsWithCategory( category.Id );
@@ -89,13 +90,13 @@ namespace Admitad.Converters
             _dbHelper.UpdateProductsByCategory( category, before, after );
             // var copeunt = Measure( () => _elasticClient.UpdateProductsForCategory( category ), out var time );
             
-            _context.CalculatePercent();
+            Context.CalculatePercent();
 
             if( result.IsError ) {
-                _context.AddMessage( $"id {category.Id} updated { result.Pretty }", result.IsError );
+                Context.AddMessage( $"id {category.Id} updated { result.Pretty }", result.IsError );
             }
             else {
-                _context.AddMessage( $"Привязвали { result.Pretty } товаров" );
+                Context.AddMessage( $"Привязвали { result.Pretty } товаров" );
             }
             
             return ( category.Id, result, time );
@@ -113,7 +114,7 @@ namespace Admitad.Converters
         private void DoLinkCountries(
             List<Country> countries )
         {
-            _context.TotalActions = countries.Count;
+            Context.TotalActions = countries.Count;
 
             var results = countries.Select( LinkCountry ).ToList();
             foreach( var ( id, count, time ) in results.OrderBy( t => t.Item2.Updated ) ) {
@@ -122,7 +123,7 @@ namespace Admitad.Converters
 
             var updatedCount = results.Sum( r => r.Item2.Updated );
             var totalCount = results.Sum( r => r.Item2.Total );
-            _context.Content =
+            Context.Content =
                 $"Linked: {updatedCount}{( totalCount > updatedCount ? $" ({totalCount})!" : string.Empty )}";
 
         }
@@ -130,14 +131,14 @@ namespace Admitad.Converters
         private ( string, UpdateResult, long ) LinkCountry( Country country )
         {
             if( country.IsSearchTermsEmpty() ) {
-                _context.CalculatePercent();
+                Context.CalculatePercent();
                 return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
             }
             var result = Measure( () => _elasticClient.UpdateProductsFroCountry( country ), out var time );
-            _context.CalculatePercent();
+            Context.CalculatePercent();
             
             if( result.IsError ) {
-                _context.AddMessage( $"id {country.Id} updated { result.Pretty }", result.IsError );
+                Context.AddMessage( $"id {country.Id} updated { result.Pretty }", result.IsError );
             }
             
             return ( country.Id.ToString(), result, time );
@@ -153,7 +154,7 @@ namespace Admitad.Converters
         private void DoLinkTags( IEnumerable<Tag> tags )
         {
 
-            _context.TotalActions = tags.Count();
+            Context.TotalActions = tags.Count();
             
             var results = tags.Select( LinkTag ).OrderByDescending( t => t.Item2.Updated );
             foreach( var (id, count, time) in results ) {
@@ -164,34 +165,34 @@ namespace Admitad.Converters
         public void RelinkTag( Tag tag )
         {
             var unlinkResult = _elasticClient.UnlinkTag( tag );
-            _context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров" );
-            _context.TotalActions = 2;
+            Context.Messages.Add( $"Отвязали { unlinkResult.Pretty } товаров" );
+            Context.TotalActions = 2;
             if( tag.SearchTerms == null ||
                 tag.SearchTerms.Any() == false ) {
-                _context.CalculatePercent();
-                _context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}";
+                Context.CalculatePercent();
+                Context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}";
                 return;
             }
 
-            var linkResult = _elasticClient.UpdateProductsForTag( tag );
-            _context.Messages.Add( $"Привязвали { linkResult.Pretty } товаров" );
-            _context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
+            var linkResult = UpdateProductsForTagAndSaveCount( tag );
+            Context.Messages.Add( $"Привязвали { linkResult.Pretty } товаров" );
+            Context.Content = $"{tag.Id}: отвязали {unlinkResult.Pretty}, привязали {linkResult.Pretty}, разница { unlinkResult.GetDifferencePercent( linkResult ) }%";
         }
-        
+
         public ( string, UpdateResult, long ) LinkTag( Tag tag )
         {
             if( tag.IsSearchTermsEmpty() ) {
-                _context.CalculatePercent();
+                Context.CalculatePercent();
                 return ( "Empty terms", new UpdateResult( 0, 0 ), 0 );
             }
-            var result = Measure( () => _elasticClient.UpdateProductsForTag( tag ), out var time );
-            _context.CalculatePercent();
+            var result = Measure( () => UpdateProductsForTagAndSaveCount( tag ), out var time );
+            Context.CalculatePercent();
             
             if( result.IsError ) {
-                _context.AddMessage( $"id {tag.Id} updated { result.Pretty }", result.IsError );
+                Context.AddMessage( $"id {tag.Id} updated { result.Pretty }", result.IsError );
             }
             else {
-                _context.AddMessage( $"Привязвали { result.Pretty } товаров" );
+                Context.AddMessage( $"Привязвали { result.Pretty } товаров" );
             }
             
             return ( tag.Id, result, time );
@@ -214,7 +215,7 @@ namespace Admitad.Converters
         {
             var result = Measure( () => _elasticClient.DisableOldProducts( dateTime, shopId ), out var time );
             if( result.IsError ) {
-                _context.AddMessage( $"Disabled products {result.Pretty}", result.IsError );
+                Context.AddMessage( $"Disabled products {result.Pretty}", result.IsError );
             }
             LogWriter.Log( $"{result} товаров распродано", true );
         }
@@ -229,7 +230,7 @@ namespace Admitad.Converters
             IEnumerable<BaseProperty> sizes )
         {
 
-            _context.TotalActions = colors.Count() + materials.Count() + sizes.Count();
+            Context.TotalActions = colors.Count() + materials.Count() + sizes.Count();
             
             ColorsLink( colors );
             MaterialsLink( materials );
@@ -241,7 +242,7 @@ namespace Admitad.Converters
             IEnumerable<BaseProperty> materials,
             IEnumerable<BaseProperty> sizes )
         {
-            _context.TotalActions = colors.Count() + materials.Count() + sizes.Count();
+            Context.TotalActions = colors.Count() + materials.Count() + sizes.Count();
             
             ColorsUnlink( colors );
             MaterialsUnlink( materials );
@@ -273,10 +274,10 @@ namespace Admitad.Converters
         
         private ( string, UpdateResult, long ) UnlinkProperty( BaseProperty property ) {
             var result = Measure( () => _elasticClient.UnlinkProductsByProperty( property ), out var time );
-            _context.CalculatePercent();
+            Context.CalculatePercent();
             
             if( result.IsError ) {
-                _context.AddMessage( $"id {property.Id} updated {result.Pretty}", result.IsError );
+                Context.AddMessage( $"id {property.Id} updated {result.Pretty}", result.IsError );
             }
             
             return ( property.Id, result, time );
@@ -306,15 +307,32 @@ namespace Admitad.Converters
         
         private ( string, UpdateResult, long ) LinkProperty( BaseProperty property ) {
             var result = Measure( () => _elasticClient.LinkProductsByProperty( property ), out var time );
-            _context.CalculatePercent();
+            Context.CalculatePercent();
             if( result.IsError ) {
-                _context.AddMessage( $"id {property.Id} updated {result.Pretty}", result.IsError );
+                Context.AddMessage( $"id {property.Id} updated {result.Pretty}", result.IsError );
             }
             return ( property.Id, result, time );
         }
         
         #endregion
 
+        private UpdateResult UpdateProductsForTagAndSaveCount( Tag tag ) {
+            
+            var result = DoUpdateProductsForTag( tag );
+
+            SaveProductCountForTag( tag );
+            
+            return result;
+        }
+
+        private void SaveProductCountForTag( Tag tag )
+        {
+            var count = (int)_elasticClient.CountProductsWithTag( tag.Id );
+            _dbHelper.SetProductCountForTag( tag.Id, count );
+        }
+        
+        private UpdateResult DoUpdateProductsForTag( Tag tag ) => _elasticClient.UpdateProductsForTag( tag );
+        
         private static void Log( string entity, string id, string count, string time ) =>
             LogWriter.Log( $"{entity}: {id}, count: { count }, time: {time}:" );
 

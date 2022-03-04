@@ -1,7 +1,7 @@
 ﻿// a.snegovoy@gmail.com
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
+using Common.Entities;
+using Common.Extensions;
 
 namespace Admitad.Converters.Handlers
 {

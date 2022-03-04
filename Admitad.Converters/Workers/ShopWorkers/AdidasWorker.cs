@@ -2,10 +2,11 @@
 
 using System.Collections.Generic;
 
-using AdmitadCommon;
-using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
+
+using Common;
+using Common.Entities;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
@@ -15,10 +16,6 @@ namespace Admitad.Converters.Workers.ShopWorkers
         public AdidasWorker(
             DbHelper dbHelper )
             : base( dbHelper ) { }
-        
-        // protected override string GetClearlyVendor(
-        //     string vendor ) =>
-        //     "adidas";
 
         protected override void FillParams(
             IExtendedOffer extendedOffer,

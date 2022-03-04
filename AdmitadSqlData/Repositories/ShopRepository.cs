@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadCommon.Entities;
-
 using AdmitadSqlData.Entities;
+
+using Microsoft.EntityFrameworkCore;
 
 namespace AdmitadSqlData.Repositories
 {
@@ -19,13 +19,13 @@ namespace AdmitadSqlData.Repositories
         public List<Shop> GetEnableShops()
         {
             using var db = GetDb();
-            return db.Shops.Where( s => s.Enabled ).ToList();
+            return db.Shops.Where( s => s.Enabled ).Include( s => s.ShopFeeds ).ToList();
         }
 
         public Shop GetShop( int id )
         {
             using var db = GetDb();
-            return db.Shops.First( s => s.Id == id );
+            return db.Shops.Include( s => s.ShopFeeds ).First( s => s.Id == id );
         }
 
         public int GetShopId( string shopNameLatin )

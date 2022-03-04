@@ -10,10 +10,10 @@ namespace ApiClient.Requests
     internal sealed class GetShopStatisticsRequest : BaseRequest<TotalShopsStatistics>
     {
         
-        private const string Controller = "Index";
-        private const string MethodName = "GetShopStatistics";
+        protected override string Controller => "Index";
+        protected override string MethodName => "GetShopStatistics";
         
         public GetShopStatisticsRequest( RequestSettings settings )
-            : base( Controller, MethodName, settings ) { }
+            : base( settings, false ) { }
     }
 }

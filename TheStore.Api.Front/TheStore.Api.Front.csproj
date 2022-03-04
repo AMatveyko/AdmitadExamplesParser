@@ -14,11 +14,18 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Common.Elastic\Common.Elastic.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
       <ProjectReference Include="..\TheStore.Api.Front.Data\TheStore.Api.Front.Data.csproj" />
       <ProjectReference Include="..\Web.Common\Web.Common.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+            <_Parameter1>UrlStatisticsTests</_Parameter1>
+        </AssemblyAttribute>
+    </ItemGroup>
+    
     <ItemGroup>
       <Content Update="NLog.config">
         <ExcludeFromSingleFile>true</ExcludeFromSingleFile>

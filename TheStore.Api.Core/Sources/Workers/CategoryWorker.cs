@@ -1,12 +1,12 @@
 ﻿// a.snegovoy@gmail.com
 
 using System.Linq;
-
+using Admitad.Converters.Workers;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers
@@ -14,8 +14,8 @@ namespace TheStore.Api.Core.Sources.Workers
     internal sealed class CategoryWorker : BaseLinkWorker
     {
 
-        public CategoryWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper db ) 
-            :base( settings, works, db ) { }
+        public CategoryWorker( ElasticSearchClientSettings settings, BackgroundWorks works, DbHelper db, ProductRatingCalculation productRatingCalculation ) 
+            :base( settings, works, db, productRatingCalculation ) { }
 
         public void RelinkCategory( RelinkCategoryContext context ) {
             

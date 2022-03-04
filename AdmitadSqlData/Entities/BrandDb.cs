@@ -12,5 +12,6 @@ namespace AdmitadSqlData.Entities
         [ Column( "name_clearly" ) ] public string ClearlyName { get; set; }
         [ Column( "name2_clearly" ) ] public string SecondClearlyName { get; set; }
         [ Column( "duplicate" ) ] public bool Duplicate { get; set; }
+        [Column("enabled")] public bool Enabled { get; set; }
     }
 }

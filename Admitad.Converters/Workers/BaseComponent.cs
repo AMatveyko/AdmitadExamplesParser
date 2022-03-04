@@ -2,11 +2,9 @@
 
 using System;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Helpers;
-
+using Common.Api;
 using Common.Entities;
+using Common.Helpers;
 
 namespace Admitad.Converters.Workers
 {
@@ -14,12 +12,12 @@ namespace Admitad.Converters.Workers
     {
         private readonly ComponentType _type;
         private readonly StatisticsBlock _statisticsBlock;
-        protected readonly BackgroundBaseContext _context;
+        protected readonly BackgroundBaseContext Context;
 
         protected BaseComponent(
             ComponentType componentType, BackgroundBaseContext context ) {
             _type = componentType;
-            _context = context;
+            Context = context;
             _statisticsBlock = StatisticsContainer.GetNewBlock( _type.ToString() );
         }
 

@@ -3,6 +3,8 @@
 using System;
 using System.Linq;
 
+using Common.Entities;
+
 using NLog;
 
 namespace AdmitadCommon.Entities.Statistics
@@ -12,9 +14,12 @@ namespace AdmitadCommon.Entities.Statistics
 
         private readonly Action<string, bool> _addMessage;
         private readonly Logger _logger;
-        private readonly DownloadInfo _info;
+        private readonly DownloadsInfo _info;
 
-        public ShopProcessingStatistics( DownloadInfo info, Action<string, bool> messageAdder, Logger logger )
+        public ShopProcessingStatistics(
+            DownloadsInfo info,
+            Action<string, bool> messageAdder,
+            Logger logger )
         {
             ( _addMessage, _info, _logger ) = ( messageAdder, info, logger );
             _product = new ShopProduct {
@@ -25,8 +30,8 @@ namespace AdmitadCommon.Entities.Statistics
 
         public DateTime StartDownloadFeed => _info.StartTime;
         public int ShopId => _info.ShopId;
-        public long FileSize => _info.FileSize;
-        public int OfferCount => _shopData?.Offers?.Count ?? 0;
+        public long FileSize => _info.FeedsInfos.Sum( f => f.FileSize );
+        public int OfferCount => _shopData?.NewOffers?.Count ?? 0;
         public int SoldOutOfferCount => _product?.SoldoutCount ?? 0;
         public int CategoryCount => _shopData?.Categories?.Count ?? 0;
         public long DownloadTime => _info.DownloadTime;

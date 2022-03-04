@@ -1,17 +1,19 @@
 ﻿// a.snegovoy@gmail.com
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 using Admitad.Converters.Handlers;
-
-using AdmitadCommon;
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
+using Admitad.Converters.Helpers;
 
 using AdmitadSqlData.Helpers;
+
+using Common;
+using Common.Entities;
+using Common.Extensions;
+using Common.Helpers;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {
@@ -20,17 +22,23 @@ namespace Admitad.Converters.Workers.ShopWorkers
         private static readonly string[] RequiredParams = { Constants.Params.ColorName, Constants.Params.SizeName, Constants.Params.MaterialName };
         private const string SkipValue = "none";
         private const string CountryParam = "Страна-изготовитель";
-        
+        private readonly ProductType _type;
+
         protected const string AgeParamName = "возраст";
         protected readonly string[] GenderParamName = { "пол", "gender" };
         protected readonly List<IOfferHandler> Handlers = new ();
         protected readonly DbHelper DbHelper;
+        protected readonly Func<RawOffer, int, string> IdGetter;
 
-        private static readonly Regex PricePattern = new Regex( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
+        private static readonly Regex PricePattern = new ( @"(?<price>\d+(\.\d{2})?)", RegexOptions.Compiled );
 
         protected BaseShopWorker(
-            DbHelper dbHelper ) =>
-            DbHelper = dbHelper; 
+            DbHelper dbHelper,
+            Func<RawOffer, int, string> idGetter = null,
+            ProductType? type = null,
+            AgeFromSize ageFromSize = null ) =>
+            ( DbHelper, IdGetter, _type ) = 
+            ( dbHelper, idGetter ?? ProductIdGetter.FirstImageUrl, type ?? ProductType.Undefined );
         
         public Offer Convert( RawOffer rawOfer )
         {
@@ -50,8 +58,10 @@ namespace Admitad.Converters.Workers.ShopWorkers
 
             FillBaseOffer( offer, rawOfer );
             DoFillExtendedOffer( offer, rawOfer );
+
             var tunedOffer = GetTunedOffer( offer, rawOfer );
             var processedOffer = RunOfferHandlers( tunedOffer, rawOfer );
+
             return processedOffer;
         }
 
@@ -85,13 +95,17 @@ namespace Admitad.Converters.Workers.ShopWorkers
         }
         
         
+        
         private void FillBaseOffer( IBaseOffer offer, RawOffer rawOffer )
         {
+
+            var shopId = DbHelper.GetShopId( rawOffer.ShopNameLatin );
             var price = GetPrice( rawOffer.Price );
             var oldPrice = GetPrice( rawOffer.OldPriceClean );
+            
             offer.Id = HashHelper.GetMd5Hash( rawOffer.ShopName, rawOffer.OfferId );
             offer.OriginalId = rawOffer.OfferId;
-            offer.ProductId = HashHelper.GetMd5Hash( rawOffer.Pictures.FirstOrDefault() ?? rawOffer.Url );
+            offer.ProductId = IdGetter( rawOffer, shopId );
             offer.Url = rawOffer.Url;
             offer.Currency = CurrencyHelper.GetCurrency( rawOffer.CurrencyId );
             offer.Description = rawOffer.Description;
@@ -105,11 +119,12 @@ namespace Admitad.Converters.Workers.ShopWorkers
             offer.Name = rawOffer.Name;
             offer.Photos = rawOffer.Pictures;
             offer.Price = price;
-            offer.ShopId = DbHelper.GetShopId( rawOffer.ShopNameLatin );
+            offer.ShopId = shopId;
             offer.UpdateDate = rawOffer.UpdateTime;
             offer.Delivery = rawOffer.IsDelivered ?? false;
             offer.SalesNotes = rawOffer.SalesNotes;
             offer.OriginalVendor = rawOffer.Vendor;
+            offer.SellerId = rawOffer.ShopId;
         }
 
         
@@ -171,6 +186,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             } else if( gender != Gender.Undefined &&
                        age == Age.Undefined ) {
                 age = AgeFromGender( gender );
+                
             }
 
             extendedOffer.Age = age;
@@ -179,6 +195,7 @@ namespace Admitad.Converters.Workers.ShopWorkers
             extendedOffer.CountryId = GetCountryId( rawOffer );
             extendedOffer.VendorNameClearly = GetClearlyVendor( rawOffer.Vendor );
             extendedOffer.CategoryId = rawOffer.CategoryId;
+            extendedOffer.Type = _type;
 
             FillParams( extendedOffer, rawOffer );
         }

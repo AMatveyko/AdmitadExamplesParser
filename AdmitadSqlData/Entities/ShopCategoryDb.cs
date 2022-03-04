@@ -26,5 +26,9 @@ namespace AdmitadSqlData.Entities
         // public int TotalProductsCount { get; set; }
         [ Column( "update_date" ) ]
         public DateTime UpdateDate { get; set; }
+        [ Column( "age_id" ) ]
+        public int? AgeId { get; set; }
+        [ Column( "sex_id" ) ]
+        public int? SexId { get; set; }
     }
 }

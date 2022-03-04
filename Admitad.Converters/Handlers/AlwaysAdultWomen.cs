@@ -2,6 +2,8 @@
 
 using AdmitadCommon.Entities;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Handlers
 {
     internal sealed class AlwaysAdultWomen : IOfferHandler

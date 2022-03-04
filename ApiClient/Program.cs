@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,8 +32,9 @@ namespace ApiClient
         private static readonly Regex ShopNamePattern =
             new(@"Error: (?<shopName>.+): ClosedStore time \d+", RegexOptions.Compiled);
 
-        private static bool _finish;
         private static TopContext _lastResult;
+
+        private readonly static List<string> _ratingCalculationMessages = new ();
 
         static void Main(
             string[] args )
@@ -45,48 +47,83 @@ namespace ApiClient
             }
         }
 
-        private static void DoWork( string[] args )
-        {
+        private static void DoWork( string[] args ) {
             
-            var apiClient = new ApiClient( new RequestSettings( "http://localhost:8080", ErrorLogger ) );
+            var apiClient = new ApiCoreClient( new RequestSettings( "http://localhost:8080", ErrorLogger ) );
+
+            // SendMessage("test");
+
+            if( args.Contains("index") || args.Contains("linkAll")) {
+                RunIndexOrLinking(args, apiClient);
+            }
             
-            var statBefore = apiClient.GetTotalStatistics();
-            var report = new Report {
+            if(args.Contains("ratingCalculation")) {
+                RunRatingCalculation(apiClient);
+            }
+
+            FlushListingCash();
+
+        }
+
+        private static void RunIndexOrLinking(string[] args, ApiCoreClient apiCoreClient) {
+            var statBefore = apiCoreClient.GetTotalStatistics();
+            var report = new Report
+            {
                 TotalBefore = statBefore.Products,
                 SoldOutBefore = statBefore.SoldOut
             };
-            
-            Func<TopContext> func = args.Length == 0 || args[ 0 ] == "index"
-                ? apiClient.RunAndCheckIndex
-                : apiClient.RunAndCheckLinkAll;  
-            
-            RunAndCheck( func );
-            
-            if( args.Length == 0 || args[ 0 ] == "index" ) {
-                IndexWork( report, apiClient );
+
+            Func<TopContext> func = args.Length == 0 || args[0] == "index"
+                ? apiCoreClient.RunAndCheckIndex
+                : apiCoreClient.RunAndCheckLinkAll;
+
+            RunAndCheck(func, SaveLastTopContext);
+
+            if (args.Length == 0 || args[0] == "index")
+            {
+                IndexWork(report, apiCoreClient);
             }
-            else {
-                SendMessage( "Завершили линковку" );
+            else
+            {
+                SendMessage("Завершили линковку");
             }
-            
-            FlushListingCash();
         }
-        
-        private static void RunAndCheck(
-            Func<TopContext> func )
-        {
+
+        private static void RunAndCheck<T>(
+            Func<T> func, Action<T> responceHandler ) where T : Context {
+
             var iterationCount = 0;
-            while( _finish == false ) {
+            var isFinish = false;
+
+            while( isFinish == false ) {
                 iterationCount++;
                 Console.Write( $"{iterationCount} " );
                 var response = func();
-                _lastResult = response;
-                _finish = response.IsFinished || response.IsError;
+                responceHandler(response);
+                isFinish = response.IsFinished || response.IsError;
                 Thread.Sleep( 30000 );
             }
 
         }
         
+        private static void SaveLastTopContext( TopContext context ) => _lastResult = context;
+
+        private static void RunRatingCalculation(ApiCoreClient apiCoreClient) {
+            RunAndCheck(apiCoreClient.RunRatingCalculation, CheckRatingCalculationResult);
+            SendMessage(CompileRatingCalculationMessage());
+        }
+
+        private static string CompileRatingCalculationMessage() =>
+            string.Join("\n", _ratingCalculationMessages.Select(m => m.Replace("Info: ", string.Empty).Replace(" time 0",string.Empty)));
+
+        private static void CheckRatingCalculationResult(Context context) {
+            foreach( var message in context.Messages) {
+                if( _ratingCalculationMessages.Contains(message) == false) {
+                    _ratingCalculationMessages.Add(message);
+                }
+            }
+        }
+
         private static void FlushListingCash()
         {
             var settings = SettingsBuilder.GetApiClientSettings();
@@ -99,20 +136,20 @@ namespace ApiClient
             command.ExecuteScalar();
         }
         
-        private static void IndexWork( Report report, ApiClient apiClient )
+        private static void IndexWork( Report report, ApiCoreClient apiCoreClient )
         {
             IndexLogger.Info( JsonConvert.SerializeObject( _lastResult ) );
             
             report.IsError = _lastResult.IsError || _lastResult.Contexts.Any( c => c.IsError );
 
 
-            var statAfter = apiClient.GetTotalStatistics( _lastResult.StartDate );
+            var statAfter = apiCoreClient.GetTotalStatistics( _lastResult.StartDate );
 
             report.TotalAfter = statAfter.Products;
             report.SoldOutAfter = statAfter.SoldOut;
             report.ProductsForDisable = statAfter.CountForSoldOut;
             
-            var shopStats = apiClient.GetShopStatistics();
+            var shopStats = apiCoreClient.GetShopStatistics();
             StatisticsLogger.Info( JsonConvert.SerializeObject( shopStats ) );
             
             report.TotalShops = shopStats.TotalEnabledShops;

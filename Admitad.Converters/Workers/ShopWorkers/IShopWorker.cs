@@ -2,6 +2,8 @@
 
 using AdmitadCommon.Entities;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal interface IShopWorker

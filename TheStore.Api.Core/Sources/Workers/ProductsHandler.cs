@@ -1,11 +1,10 @@
 ﻿// a.snegovoy@gmail.com
 
 using System;
-
-using AdmitadCommon.Entities.Api;
-
+using Admitad.Converters.Workers;
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Settings;
 
 namespace TheStore.Api.Core.Sources.Workers
@@ -19,8 +18,9 @@ namespace TheStore.Api.Core.Sources.Workers
             ElasticSearchClientSettings settings,
             BackgroundBaseContext context,
             BackgroundWorks works,
-            DbHelper db )
-            : base( settings, works, db )
+            DbHelper db,
+            ProductRatingCalculation productRatingCalculation)
+            : base( settings, works, db, productRatingCalculation )
         {
             _context = context;
         }

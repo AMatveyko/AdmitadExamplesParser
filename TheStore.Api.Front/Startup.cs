@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Common.Api;
+using Common.Elastic.Workers;
+using Common.Entities;
+using Common.Settings;
 using Common.Workers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +21,7 @@ using Microsoft.OpenApi.Models;
 
 using TheStore.Api.Front.Data.Repositories;
 using TheStore.Api.Front.Entity;
+using TheStore.Api.Front.Workers;
 
 namespace TheStore.Api.Front
 {
@@ -45,11 +49,32 @@ namespace TheStore.Api.Front
                             Version = "v1"
                         } );
                 } );
-
-            var dbSettings = SettingsBuilder.GetDbSettings();
             services.AddTransient( r => 
-                new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
+                new TheStoreRepository( SettingsBuilder.GetDbSettings() ) );
             services.AddSingleton<Proxies>();
+            services.AddTransient<ImageWorker>();
+            services.AddSingleton( r => {
+                    var repository = ( ISettingsRepository )r.GetService( typeof( TheStoreRepository ) );
+                    var builder = new SettingsBuilder( repository );
+                    return builder.GetSettings();
+                } );
+            services.AddSingleton( r => {
+                    var settings = (ProcessorSettings)r.GetService( typeof( ProcessorSettings ) );
+                    return IndexClient.CreateIndexClient( settings.ElasticSearchClientSettings, new BackgroundBaseContext( "1", "1" ) );
+                } );
+            services.AddScoped(
+                r => {
+                    var repository = ( ISettingsRepository )r.GetService( typeof( TheStoreRepository ) );
+                    var builder = new SettingsBuilder( repository );
+                    var settings = builder.GetSettings();
+
+                    return new UrlStatisticsControllerRequirements() {
+                        IndexClient = new UrlStatisticsIndexClient(
+                            settings.ElasticSearchClientSettings,
+                            new BackgroundBaseContext( "urlStatistics", "createOrUpdate" ) ),
+                        IsDebug = settings.UrlStatisticsDebuggingEnable 
+                    };
+                } );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

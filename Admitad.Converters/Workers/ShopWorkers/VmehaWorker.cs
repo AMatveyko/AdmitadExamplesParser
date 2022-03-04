@@ -4,6 +4,8 @@ using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Entities;
+
 namespace Admitad.Converters.Workers.ShopWorkers
 {
     internal class VmehaWorker : BaseShopWorker, IShopWorker

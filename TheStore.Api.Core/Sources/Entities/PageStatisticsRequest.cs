@@ -8,10 +8,10 @@ namespace TheStore.Api.Core.Sources.Entities
 {
     public sealed class PageStatisticsRequest : BaseRequest<PagesStatisticsResponse>
     {
-        private const string Controller = "api/Files";
-        private const string MethodName = "GetPageStatistics";
+        protected override string Controller => "api/Files";
+        protected override string MethodName => "GetPageStatistics";
         
         public PageStatisticsRequest( RequestSettings settings )
-            : base( Controller, MethodName, settings ) { }
+            : base( settings, false ) { }
     }
 }

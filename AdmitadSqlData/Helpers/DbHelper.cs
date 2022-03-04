@@ -3,20 +3,20 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
-using AdmitadCommon;
-using AdmitadCommon.Entities;
 using AdmitadCommon.Entities.Statistics;
-using AdmitadCommon.Extensions;
 
 using AdmitadSqlData.Entities;
 using AdmitadSqlData.Repositories;
 
+using Common;
 using Common.Entities;
+using Common.Extensions;
 using Common.Settings;
 
-using Country = AdmitadCommon.Country;
+using Country = Common.Country;
 
 namespace AdmitadSqlData.Helpers
 {
@@ -29,27 +29,41 @@ namespace AdmitadSqlData.Helpers
         private readonly CategoryRepository _categoryRepository;
         private readonly TagRepository _tagRepository;
         private readonly TheStoreRepository _theStoreRepository;
+        private readonly CategoryMappingRepository _categoryMappingRepository;
         #endregion
         
         private static readonly ConcurrentDictionary<string, int> ShopIdCache = new();
         private static Dictionary<int, string[]> _countriesCache;
         private static Dictionary<string, string> _brandCache;
-        private static readonly Dictionary<string, UnknownBrands> UnknownBrands = new();
-        private static readonly Dictionary<string, int> UnknownCountries = new();
+        private static readonly ConcurrentDictionary<string, UnknownBrands> UnknownBrands = new();
+        private static readonly ConcurrentDictionary<string, int> UnknownCountries = new();
         private static bool _unknownBrandsNeedClean = true;
 
 
+        private static readonly Dictionary<int, string> AgeCache = new Dictionary<int, string>();
+        private static readonly Dictionary<int, string> GenderCache = new Dictionary<int, string>();
+        
         public DbHelper( DbSettings settings )
         {
             var connectionString = settings.GetConnectionString();
-                ( _shopRepository, _countryRepository, _categoryRepository, _tagRepository, _theStoreRepository ) = (
+                ( _shopRepository, _countryRepository, _categoryRepository, _tagRepository, _theStoreRepository, _categoryMappingRepository ) = (
                 new ShopRepository( connectionString, settings.Version ),
                 new CountryRepository( connectionString, settings.Version ),
                 new CategoryRepository( connectionString, settings.Version ),
                 new TagRepository( connectionString, settings.Version ),
-                new TheStoreRepository( connectionString, settings.Version ) );
+                new TheStoreRepository( connectionString, settings.Version ),
+                new CategoryMappingRepository( connectionString, settings.Version ) );
         }
 
+        public List<AgeGenderForCategoryContainer> GetAgeGenderFromCategories( int shopId ) =>
+            _theStoreRepository.GetShopCategories( shopId ).Select( EntityConverter.Convert ).ToList();
+
+        public string GetAgeName( int id ) =>
+            GetFromCache( id, AgeCache, _theStoreRepository.GetAgeName );
+
+        public string GetSexName( int id ) =>
+            GetFromCache( id, GenderCache, _theStoreRepository.GetSexName );
+        
         public void WriteShopStatistics( ShopProcessingStatistics statistics )
         {
             var container = new DbWorkersContainer(
@@ -151,7 +165,7 @@ namespace AdmitadSqlData.Helpers
         {
             if( _brandCache == null ) {
                 _brandCache = new();
-                var brands = _theStoreRepository.GetBrands();
+                var brands = GetAllBrands();
 
                 foreach( var brandDb in brands ) {
                     if( _brandCache.ContainsKey( brandDb.ClearlyName ) == false ) {
@@ -168,6 +182,8 @@ namespace AdmitadSqlData.Helpers
             return _brandCache.ContainsKey( clearlyName ) ? _brandCache[ clearlyName ] : Constants.UndefinedBrandId;
         }
         
+        public List<BrandDb> GetAllBrands() => _theStoreRepository.GetBrands();
+
         public List<Tag> GetTags()
         {
             var categories = GetDictionaryCategory();
@@ -178,10 +194,10 @@ namespace AdmitadSqlData.Helpers
                 .ToList();
         }
 
-        public List<XmlFileInfo> GetEnableShops() =>
+        public List<ShopInfo> GetEnableShops() =>
             _shopRepository.GetEnableShops().Select( EntityConverter.Convert ).ToList();
 
-        public XmlFileInfo GetShop( int id ) {
+        public ShopInfo GetShop( int id ) {
             var shop = _shopRepository.GetShop( id );
             return EntityConverter.Convert( shop );
         }
@@ -263,11 +279,6 @@ namespace AdmitadSqlData.Helpers
 
         public List<SizeProperty> GetSizes() => _theStoreRepository.GetSizes().Select( EntityConverter.Convert ).ToList();
 
-        public void UpdateTags()
-        {
-            _tagRepository.AddDescriptionField();
-        }
-
         public void DeleteWordFromTag(
             string word,
             int categoryId )
@@ -275,7 +286,16 @@ namespace AdmitadSqlData.Helpers
             _tagRepository.DeleteWordFromTagSearch( word, categoryId );
         }
 
+        public void SetProductCountForTag(
+            string tagId,
+            int count ) =>
+            _tagRepository.SetProductCountForTag( tagId, count );
+        
+        public List<CategoryMappingDb> GetCategoryMapping(int shopId) => _categoryMappingRepository.GetCategoryMapping(shopId);
 
+        public void AddDescriptionFieldIntagIfNeed(
+            HashSet<int> tagIds ) =>
+            _tagRepository.UpdateTagFields( tagIds );
 
 
         #region OriginalCategory
@@ -328,7 +348,17 @@ namespace AdmitadSqlData.Helpers
                 FillSynonyms( synonyms, country.Name );
                 FillSynonyms( synonyms, country.Synonym );
                 FillSynonyms( synonyms, country.LatinName );
-                _countriesCache[ country.Id ] = synonyms.ToArray();
+                try {
+                    _countriesCache[country.Id] = synonyms.ToArray();
+                }
+                catch (Exception e) {
+
+                    var cache = _countriesCache.Select(i => $"{i.Key}: {string.Join(",", i.Value)}").ToList();
+                    cache.Insert(1, $"ID: {country.Id}");
+                    File.WriteAllLines(@"o:\admitad\logs\api.core\", cache);
+                    
+                    throw e;
+                }
             }
         }
 
@@ -345,6 +375,15 @@ namespace AdmitadSqlData.Helpers
             }
 
             return cache[ key ];
+        }
+        
+        private static string GetFromCache( int key, IDictionary<int, string> dictionary, Func<int, string> valueGetter )
+        {
+            if( dictionary.ContainsKey( key ) == false ) {
+                dictionary[ key ] = valueGetter( key );
+            }
+
+            return dictionary[ key ];
         }
 
         #endregion

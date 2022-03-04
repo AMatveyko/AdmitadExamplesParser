@@ -6,14 +6,15 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using AdmitadCommon;
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.ForElastic;
 using AdmitadCommon.Entities.Statistics;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
 
 using AdmitadSqlData.Entities;
 
+using Common;
+using Common.Entities;
+using Common.Entities.ForElastic;
+using Common.Extensions;
+using Common.Helpers;
 using Common.Settings;
 
 namespace AdmitadSqlData.Helpers
@@ -23,6 +24,10 @@ namespace AdmitadSqlData.Helpers
         private static readonly Regex _categoryName = new(@"([^a-zA-zа-яА-Я\d\s])", RegexOptions.Compiled);
         
         #region Convert
+
+        public static AgeGenderForCategoryContainer Convert( ShopCategoryDb categoryDb ) =>
+            new ( categoryDb.CategoryId, categoryDb.AgeId ?? -1, categoryDb.SexId ?? -1 );
+        
         public static ShopCategoryDb Convert(
             int shopId,
             ShopCategory category )
@@ -45,12 +50,12 @@ namespace AdmitadSqlData.Helpers
             return _categoryName.Replace( data ?? string.Empty, string.Empty );
         }
 
-        public static XmlFileInfo Convert(
+        public static ShopInfo Convert(
             Shop shop ) =>
             new (
                 shop.Name,
                 shop.NameLatin,
-                shop.XmlFeed,
+                shop.ShopFeeds.Select( f => new FeedInfo( f.Id.ToString(), f.Url)).ToList(),
                 shop.Id,
                 shop.Weight,
                 shop.VersionProcessing,
@@ -111,15 +116,18 @@ namespace AdmitadSqlData.Helpers
 
         public static Tag Convert( TagDb tagDb, List<Category> children )
         {
-            var tag = new Tag();
-            tag.Id = tagDb.Id.ToString();
-            tag.Fields = SplitComa( tagDb.SearchFields );
-            tag.SearchTerms = CreateTerms( tagDb.Name );
-            tag.Gender = GenderHelper.ConvertFromTag( tagDb.Pol );
-            tag.IdCategory = tagDb.IdCategory;
-            tag.SpecifyWords = CreateTerms( tagDb.SpecifyWords );
-            tag.ExcludePhrase = CreateTerms( tagDb.ExcludePhrase );
-            tag.Title = tagDb.NameTitle;
+            var tag = new Tag {
+                Id = tagDb.Id.ToString(),
+                Fields = SplitComa( tagDb.SearchFields ),
+                SearchTerms = CreateTerms( tagDb.Name ),
+                Gender = GenderHelper.ConvertFromTag( tagDb.Pol ),
+                IdCategory = tagDb.IdCategory,
+                SpecifyWords = CreateTerms( tagDb.SpecifyWords ),
+                ExcludePhrase = CreateTerms( tagDb.ExcludePhrase ),
+                Title = tagDb.NameTitle,
+                SearchAsPart = tagDb.SearchAsPart,
+                AddDate =tagDb.AddDate
+            };
             //var categories = GetCategoryChildren( tagDb.IdCategory, allCategories ).Select( c => c.Id ).ToList();
             var categories = children.Select( c => c.Id ).ToList();
             categories.Add( tag.IdCategory.ToString() );

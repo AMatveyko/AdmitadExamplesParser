@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using AdmitadCommon;
-using AdmitadCommon.Entities;
-using AdmitadCommon.Extensions;
-
 using AdmitadSqlData.Helpers;
+
+using Common;
+using Common.Entities;
+using Common.Extensions;
 
 namespace Admitad.Converters.Workers.ShopWorkers
 {

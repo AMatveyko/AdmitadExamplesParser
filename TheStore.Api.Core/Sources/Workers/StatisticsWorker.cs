@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 using Admitad.Converters.Workers;
 
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
 using AdmitadCommon.Entities.Statistics;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Entities;
 using Common.Settings;
 
 using Microsoft.AspNetCore.Mvc;

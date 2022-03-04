@@ -5,14 +5,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Admitad.Converters;
-
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
-
 using AdmitadSqlData.Helpers;
 using AdmitadSqlData.Repositories;
 
+using Common.Entities;
+using Common.Helpers;
 using Common.Workers;
 
 using NUnit.Framework;
@@ -62,13 +59,6 @@ namespace AdmitadSqlDataTests
             var settings = SettingsBuilder.GetDbSettings();
             var rep = new ShopRepository( settings.GetConnectionString(), settings.Version );
             var shops = rep.GetEnableShops();
-        }
-
-        [ Test ]
-        public void UpdateTag()
-        {
-            var helper = GetDbHelper();
-            helper.UpdateTags();
         }
 
         [ Test ]

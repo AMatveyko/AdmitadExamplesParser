@@ -3,16 +3,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
-using AdmitadCommon;
 using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-using AdmitadCommon.Entities.Responses;
-using AdmitadCommon.Extensions;
-using AdmitadCommon.Helpers;
 
+using Common;
+using Common.Api;
 using Common.Entities;
+using Common.Entities.Responses;
+using Common.Extensions;
+using Common.Helpers;
 using Common.Settings;
 
 using Elasticsearch.Net;
@@ -23,7 +22,7 @@ using NLog;
 
 namespace Admitad.Converters.Workers
 {
-    public sealed class ElasticSearchClient< T > : BaseComponent, IElasticClient<T>
+    public sealed class ElasticSearchClient< T > : BaseComponent, IElasticClient<T>, IClientForShopStatistics
         where T : class, IIndexedEntities
     {
 
@@ -46,7 +45,7 @@ namespace Admitad.Converters.Workers
         {
             var clientSettings = new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
                 //.Proxy(new Uri( "http://127.0.0.1:8888" ), string.Empty, string.Empty )
-                .RequestTimeout( TimeSpan.FromMinutes( 10 ) ).DefaultIndex( settings.DefaultIndex );
+                .RequestTimeout( TimeSpan.FromMinutes( 15 ) ).DefaultIndex( settings.DefaultIndex );
             _client = new ElasticClient( clientSettings );
             _withStatistics = withStatics;
             _frameSize = settings.FrameSize;
@@ -81,9 +80,34 @@ namespace Admitad.Converters.Workers
             
             return ids;
         }
-        
+
+        public List<string> GetOffersIds()
+        {
+
+            const string time = "1m";
+
+            var searchResponse = _client.Search<Product>(s => s
+                .Source(s=> s.Includes( i=> i.Field( p=> p.OfferIds)))
+                //.Size(100000)
+                .Query(q => q.Bool(b=>b.Filter(f=>f.Range(r=>r.Field("categories").GreaterThanOrEquals(90000000000)))))
+                .Scroll(time)
+            );
+
+            var offerIds = new List<string>();
+
+            while (searchResponse.Documents.Any())
+            {
+                offerIds.AddRange(searchResponse.Hits.SelectMany(p => p.Source.OfferIds));
+                Console.WriteLine(offerIds.Count);
+                searchResponse = _client.Scroll<Product>(time, searchResponse.ScrollId);
+            }
+
+            return offerIds;
+
+        }
+
         #endregion
-        
+
         #region Product
 
         public ProductResponse GetProduct( string id )
@@ -127,9 +151,7 @@ namespace Admitad.Converters.Workers
             }
         }
 
-        public void Bulk(
-            IEnumerable<T> entities )
-        {
+        public void Bulk( IEnumerable<T> entities ) {
             MeasureWorkTime( () => DoBulk( entities ) );
         }
 
@@ -147,16 +169,16 @@ namespace Admitad.Converters.Workers
             }
         }
 
-        public void BulkAll(
-            IEnumerable<T> entities )
-        {
-            MeasureWorkTime( () => DoBulkAll( entities ) );
-        }
-        
+        public void BulkAll( IEnumerable<T> entities ) => MeasureWorkTime(() => DoBulkAll(entities));
+        // public void BulkAll(IEnumerable<T> entities) => MeasureWorkTime(() => DoBulkAllTyped(entities));
+
+        public void BulkAllTyped(IEnumerable<T> entities) => MeasureWorkTime(() => DoBulkAllTyped(entities));
+        public void BulkAllWithCategories(IEnumerable<T> entities) => MeasureWorkTime(() => DoBulkAllWithCategories(entities));
+
         #endregion
 
         #region Property
-        
+
         public UpdateResult LinkProductsByProperty( BaseProperty property )
         {
 
@@ -314,7 +336,12 @@ namespace Admitad.Converters.Workers
             BoolQueryDescriptor<Product> descriptor,
             Tag tag )
         {
-            var query = $"( { string.Join( " OR ", tag.SearchTerms ) } )";
+            var searchTerms = tag.SearchAsPart
+                ? tag.SearchTerms.Select(t => t.Replace("\"",string.Empty))
+                    .Select( t => $"*{t}*" )
+                    .ToArray()
+                : tag.SearchTerms;
+            var query = $"( { string.Join( " OR ", searchTerms ) } )";
 
             if( tag.ExcludePhrase.Any() ) {
                 var queryExcludePhrase = string.Join( " AND ", tag.ExcludePhrase.Select( ep => $"NOT {ep}" ) );
@@ -528,11 +555,11 @@ namespace Admitad.Converters.Workers
 
         #region Routin
         
-        private static IEnumerable<Func<QueryContainerDescriptor<Product>, QueryContainer>> GetTerms( string[] fields, string[] terms ) {
-            foreach( var field in fields ) {
-                yield return m => m.Terms( t => t.Field( field ).Terms( terms ) );
-            }
-        }
+        // private static IEnumerable<Func<QueryContainerDescriptor<Product>, QueryContainer>> GetTerms( string[] fields, string[] terms ) {
+        //     foreach( var field in fields ) {
+        //         yield return m => m.Terms( t => t.Field( field ).Terms( terms ) );
+        //     }
+        // }
         
         private static FieldsDescriptor<Product> GetFields( FieldsDescriptor<Product> descriptor, string[] fields )
         {
@@ -545,29 +572,29 @@ namespace Admitad.Converters.Workers
 
         #region Upload products and LinkedData
         
-        public void BulkLinkedData( List<LinkedData> data )
-        {
-            var result = _client.Bulk( b => b.CreateMany( data, (
-                descriptor,
-                linkedData ) => descriptor.Routing( linkedData.RoutingId ) ) );
-            ResponseCollector.Responses.Add( ( _settings.ShopName, "ld", result ) );
-        }
+        // public void BulkLinkedData( List<LinkedData> data )
+        // {
+        //     var result = _client.Bulk( b => b.CreateMany( data, (
+        //         descriptor,
+        //         linkedData ) => descriptor.Routing( linkedData.RoutingId ) ) );
+        //     ResponseCollector.Responses.Add( ( _settings.ShopName, "ld", result ) );
+        // }
         
-        public void DoBulkAllInsert(
-            IEnumerable<T> entities )
-        {
-            var list = entities.ToList();
-            var position = 0;
-            var frameSize = 300000;
-            while( position < list.Count ) {
-                var portion = list.Skip( position ).Take( frameSize );
-                var result = _client.Bulk( b => b.IndexMany( portion, (
-                    descriptor,
-                    entity ) => descriptor.Routing( entity.RoutingId ) ) );
-                ResponseCollector.Responses.Add( ( _settings.ShopName, "p", result ) );
-                position += frameSize;
-            }
-        }
+        // public void DoBulkAllInsert(
+        //     IEnumerable<T> entities )
+        // {
+        //     var list = entities.ToList();
+        //     var position = 0;
+        //     var frameSize = 300000;
+        //     while( position < list.Count ) {
+        //         var portion = list.Skip( position ).Take( frameSize );
+        //         var result = _client.Bulk( b => b.IndexMany( portion, (
+        //             descriptor,
+        //             entity ) => descriptor.Routing( entity.RoutingId ) ) );
+        //         ResponseCollector.Responses.Add( ( _settings.ShopName, "p", result ) );
+        //         position += frameSize;
+        //     }
+        // }
         
         public void DoBulkAll(
             IEnumerable<T> entities )
@@ -581,17 +608,49 @@ namespace Admitad.Converters.Workers
                 var result = _client.Bulk( b => b.UpdateMany<T,IProductForIndex>( portion, (
                     descriptor,
                     entity ) => descriptor.Upsert( entity ).DocAsUpsert().Doc( (IProductForIndex)entity ).Routing( entity.RoutingId ) ) );
-                ResponseCollector.Responses.Add( ( _settings.ShopName, "products", result ) );
                 position += frameSize;
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {
-                    _context.AddMessage( "Update error!", true );
+                    Context.AddMessage( "Update error!", true );
                     Logger.Error( result.DebugInformation );
                 }
                 
             }
-            _context.AddMessage( $"Update { count } products" );
+            Context.AddMessage( $"Update { count } products" );
         }
+
+        public void DoBulkAllWithCategories(IEnumerable<T> entities) =>
+            DoBulkAllTyped(entities, entity => (IProductForIndexWithCategories)entity);
+
+        public void DoBulkAllTyped(IEnumerable<T> entities) =>
+            DoBulkAllTyped(entities, entity => (IProductForIndex)entity );
+
+        private void DoBulkAllTyped<E>(IEnumerable<T> entities, Func<T,E> typecast ) where E : class, IIndexedEntities {
+            var list = entities.ToList();
+            var position = 0;
+            var frameSize = 100000;
+            var count = 0;
+            while (position < list.Count)
+            {
+                var portion = list.Skip(position).Take(frameSize);
+                var result = _client.Bulk(b => b.UpdateMany<T, E>(portion, 
+                    ( descriptor, entity) => descriptor.Upsert(entity).DocAsUpsert().Doc(typecast(entity)).Routing(entity.RoutingId)
+                ));
+                position += frameSize;
+                count += portion.Count();
+                if (result.DebugInformation.Contains("Invalid"))
+                {
+                    Context.AddMessage("Update error!", true);
+                    Logger.Error(result.DebugInformation);
+                }
+
+            }
+            Context.AddMessage($"Updated { count } products");
+        }
+
+        //private IBulkUpdateOperation<T,E> GetBulkDescriptor<E>(BulkUpdateDescriptor<T,E> descriptor, T entity) where E : class, IIndexedEntities {
+        //    return descriptor.Upsert(entity).DocAsUpsert().Doc((E)entity).Routing(entity.RoutingId);
+        //}
 
         public void DoBulkAllForImport(
             IEnumerable<T> entities )
@@ -605,52 +664,51 @@ namespace Admitad.Converters.Workers
                 var result = _client.Bulk( b => b.UpdateMany<T,T>( portion, (
                     descriptor,
                     entity ) => descriptor.Upsert( entity ).DocAsUpsert().Doc( (T)entity ).Routing( entity.RoutingId ) ) );
-                ResponseCollector.Responses.Add( ( _settings.ShopName, "products", result ) );
                 position += frameSize;
                 count += portion.Count();
                 if( result.DebugInformation.Contains( "Invalid" ) ) {
-                    _context.AddMessage( "Update error!", true );
+                    Context.AddMessage( "Update error!", true );
                     Logger.Error( result.DebugInformation );
                 }
                 
             }
-            _context.AddMessage( $"Update { count } products" );
+            Context.AddMessage( $"Update { count } products" );
         }
         
-        public void DoBulkAllOld(
-            IEnumerable<T> entities )
-        {
-            
-            var entitiesList = entities.ToList();
-            var count = entitiesList.Count;
-            var countUniq = entities.Select( e => e.Id ).Distinct();
-            
-            AddStatisticLine( $"Count: {count}" );
-            AddStatisticLine( $"Uniq: {countUniq}" );
-            
-            var bulkAllObservable = _client.BulkAll(
-                entities, b =>
-                    b.Index( _settings.DefaultIndex )
-                        .BackOffTime( "3s" )
-                        .BackOffRetries( 10 )
-                        .RefreshOnCompleted()
-                        .MaxDegreeOfParallelism( 6 )
-                        .Size( 20000 )
-                        .ContinueAfterDroppedDocuments()
-                        .DroppedDocumentCallback( DroppedDocumentCallback ) );
-            var handler = new Handler();
-            var bulkAllObserver = new BulkAllObserver(
-                onNext: response => Console.Write( $"{response.Page} " ),
-                onError: response => Console.Write( "E " ),
-                onCompleted: () => {
-                    LogWriter.Log( "Complete!" );
-                    handler.Complete();
-                } );
-            bulkAllObservable.Subscribe( bulkAllObserver );
-            while( handler.IsWait() ) {
-                Thread.Sleep( 5000 );
-            }
-        }
+        // public void DoBulkAllOld(
+        //     IEnumerable<T> entities )
+        // {
+        //     
+        //     var entitiesList = entities.ToList();
+        //     var count = entitiesList.Count;
+        //     var countUniq = entities.Select( e => e.Id ).Distinct();
+        //     
+        //     AddStatisticLine( $"Count: {count}" );
+        //     AddStatisticLine( $"Uniq: {countUniq}" );
+        //     
+        //     var bulkAllObservable = _client.BulkAll(
+        //         entities, b =>
+        //             b.Index( _settings.DefaultIndex )
+        //                 .BackOffTime( "3s" )
+        //                 .BackOffRetries( 10 )
+        //                 .RefreshOnCompleted()
+        //                 .MaxDegreeOfParallelism( 6 )
+        //                 .Size( 20000 )
+        //                 .ContinueAfterDroppedDocuments()
+        //                 .DroppedDocumentCallback( DroppedDocumentCallback ) );
+        //     var handler = new Handler();
+        //     var bulkAllObserver = new BulkAllObserver(
+        //         onNext: response => Console.Write( $"{response.Page} " ),
+        //         onError: response => Console.Write( "E " ),
+        //         onCompleted: () => {
+        //             LogWriter.Log( "Complete!" );
+        //             handler.Complete();
+        //         } );
+        //     bulkAllObservable.Subscribe( bulkAllObserver );
+        //     while( handler.IsWait() ) {
+        //         Thread.Sleep( 5000 );
+        //     }
+        // }
 
         private void DroppedDocumentCallback(
             BulkResponseItemBase response,

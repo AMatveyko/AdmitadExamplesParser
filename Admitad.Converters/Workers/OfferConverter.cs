@@ -5,11 +5,9 @@ using System.Linq;
 
 using Admitad.Converters.Workers.ShopWorkers;
 
-using AdmitadCommon.Entities;
-using AdmitadCommon.Entities.Api;
-
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
 using Common.Entities;
 
 namespace Admitad.Converters.Workers
@@ -19,11 +17,11 @@ namespace Admitad.Converters.Workers
         private readonly IShopWorker _worker;
         private readonly List<RawOffer> _offers;
 
-        public OfferConverter( ShopData shopData, DbHelper dbHelper, BackgroundBaseContext context  )
+        public OfferConverter( IShopDataWithNewOffers shopData, DbHelper dbHelper, BackgroundBaseContext context  )
             : base( ComponentType.Converter, context )
         {
             _worker = ConverterBuilder.GetConverterByShop( shopData.Name, dbHelper );
-            _offers = shopData.Offers;
+            _offers = shopData.NewOffers;
         }
 
         public List<Offer> GetCleanOffers() =>
@@ -31,8 +29,8 @@ namespace Admitad.Converters.Workers
 
         private List<Offer> DoGetCleanOffers()
         {
-            var offers = FilterOffers( _offers ).Select( _worker.Convert ).ToList();
-            _context.AddMessage( "Offers clean" );
+            var offers = FilterOffers( _offers ).AsParallel().Select( _worker.Convert ).ToList();
+            Context.AddMessage( "Offers clean" );
             return offers;
         }
 

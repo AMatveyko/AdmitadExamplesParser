@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AdmitadSqlData.Entities
 {
     [ Table( "category" ) ]
-    public class CategoryDb
+    public sealed class CategoryDb
     {
         [ Column( "id" ) ]
         public int Id { get; set; }

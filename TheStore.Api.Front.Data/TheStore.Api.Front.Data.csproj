@@ -11,10 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Pub" />
-    </ItemGroup>
-
-    <ItemGroup>
+      <ProjectReference Include="..\Common.SqlData\Common.SqlData.csproj" />
       <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 

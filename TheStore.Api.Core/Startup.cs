@@ -1,22 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Admitad.Converters;
-
-using AdmitadCommon.Entities;
-using AdmitadCommon.Helpers;
+using Admitad.Converters.Workers;
 using AdmitadCommon.Types;
 
 using AdmitadSqlData.Helpers;
 
+using Common.Api;
+using Common.Elastic.Workers;
 using Common.Workers;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,6 +16,8 @@ using Microsoft.OpenApi.Models;
 
 using TheStore.Api.Core.Sources.Workers;
 using TheStore.Api.Front.Data.Repositories;
+
+using TheStoreRepositoryFromFront = TheStore.Api.Front.Data.Repositories.TheStoreRepository;
 
 namespace TheStore.Api.Core
 {
@@ -52,12 +46,13 @@ namespace TheStore.Api.Core
                             Version = "v1"
                         } );
                 } );
-            var settingsBuilder = new SettingsBuilder( new DbHelper( SettingsBuilder.GetDbSettings() ) );
-            services.AddTransient( provider => settingsBuilder.GetSettings() );
+            var settingsBuilder = new SettingsBuilder( new DbHelper(dbSettings) );
+            var settings = settingsBuilder.GetSettings();
+            services.AddScoped( provider => settings );
             services.AddSingleton<PriorityQueue>();
             services.AddSingleton<BackgroundWorks>();
-            services.AddTransient( r => 
-                new TheStoreRepository( dbSettings.GetConnectionString(), dbSettings.Version ) );
+            services.AddScoped( r => new TheStoreRepository( dbSettings ) );
+            services.AddSingleton(r => new ProductRatingCalculation(new TheStoreRepositoryFromFront(dbSettings), settings.CtrCalculationType) );
             services.AddScoped( r => new DbHelper( dbSettings ) );
         }
 
@@ -70,6 +65,8 @@ namespace TheStore.Api.Core
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseDeveloperExceptionPage();
+            
             app.UseSwagger();
             app.UseSwaggerUI( c => c.SwaggerEndpoint( "/swagger/v1/swagger.json", "TheStore.Api.Core v1" ) );
             

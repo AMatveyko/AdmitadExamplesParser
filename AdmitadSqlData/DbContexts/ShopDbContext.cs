@@ -2,11 +2,14 @@
 
 using System;
 
-using AdmitadCommon.Entities;
-
 using AdmitadSqlData.Entities;
 
+using Common.Entities;
+using Common.SqlData.Entities;
+
 using Microsoft.EntityFrameworkCore;
+
+using TheStore.Api.Front.Data.Entities;
 
 namespace AdmitadSqlData.DbContexts
 {
@@ -24,8 +27,8 @@ namespace AdmitadSqlData.DbContexts
         
         public DbSet<Shop> Shops { get; set; }
         public DbSet<CountryDb> Countries { get; set; }
-        public DbSet<CategoryDb> Categories { get; set; }
-        public DbSet<TagDb> Tags { get; set; }
+        public DbSet<Entities.CategoryDb> Categories { get; set; }
+        public DbSet<Entities.TagDb> Tags { get; set; }
         public DbSet<ColorDb> Colors { get; set; }
         public DbSet<SostavDb> Materials { get; set; }
         public DbSet<SizeDb> Sizes { get; set; }
@@ -37,6 +40,10 @@ namespace AdmitadSqlData.DbContexts
         public DbSet<UnknownCountry> UnknownCountries { get; set; }
         public DbSet<ShopCategoryDb> ShopCategories { get; set; }
         public DbSet<ParseLog> ParseLogs { get; set; }
+        public DbSet<AgeDb> Ages { get; set; }
+        public DbSet<SexDb> Sex { get; set; }
+        public DbSet<CategoryMappingDb> CategoryMapping { get; set; }
+        public DbSet<ShopFeedDb> ShopFeeds { get; set; }
 
         protected override void OnConfiguring(
             DbContextOptionsBuilder optionsBuilder ) {

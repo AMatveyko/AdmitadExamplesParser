@@ -48,6 +48,12 @@ namespace Common.Workers
         
         public ProcessorSettings GetSettings()
         {
+            var admitadSettings = new AdmitadApiSettings {
+                TokensUrl = GetString("AdmitadTokensUrl"),
+                ClientId = GetString("AdmitadClientId"),
+                ClientSecret = GetString("AdmitadClientSecret"),
+                Base64Header = GetString("AdmitadBase64Header")
+            };
             var telegramSetting = new TelegramSettings {
                 Enabled = GetBool( "TelegramEnabled" ),
                 Token = GetString( "TelegramBotToken" ),
@@ -67,7 +73,10 @@ namespace Common.Workers
                 DuplicateFile = GetString( "DuplicateFile" ),
                 ShowStatistics = GetBool( "ShowStatistics" ),
                 ElasticSearchClientSettings = elasticSearchClientSettings,
-                TelegramSettings = telegramSetting
+                TelegramSettings = telegramSetting,
+                AdmitadSettings = admitadSettings,
+                CtrCalculationType = GetString("RatingCalculationType"),
+                UrlStatisticsDebuggingEnable = GetBool("UrlStatisticsDebuggingEnable")
             };
             return settings;
         }

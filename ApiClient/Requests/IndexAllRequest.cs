@@ -9,13 +9,10 @@ namespace ApiClient.Requests
 {
     internal sealed class IndexAllRequest : BaseRequest<TopContext>
     {
-        private const string Controller = "Index";
-        private const string MethodName = "IndexAllShops";
+        protected override string Controller => "Index";
+        protected override string MethodName => "IndexAllShops";
 
         public IndexAllRequest( RequestSettings settings, bool clean = true )
-            : base( Controller, MethodName, settings )
-        {
-            AddParam( nameof(clean), clean.ToString().ToLower() );
-        }
+            : base( settings, clean )  {}
     }
 }

@@ -8,12 +8,32 @@ using AdmitadCommon.Entities;
 
 using AdmitadSqlData.Entities;
 
+using Common.Entities;
+
 namespace AdmitadSqlData.Repositories
 {
     internal sealed class TheStoreRepository : BaseRepository
     {
         
         public TheStoreRepository( string connectionString, string version ) : base( connectionString, version ) { }
+
+        public List<ShopCategoryDb> GetShopCategories( int shopId )
+        {
+            var db = GetDb();
+            return db.ShopCategories.Where( c => c.ShopId == shopId ).ToList();
+        }
+        
+        public string GetAgeName( int id )
+        {
+            var db = GetDb();
+            return db.Ages.ToList().First( a => a.Id == id ).Name;
+        }
+
+        public string GetSexName( int id )
+        {
+            var db = GetDb();
+            return db.Sex.ToList().First( s => s.Id == id ).Name;
+        }
         
         #region Properties
         public List<ColorDb> GetColors()
@@ -39,7 +59,7 @@ namespace AdmitadSqlData.Repositories
         public List<BrandDb> GetBrands()
         {
             using var db = GetDb();
-            return db.Brands.Where( b => b.Duplicate == false ).ToList();
+            return db.Brands.Where(b => b.Duplicate == false && b.Enabled).ToList();
         }
 
         public void ClearUnknownBrands()
