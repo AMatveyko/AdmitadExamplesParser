@@ -70,7 +70,7 @@ namespace Web.Common.Entities.Requests
             }
             catch( Exception e ) {
                 _settings.Logger?.Error( e );
-                throw new Exception( "Исключение!" );   
+                throw new Exception( $"Исключение: {e.Message}" );   
             }
         }
         

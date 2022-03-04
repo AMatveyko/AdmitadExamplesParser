@@ -17,8 +17,8 @@ namespace CheckIndexTool
     class Program
     {
         static void Main(string[] args) {
-            // HideThisProcess();
-            
+
+            KillAllEdges();
             
             int.TryParse( args.Length > 0 ? args[0] : "0", out var urlNumber );
             int.TryParse( args.Length > 0 ? args[1] : "0", out var amountWorkers);
@@ -50,10 +50,11 @@ namespace CheckIndexTool
         private static void WriteStatistics(int seconds, List<UrlIndexInfo> infos, int amountWorkers) {
             var infosWithErrors = infos.Where(i => i.Error != null).Select( i => $"{DateTime.Now} {i.Url}: {i.Error}").ToList();
             
-            File.AppendAllLines(@"C:\indexChecker\errors.txt", infosWithErrors );
+            File.AppendAllLines(@"C:\tasks\checkIndexTool\errors.txt", infosWithErrors );
 
-            var stats = $"{DateTime.Now}, {seconds} sec, total {infos.Count}, errors {infosWithErrors.Count}, workers {amountWorkers}";
-            File.AppendAllLines(@"C:\indexChecker\statistics.txt", new []{ stats } );
+            var stats = 
+                $"{DateTime.Now}, {seconds} sec, total {infos.Count}, errors {infosWithErrors.Count}, workers {amountWorkers}, % errors { infosWithErrors.Count / (infos.Count / 100)}";
+            File.AppendAllLines(@"C:\tasks\checkIndexTool\statistics.txt", new []{ stats } );
         }
         
         private static void SaveResult(List<UrlIndexInfo> results) {
@@ -68,6 +69,12 @@ namespace CheckIndexTool
             sw.Stop();
             seconds = (int)(sw.ElapsedMilliseconds / 1000);
             return result;
+        }
+
+        private static void KillAllEdges() {
+            foreach (var process in Process.GetProcessesByName("msedge.exe")) {
+                process.Kill();
+            }
         }
     }
 }

@@ -22,11 +22,10 @@ namespace Common.Elastic.Workers
         
         #region Ctors
 
-        protected IndexClientBase( ElasticSearchClientSettings settings, BackgroundBaseContext context, string indexName )
-        {
-            var clientSettings = new ConnectionSettings( new Uri( settings.ElasticSearchUrl ) )
-                .RequestTimeout( TimeSpan.FromMinutes( 20 ) ).DefaultIndex( indexName );
-                    //.Proxy( new Uri("http://localhost:8888"),string.Empty, String.Empty) ;
+        protected IndexClientBase( ElasticSearchClientSettings settings, BackgroundBaseContext context, string indexName ) {
+            var clientSettings = new ConnectionSettings(new Uri(settings.ElasticSearchUrl))
+                .RequestTimeout(TimeSpan.FromMinutes(20)).DefaultIndex(indexName);
+                    // .Proxy( new Uri("http://localhost:8888"),string.Empty, String.Empty) ;
             Client = new ElasticClient( clientSettings );
             Context = context;
             Settings = settings;

@@ -13,35 +13,13 @@ namespace SearchEngineIndexChecking.Workers
     internal sealed class YandexIndexWorker
     {
 
-        private Queue<IWebDriver> _browsers;
+        private readonly Queue<IWebDriver> _browsers;
         private readonly object _lockFlag = new object();
-        private readonly int _browserNumber;
         private readonly List<Task<UrlIndexInfo>> _tasks = new List<Task<UrlIndexInfo>>();
+        private readonly IWordsSet _wordsSet;
 
-        private readonly WebDriverBuilder _builder;
-
-        public YandexIndexWorker(WebDriverBuilder builder, int browserNumber) {
-            (_builder, _browserNumber) = (builder, browserNumber);
-            Initialize();
-        }
-
-
-        private void Initialize() {
-
-            _browsers = new Queue<IWebDriver>();
-
-            var tasks = new List<Task<IWebDriver>>();
-
-            for (var i = 0; i < _browserNumber; i++) {
-                tasks.Add(Task.Factory.StartNew(() => _builder.CreateBrowser()));
-            }
-
-            Task.WaitAll(tasks.ToArray());
-
-            foreach (var task in tasks) {
-                _browsers.Enqueue(task.Result);
-            }
-        }
+        public YandexIndexWorker(IBrowserDistributor distributor, IWordsSet wordSet) =>
+            (_browsers, _wordsSet) = (distributor.GetBrowsers(), wordSet);
 
         private void TryCheckUrlInTask(string url, IWebDriver browser) =>
             _tasks.Add(Task.Factory.StartNew(() => TryCheckUrl(url, browser)));
@@ -49,8 +27,7 @@ namespace SearchEngineIndexChecking.Workers
         private UrlIndexInfo TryCheckUrl(string url, IWebDriver browser) {
             try {
                 return CheckUrl(url, browser);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 return new UrlIndexInfo {
                     Url = url,
                     Error = e.Message
@@ -97,7 +74,7 @@ namespace SearchEngineIndexChecking.Workers
             
 
         private UrlIndexInfo CheckUrl(string url, IWebDriver browser) {
-            var scenario = new YandexScenario(browser);
+            var scenario = new YandexScenario(browser, _wordsSet);
             var data = scenario.GetIndexInfo(url);
             PutBrowserPool( browser );
             var result = YandexParser.IsIndexed(data);

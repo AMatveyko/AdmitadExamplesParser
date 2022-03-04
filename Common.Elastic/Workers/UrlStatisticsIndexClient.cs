@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using Common.Api;
+using Common.Elastic.Queries;
 using Common.Entities;
 using Common.Settings;
 
@@ -86,26 +87,16 @@ namespace Common.Elastic.Workers
 
         public List<string> GetUrlsForChecking(BotType botType, int size) {
             const int dateRange = 30;
-            var fieldName = botType switch {
-                BotType.Yandex => "dateLastIndexCheckYandex",
-                BotType.Google => "dateLastIndexCheckGoogle",
+            var fieldModifier = botType switch {
+                BotType.Yandex => "Yandex",
+                BotType.Google => "Google",
                 _ => throw new ArgumentException("unavailable bot")
             };
-            var result = Client.Search<UrlStatisticEntry>(s =>
-                    s.Query(q =>
-                            q.Bool(b =>
-                                b.Should(bs =>
-                                        bs.Bool(bbs =>
-                                            bbs.MustNot(bbsm =>
-                                                bbsm.Exists(e =>
-                                                    e.Field(fieldName)
-                                                )
-                                            )
-                                        ),
-                                    bs2 =>
-                                        bs2.DateRange(r =>
-                                            r.LessThan(DateTime.Now.AddDays(-dateRange)).Field(fieldName)))))
-                        .Size(size).Source(s => s.Includes(i => i.Field(e => e.Url))));
+
+            var queryMaker = BaseQuery.GetQueryMaker(size, fieldModifier, dateRange, false);
+            
+            var result = 
+                Client.Search<UrlStatisticEntry>( queryMaker.Query );
 
             return result.Documents.Select(d => d.Url).ToList();
         }
