@@ -15,7 +15,7 @@ namespace Messenger
     internal static class ClientBuilder
     {
 
-        public static IEnumerable<IMessenger> GetMessengers( IEnumerable<IClientSettings> settings ) =>
+        public static IEnumerable<IMessenger> GetMessengerss( IEnumerable<IClientSettings> settings ) =>
             settings.Where( s => s.Enabled ).Select( CreateClient );
 
         private static IMessenger CreateClient(

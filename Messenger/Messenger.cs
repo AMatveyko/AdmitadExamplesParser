@@ -15,7 +15,7 @@ namespace Messenger
             
         public void Send( string message )
         {
-            var clients = ClientBuilder.GetMessengers( _settings.Clients );
+            var clients = ClientBuilder.GetMessengerss( _settings.Clients );
             foreach( var client in clients ) {
                 client.Send( message );
             }
